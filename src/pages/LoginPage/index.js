@@ -1,5 +1,5 @@
 function LoginPage() {
-    return <div>Login page</div>;
+    return <div className="text-yellow-500">Login page</div>;
 }
 
 export default LoginPage;

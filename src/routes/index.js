@@ -1,0 +1,40 @@
+import { HOME_PAGE_URL, LOGIN_PAGE_URL, PERSONAL_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import FullLayout from '~/layouts/FullLayout';
+import LoginLayout from '~/layouts/LoginLayout';
+import HomePage from '~/pages/HomePage';
+import LoginPage from '~/pages/LoginPage';
+import PersonalPage from '~/pages/PersonalPage';
+import SignUpPage from '~/pages/SignUpPage';
+
+const publicRoutes = [
+    {
+        path: '/',
+        component: HomePage,
+        layout: FullLayout,
+    },
+    {
+        path: `${HOME_PAGE_URL}`,
+        component: HomePage,
+        layout: FullLayout,
+    },
+    {
+        path: `${LOGIN_PAGE_URL}`,
+        component: LoginPage,
+        layout: LoginLayout,
+    },
+    {
+        path: `${SIGNUP_PAGE_URL}`,
+        component: SignUpPage,
+        layout: LoginLayout,
+    },
+];
+
+const privateRoutes = [
+    {
+        path: `${PERSONAL_PAGE_URL}`,
+        component: PersonalPage,
+        layout: FullLayout,
+    },
+];
+
+export { publicRoutes, privateRoutes };

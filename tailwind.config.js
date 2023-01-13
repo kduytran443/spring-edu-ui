@@ -2,6 +2,9 @@
 module.exports = {
     content: ['./src/**/*.{js,jsx,ts,tsx}'],
     theme: {
+        fontFamily: {
+            serif: ['Manrope', 'sans-serif'],
+        },
         extend: {},
         screens: {
             sm: '480px',

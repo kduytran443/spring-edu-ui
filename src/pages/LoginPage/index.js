@@ -60,6 +60,8 @@ function LoginPage() {
                                 <FontAwesomeIcon icon={faUser} />
                             </InputAdornment>
                         ),
+                        autoCapitalize: 'off',
+                        autoCorrect: 'off',
                     }}
                     error={!!usernameErrorState}
                     helperText={usernameErrorState}
@@ -81,6 +83,8 @@ function LoginPage() {
                                 <FontAwesomeIcon icon={faLock} />
                             </InputAdornment>
                         ),
+                        autoCapitalize: 'off',
+                        autoCorrect: 'off',
                     }}
                     error={!!passwordErrorState}
                     helperText={passwordErrorState}

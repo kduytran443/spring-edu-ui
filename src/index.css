@@ -39,3 +39,7 @@ body {
 * {
     font-family: 'Manrope', sans-serif !important;
 }
+
+:root {
+    --header-height: 64px;
+}

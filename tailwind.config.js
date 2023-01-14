@@ -5,7 +5,11 @@ module.exports = {
         fontFamily: {
             serif: ['Manrope', 'sans-serif'],
         },
-        extend: {},
+        extend: {
+            height: {
+                'header-height': 'var(--header-height)',
+            },
+        },
         screens: {
             sm: '480px',
             // => @media (min-width: 640px) { ... }

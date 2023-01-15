@@ -36,12 +36,14 @@ function Header() {
                     <CustomizedInputBase />
                 </div>
                 {authenticatedState ? (
-                    <Avatar
-                        sx={{ width: 56, height: 56 }}
-                        src={
-                            'https://vcdn1-ngoisao.vnecdn.net/2021/10/15/messi1-8720-1634293782.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=hTOVrO1AGptYaG7l17xfPw'
-                        }
-                    />
+                    <div className="cursor-pointer">
+                        <Avatar
+                            sx={{ width: 44, height: 44 }}
+                            src={
+                                'https://vcdn1-ngoisao.vnecdn.net/2021/10/15/messi1-8720-1634293782.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=hTOVrO1AGptYaG7l17xfPw'
+                            }
+                        />
+                    </div>
                 ) : (
                     <div>
                         <Button

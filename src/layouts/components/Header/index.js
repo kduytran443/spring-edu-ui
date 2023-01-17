@@ -1,6 +1,6 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Avatar, Button, IconButton } from '@mui/material';
+import { Avatar, Badge, Button, IconButton } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +8,12 @@ import images from '~/assets/images';
 import CustomizedInputBase from '~/components/CustomizedInputBase';
 import { LOGIN_PAGE_URL } from '~/constants';
 import { authorize } from '~/services/userService';
-import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
+import HeaderAvatar from '~/components/HeaderAvatar';
+import FullScreenDialog from '~/components/FullScreenDialog';
+import MobileHeaderMenu from '~/components/MobileHeaderMenu';
+import SearchIcon from '@mui/icons-material/Search';
+import MailIcon from '@mui/icons-material/Mail';
 
 function Header() {
     const navigate = useNavigate();
@@ -19,13 +23,11 @@ function Header() {
         <header className="w-full">
             <div className="w-full h-header-height shadow border-slate-200 border-b-[1px] flex flex-row justify-between items-center px-4">
                 <div className="md:hidden block">
-                    <IconButton sx={{ p: '10px' }} aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
+                    <MobileHeaderMenu />
                 </div>
-                <div className="md:hidden block">
+                <div className="md:hidden flex flex-row items-center justify-center">
                     <IconButton sx={{ p: '10px' }} aria-label="menu">
-                        <HomeIcon />
+                        <SearchIcon />
                     </IconButton>
                 </div>
                 <div className="h-full  flex-row justify-center items-center md:flex hidden">
@@ -36,13 +38,13 @@ function Header() {
                     <CustomizedInputBase />
                 </div>
                 {authenticatedState ? (
-                    <div className="cursor-pointer">
-                        <Avatar
-                            sx={{ width: 44, height: 44 }}
-                            src={
-                                'https://vcdn1-ngoisao.vnecdn.net/2021/10/15/messi1-8720-1634293782.jpg?w=680&h=0&q=100&dpr=1&fit=crop&s=hTOVrO1AGptYaG7l17xfPw'
-                            }
-                        />
+                    <div className="flex flex-row justify-center items-center">
+                        <div className="p-[10px] mr-4">
+                            <Badge badgeContent={4} color="primary">
+                                <MailIcon color="action" />
+                            </Badge>
+                        </div>
+                        <HeaderAvatar />
                     </div>
                 ) : (
                     <div>

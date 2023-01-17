@@ -3,6 +3,7 @@ import { useState } from 'react';
 import FullScreenDialog from '../FullScreenDialog';
 import MenuIcon from '@mui/icons-material/Menu';
 import SidebarMenu from '../SidebarMenu';
+import CustomizedInputBase from '../CustomizedInputBase';
 
 function MobileHeaderMenu() {
     const [open, setOpen] = useState(false);

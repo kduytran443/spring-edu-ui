@@ -20,7 +20,7 @@ function Header() {
     const [authenticatedState, setAuthenticatedState] = useState(true);
 
     return (
-        <header className="w-full">
+        <header className="sticky z-50 top-0 w-full relative bg-white">
             <div className="w-full h-header-height shadow border-slate-200 border-b-[1px] flex flex-row justify-between items-center px-4">
                 <div className="md:hidden block">
                     <MobileHeaderMenu />

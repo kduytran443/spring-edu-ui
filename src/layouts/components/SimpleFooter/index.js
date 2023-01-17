@@ -4,7 +4,7 @@ import { IconButton, Tooltip } from '@mui/material';
 
 function SimpleFooter() {
     return (
-        <div className="bg-white w-full p-6 mt-8 flex flex-col sm:flex-row items-center justify-center border-slate-200 border-t-[1px]">
+        <div className="bg-white w-full p-4 flex flex-col sm:flex-row items-center justify-center border-slate-200 border-t-[1px]">
             <div className="flex flex-col sm:flex-row items-center justify-center">
                 <span>Theo dõi chúng tôi qua</span>
                 <div className="ml-0 sm:ml-8">

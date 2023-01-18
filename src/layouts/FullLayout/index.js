@@ -12,7 +12,9 @@ function FullLayout({ children }) {
                         <SidebarMenu />
                     </div>
                 </div>
-                {children}
+                <div className="flex flex-col max-w-full flex-1 w-full md:w-[calc(100%-96px)] p-0 md:p-6">
+                    {children}
+                </div>
             </div>
             <SimpleFooter />
         </div>

@@ -23,7 +23,7 @@ export default function CourseItemIntro() {
     };
 
     return (
-        <Card>
+        <Card style={{ boxShadow: 'none' }}>
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">

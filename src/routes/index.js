@@ -1,6 +1,7 @@
-import { HOME_PAGE_URL, LOGIN_PAGE_URL, PERSONAL_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { CATEGORY_PAGE_URL, HOME_PAGE_URL, LOGIN_PAGE_URL, PERSONAL_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
+import CategoryPage from '~/pages/CategoryPage';
 import HomePage from '~/pages/HomePage';
 import LoginPage from '~/pages/LoginPage';
 import PersonalPage from '~/pages/PersonalPage';
@@ -26,6 +27,11 @@ const publicRoutes = [
         path: `${SIGNUP_PAGE_URL}`,
         component: SignUpPage,
         layout: LoginLayout,
+    },
+    {
+        path: `${CATEGORY_PAGE_URL}`,
+        component: CategoryPage,
+        layout: FullLayout,
     },
 ];
 

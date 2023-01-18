@@ -3,9 +3,10 @@ import SchoolIcon from '@mui/icons-material/School';
 import { HOME_PAGE_URL } from '~/constants';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { IconButton } from '@mui/material';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faPlus } from '@fortawesome/free-solid-svg-icons';
+import BallotIcon from '@mui/icons-material/Ballot';
 
 function SidebarMenu() {
     const location = useLocation();
@@ -15,12 +16,17 @@ function SidebarMenu() {
 
     const selected = false;
 
+    const navigate = useNavigate();
+
     return (
-        <ul className="flex flex-col items-center">
+        <ul className="flex flex-col items-center mt-8">
             <li
                 className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
                     selected && ' bg-gray-200 border-[1px] shadow'
                 }`}
+                onClick={(e) => {
+                    navigate(HOME_PAGE_URL);
+                }}
             >
                 <HomeIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Trang chủ</span>
@@ -41,6 +47,14 @@ function SidebarMenu() {
             >
                 <CalendarMonthIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Lịch</span>
+            </li>
+            <li
+                className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
+                    selected && ' bg-gray-200 border-[1px] shadow'
+                }`}
+            >
+                <BallotIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
+                <span className="text-xs font-bold text-center">Việc cần làm</span>
             </li>
             <li>
                 <IconButton aria-label="other" size="large" style={{ width: '64px', height: '64px' }}>

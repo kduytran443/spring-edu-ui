@@ -1,6 +1,14 @@
-import { CATEGORY_PAGE_URL, HOME_PAGE_URL, LOGIN_PAGE_URL, PERSONAL_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import {
+    CALENDAR_PAGE_URL,
+    CATEGORY_PAGE_URL,
+    HOME_PAGE_URL,
+    LOGIN_PAGE_URL,
+    PERSONAL_PAGE_URL,
+    SIGNUP_PAGE_URL,
+} from '~/constants';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
+import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
 import HomePage from '~/pages/HomePage';
 import LoginPage from '~/pages/LoginPage';
@@ -39,6 +47,11 @@ const privateRoutes = [
     {
         path: `${PERSONAL_PAGE_URL}`,
         component: PersonalPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${CALENDAR_PAGE_URL}`,
+        component: CalendarPage,
         layout: FullLayout,
     },
 ];

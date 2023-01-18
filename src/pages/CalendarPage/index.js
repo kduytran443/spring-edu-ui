@@ -2,7 +2,7 @@ import SchedulerCalendar from '~/components/SchedulerCalendar';
 
 function CalendarPage() {
     return (
-        <div>
+        <div className="w-full">
             <SchedulerCalendar />
         </div>
     );

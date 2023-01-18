@@ -10,6 +10,7 @@ function CourseListIntro({
     title = '',
     icon = '',
     link = '',
+    scroll = true,
     hiddenHeader = false,
 }) {
     //item: image, title, description, avatar, userLink, courseLink, review, courseQuantity, price, time
@@ -52,11 +53,11 @@ function CourseListIntro({
                     <div></div>
                 </div>
             )}
-            <div className="overflow-x-scroll w-full">
-                <ul className="flex flex-row items-center md:flex-wrap">
+            <div className={`${scroll && 'overflow-x-scroll'} w-full`}>
+                <ul className={`flex flex-row items-center ${!scroll && 'flex-wrap'} md:flex-wrap`}>
                     {listItem.map((item, index) => {
                         return (
-                            <li className="min-w-[328px] max-w-[328px] mx-2 ">
+                            <li className="min-w-[328px] max-w-[328px] md:mx-2 ">
                                 <CourseItemIntro />
                             </li>
                         );

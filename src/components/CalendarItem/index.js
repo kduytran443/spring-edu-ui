@@ -6,27 +6,39 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function CalendarItem() {
+export default function CalendarItem({
+    id = 0,
+    title = 'Tiêu đề',
+    description = 'Mô tả',
+    start = new Date(2023, 0, 18, 17, 0),
+    end = new Date(2023, 0, 18, 18, 30),
+    img = 'https://mui.com/static/images/cards/contemplative-reptile.jpg',
+    onRemove = () => {},
+}) {
     return (
         <Card className="w-full h-full flex flex-col">
-            <CardMedia
-                component="img"
-                alt="green iguana"
-                height="140"
-                image="https://mui.com/static/images/cards/contemplative-reptile.jpg"
-            />
+            <CardMedia className="max-h-[245px]" component="img" alt="green iguana" height="140" image={img} />
             <CardContent className="flex-1">
                 <Typography gutterBottom variant="h5" component="div">
-                    Lizard
+                    {title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all
-                    continents except Antarctica
+                    <div className="flex flex-col">
+                        <p>
+                            <b>Bắt đầu</b>: {start.toLocaleString()}
+                        </p>
+                        <p>
+                            <b>Kết thúc</b>: {end.toLocaleString()}
+                        </p>
+                    </div>
+                    <div className="mt-2">{description}</div>
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">Share</Button>
-                <Button size="small">Learn More</Button>
+                <Button size="small">Sửa</Button>
+                <Button color={'error'} size="small" onClick={onRemove}>
+                    Xóa
+                </Button>
             </CardActions>
         </Card>
     );

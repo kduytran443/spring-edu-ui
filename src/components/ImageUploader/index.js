@@ -1,4 +1,8 @@
+import { useRef } from 'react';
+
 function ImageUploader({ width = '', onInput = () => {} }) {
+    const imageUploaderRef = useRef();
+
     const uploadImage = (e) => {
         const files = e.target.files;
         for (let i = 0; i < files.length; i++) {
@@ -8,7 +12,7 @@ function ImageUploader({ width = '', onInput = () => {} }) {
                 reader.readAsDataURL(file);
                 reader.onload = () => {
                     onInput(reader.result);
-                    e.target.value = null;
+                    imageUploaderRef.current.value = null;
                 };
                 reader.onerror = (error) => {
                     console.log('error uploading!');
@@ -19,7 +23,7 @@ function ImageUploader({ width = '', onInput = () => {} }) {
 
     return (
         <div>
-            <input type={'file'} className="h-full" onChange={uploadImage} />
+            <input ref={imageUploaderRef} type={'file'} className="h-full" onChange={uploadImage} />
         </div>
     );
 }

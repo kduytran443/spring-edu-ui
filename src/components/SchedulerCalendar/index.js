@@ -53,6 +53,7 @@ function SchedulerCalendar() {
 
     const addNewEvent = () => {
         if (newEventState.title && newEventState.start.getTime() < newEventState.end.getTime()) {
+            console.log(newEventState);
             setAllEventsState((pre) => [...pre, newEventState]);
             setNewEventErrorState('');
             setNewEventState({ title: '', start: new Date(), end: new Date(), img: '' });
@@ -80,9 +81,25 @@ function SchedulerCalendar() {
     };
 
     const onImageUploaded = (base64String) => {
-        setNewEventState((pre) => {
-            return { ...pre, img: base64String };
-        });
+        if (base64String) {
+            setNewEventState((pre) => {
+                return { ...pre, img: base64String };
+            });
+        } else {
+            setNewEventState((pre) => {
+                return { ...pre, img: '' };
+            });
+        }
+    };
+
+    const updateEvent = (data) => {
+        const event = allEventsState.find((e) => e.id === data.id);
+
+        event.img = data.img;
+        event.description = data.description;
+        event.end = data.end;
+        event.start = data.start;
+        event.title = data.title;
     };
 
     return (
@@ -173,13 +190,10 @@ function SchedulerCalendar() {
                 {selectedEventState && (
                     <div className="flex-1">
                         <CalendarItem
-                            id={selectedEventState.id}
-                            description={selectedEventState.description}
-                            title={selectedEventState.title}
-                            start={selectedEventState.start}
-                            end={selectedEventState.end}
-                            img={selectedEventState.img}
+                            data={selectedEventState}
+                            setData={setSelectedEventState}
                             onRemove={removeEvent}
+                            onUpdate={updateEvent}
                         />
                     </div>
                 )}

@@ -93,13 +93,24 @@ function SchedulerCalendar() {
     };
 
     const updateEvent = (data) => {
-        const event = allEventsState.find((e) => e.id === data.id);
+        setAllEventsState((pre) => {
+            const eventObj = {
+                id: data.id,
+                title: data.title,
+                start: new Date(data.start),
+                end: new Date(data.end),
+                description: data.description,
+                img: data.img,
+            };
 
-        event.img = data.img;
-        event.description = data.description;
-        event.end = data.end;
-        event.start = data.start;
-        event.title = data.title;
+            return pre.map((item) => {
+                return item.id === eventObj.id ? eventObj : item;
+            });
+        });
+    };
+
+    const closeItem = () => {
+        setSelectedEventState();
     };
 
     return (
@@ -194,6 +205,7 @@ function SchedulerCalendar() {
                             setData={setSelectedEventState}
                             onRemove={removeEvent}
                             onUpdate={updateEvent}
+                            close={closeItem}
                         />
                     </div>
                 )}

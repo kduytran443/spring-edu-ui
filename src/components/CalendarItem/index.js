@@ -23,6 +23,7 @@ export default function CalendarItem({
     onRemove = () => {},
     onUpdate = () => {},
     setData = () => {},
+    close = () => {},
 }) {
     const [enableEditingState, setEnableEditingState] = useState(false);
     const [removeAlertState, setRemoveAlertState] = useState(false);
@@ -66,7 +67,7 @@ export default function CalendarItem({
     return (
         <Card className="relative w-full h-full flex flex-col">
             <div className="absolute top-0 right-0 bg-white">
-                <IconButton>
+                <IconButton onClick={close}>
                     <FontAwesomeIcon icon={faXmarkCircle} />
                 </IconButton>
             </div>
@@ -80,7 +81,16 @@ export default function CalendarItem({
             <CardContent className="flex-1">
                 <Typography gutterBottom variant="h5" component="div">
                     {enableEditingState ? (
-                        <TextField size="small" className="w-full" value={dataState.title} />
+                        <TextField
+                            size="small"
+                            className="w-full"
+                            value={dataState.title}
+                            onChange={(e) => {
+                                setDataState((pre) => {
+                                    return { ...pre, title: e.target.value };
+                                });
+                            }}
+                        />
                     ) : (
                         dataState.title
                     )}
@@ -93,6 +103,9 @@ export default function CalendarItem({
                                 <DateTimePicker
                                     className="h-[40px] w-full md:w-auto flex-1 pl-4"
                                     value={dataState.start}
+                                    onChange={(e) => {
+                                        setDataState({ ...dataState, start: new Date(e.getTime()) });
+                                    }}
                                 />
                             ) : (
                                 <span className="flex-1 ml-4">{dataState.start.toLocaleString()}</span>
@@ -104,6 +117,9 @@ export default function CalendarItem({
                                 <DateTimePicker
                                     className="h-[40px] w-full md:w-auto flex-1 pl-4"
                                     value={dataState.end}
+                                    onChange={(e) => {
+                                        setDataState({ ...dataState, end: new Date(e.getTime()) });
+                                    }}
                                 />
                             ) : (
                                 <span className="flex-1 ml-4">{dataState.end.toLocaleString()}</span>

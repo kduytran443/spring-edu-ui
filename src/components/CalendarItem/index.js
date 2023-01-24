@@ -66,7 +66,7 @@ export default function CalendarItem({
 
     return (
         <Card className="relative w-full h-full flex flex-col">
-            <div className="absolute top-0 right-0 bg-white">
+            <div className="absolute top-0 right-0 bg-white opacity-50">
                 <IconButton onClick={close}>
                     <FontAwesomeIcon icon={faXmarkCircle} />
                 </IconButton>
@@ -126,7 +126,7 @@ export default function CalendarItem({
                             )}
                         </p>
                     </div>
-                    <div className="mt-2">
+                    <div className="mt-2 max-h-[128px] overflow-y-scroll">
                         {enableEditingState ? (
                             <TextField
                                 size="small"

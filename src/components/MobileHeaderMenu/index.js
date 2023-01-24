@@ -22,7 +22,7 @@ function MobileHeaderMenu() {
                 <MenuIcon />
             </IconButton>
             <FullScreenDialog openState={open} handleClose={handleClose} headerTitle="Menu">
-                <SidebarMenu />
+                <SidebarMenu preAction={handleClose} />
             </FullScreenDialog>
         </div>
     );

@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEllipsis, faPlus } from '@fortawesome/free-solid-svg-icons';
 import BallotIcon from '@mui/icons-material/Ballot';
 
-function SidebarMenu() {
+function SidebarMenu({ preAction = () => {} }) {
     const location = useLocation();
     console.log('hash', location.hash);
     console.log('pathname', location.pathname);
@@ -18,6 +18,11 @@ function SidebarMenu() {
 
     const navigate = useNavigate();
 
+    const doNavigate = (url) => {
+        preAction();
+        navigate(url);
+    };
+
     return (
         <ul className="flex flex-col items-center mt-8">
             <li
@@ -25,7 +30,7 @@ function SidebarMenu() {
                     selected && ' bg-gray-200 border-[1px] shadow'
                 }`}
                 onClick={(e) => {
-                    navigate(HOME_PAGE_URL);
+                    doNavigate(HOME_PAGE_URL);
                 }}
             >
                 <HomeIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
@@ -45,7 +50,7 @@ function SidebarMenu() {
                     selected && ' bg-gray-200 border-[1px] shadow'
                 }`}
                 onClick={(e) => {
-                    navigate(CALENDAR_PAGE_URL);
+                    doNavigate(CALENDAR_PAGE_URL);
                 }}
             >
                 <CalendarMonthIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />

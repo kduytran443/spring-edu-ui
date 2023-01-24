@@ -60,7 +60,7 @@ const properties = {
 
 const SildeshowIntroduction = () => {
     return (
-        <div className="slide-container">
+        <div className="slide-container md:rounded-lg md:overflow-hidden md:shadow-md">
             <Slide {...properties} transitionDuration={500}>
                 {slideImages.map((slideImage, index) => (
                     <div key={index}>

@@ -5,6 +5,7 @@ const INTRO_PAGE_URL = '/intro';
 const PERSONAL_PAGE_URL = '/personal';
 const CATEGORY_PAGE_URL = '/category/:id';
 const CALENDAR_PAGE_URL = '/calendar';
+const CLASS_INTRO_PAGE_URL = '/class/:id/intro';
 
 export {
     HOME_PAGE_URL,
@@ -14,4 +15,5 @@ export {
     PERSONAL_PAGE_URL,
     CATEGORY_PAGE_URL,
     CALENDAR_PAGE_URL,
+    CLASS_INTRO_PAGE_URL,
 };

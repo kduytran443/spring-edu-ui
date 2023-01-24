@@ -1,6 +1,7 @@
 import {
     CALENDAR_PAGE_URL,
     CATEGORY_PAGE_URL,
+    CLASS_INTRO_PAGE_URL,
     HOME_PAGE_URL,
     LOGIN_PAGE_URL,
     PERSONAL_PAGE_URL,
@@ -10,6 +11,7 @@ import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
 import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
+import ClassIntroPage from '~/pages/ClassIntroPage';
 import HomePage from '~/pages/HomePage';
 import LoginPage from '~/pages/LoginPage';
 import PersonalPage from '~/pages/PersonalPage';
@@ -39,6 +41,11 @@ const publicRoutes = [
     {
         path: `${CATEGORY_PAGE_URL}`,
         component: CategoryPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${CLASS_INTRO_PAGE_URL}`,
+        component: ClassIntroPage,
         layout: FullLayout,
     },
 ];

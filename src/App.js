@@ -5,6 +5,7 @@ import FullLayout from './layouts/FullLayout';
 import { Fragment } from 'react';
 import { authorize } from './services/userService';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import ScrollToTop from './components/ScrollToTop';
 
 const theme = createTheme({
     typography: {
@@ -35,57 +36,59 @@ function App() {
         <ThemeProvider theme={theme}>
             <Router>
                 <div className="pd-0 ">
-                    <Routes>
-                        {publicRoutes.map((publicRoute, index) => {
-                            const Page = publicRoute.component;
+                    <ScrollToTop>
+                        <Routes>
+                            {publicRoutes.map((publicRoute, index) => {
+                                const Page = publicRoute.component;
 
-                            let Layout = FullLayout;
-                            if (publicRoute.layout) {
-                                Layout = publicRoute.layout;
-                            } else if (publicRoute.layout === null) {
-                                Layout = Fragment;
-                            }
+                                let Layout = FullLayout;
+                                if (publicRoute.layout) {
+                                    Layout = publicRoute.layout;
+                                } else if (publicRoute.layout === null) {
+                                    Layout = Fragment;
+                                }
 
-                            return (
-                                <Route
-                                    key={publicRoute.path}
-                                    path={publicRoute.path}
-                                    element={
-                                        <Layout>
-                                            <Page />
-                                        </Layout>
-                                    }
-                                />
-                            );
-                        })}
-                        {privateRoutes.map((privateRoute) => {
-                            const Page = privateRoute.component;
-
-                            let Layout = FullLayout;
-                            if (privateRoute.layout) {
-                                Layout = privateRoute.layout;
-                            } else if (privateRoute.layout === null) {
-                                Layout = Fragment;
-                            }
-
-                            const isAuthenticated = authorize();
-                            return (
-                                <Route
-                                    key={privateRoute.path}
-                                    path={privateRoute.path}
-                                    element={
-                                        isAuthenticated ? (
+                                return (
+                                    <Route
+                                        key={publicRoute.path}
+                                        path={publicRoute.path}
+                                        element={
                                             <Layout>
                                                 <Page />
                                             </Layout>
-                                        ) : (
-                                            <Navigate to="/home" />
-                                        )
-                                    }
-                                />
-                            );
-                        })}
-                    </Routes>
+                                        }
+                                    />
+                                );
+                            })}
+                            {privateRoutes.map((privateRoute) => {
+                                const Page = privateRoute.component;
+
+                                let Layout = FullLayout;
+                                if (privateRoute.layout) {
+                                    Layout = privateRoute.layout;
+                                } else if (privateRoute.layout === null) {
+                                    Layout = Fragment;
+                                }
+
+                                const isAuthenticated = authorize();
+                                return (
+                                    <Route
+                                        key={privateRoute.path}
+                                        path={privateRoute.path}
+                                        element={
+                                            isAuthenticated ? (
+                                                <Layout>
+                                                    <Page />
+                                                </Layout>
+                                            ) : (
+                                                <Navigate to="/home" />
+                                            )
+                                        }
+                                    />
+                                );
+                            })}
+                        </Routes>
+                    </ScrollToTop>
                 </div>
             </Router>
         </ThemeProvider>

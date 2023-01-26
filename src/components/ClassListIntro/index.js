@@ -1,21 +1,14 @@
 import { faDiagramNext, faForward, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Divider } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CATEGORY_PAGE_URL } from '~/constants';
-import CourseItemIntro from '../CourseItemIntro';
+import CategoryCard from '../CategoryCard';
+import ClassCard from '../ClassCard';
 
-function CourseListIntro({
-    listItem = [1, 1, 1, 1, 1, 1, 1, 1],
-    title = '',
-    icon = '',
-    link = '',
-    scroll = true,
-    hiddenHeader = false,
-}) {
+function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = true, hiddenHeader = false }) {
     //item: image, title, description, avatar, userLink, courseLink, review, courseQuantity, price, time
-
-    console.log(hiddenHeader);
 
     const navigate = useNavigate();
 
@@ -53,17 +46,22 @@ function CourseListIntro({
                     <div></div>
                 </div>
             )}
-            <div className={`${scroll && 'overflow-x-scroll'} w-full`}>
-                <ul className={`flex flex-row items-center ${!scroll && 'flex-wrap'} md:flex-wrap`}>
-                    {listItem.map((item, index) => {
-                        return (
-                            <li className="min-w-[328px] max-w-[328px] md:mx-2 ">
-                                <CourseItemIntro />
-                            </li>
-                        );
-                    })}
-                </ul>
-            </div>
+            <ul className={`flex flex-row flex-wrap w-full`}>
+                {listItem.map((item, index) => {
+                    return (
+                        <li key={index} className={`lg:max-w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 lg:w-1/3 w-[100%]`}>
+                            <div className="w-full">
+                                <ClassCard
+                                    navigateTo={'/category/' + item.id}
+                                    name={item.name}
+                                    img={item.img}
+                                    description={item.description}
+                                />
+                            </div>
+                        </li>
+                    );
+                })}
+            </ul>
             {!hiddenHeader && (
                 <div>
                     <Button onClick={navigateToPage} variant="text" startIcon={<FontAwesomeIcon icon={faForward} />}>
@@ -75,4 +73,4 @@ function CourseListIntro({
     );
 }
 
-export default CourseListIntro;
+export default ClassListIntro;

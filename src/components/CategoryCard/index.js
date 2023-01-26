@@ -21,7 +21,7 @@ function CategoryCard({ id, name, description, img, navigateTo }) {
                 >
                     <div className="duration-200 block w-full h-full absolute bg-black opacity-[0.2] group-hover:opacity-[0.4]"></div>
                     <div className="duration-200 flex flex-col justify-between h-full w-full p-6 text-white overflow-hidden absolute z-10">
-                        <h1 className="text-2xl md:text-3xl font-black">{name}</h1>
+                        <h1 className="text-2xl lg:text-3xl font-black">{name}</h1>
                         <p className="font-semibold">{description}</p>
                     </div>
                 </div>

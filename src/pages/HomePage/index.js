@@ -1,7 +1,7 @@
 import { Divider } from '@mui/material';
 import { useState } from 'react';
 import CategoryCard from '~/components/CategoryCard';
-import CourseListIntro from '~/components/CourseListIntro';
+import CourseListIntro from '~/components/ClassListIntro';
 import SildeshowIntroduction from '~/components/SildeshowIntroduction';
 import TeacherListIntro from '~/components/TeacherListIntro';
 import { CATEGORY_PAGE_URL } from '~/constants';
@@ -75,8 +75,9 @@ function HomePage() {
 
     return (
         <>
-            <SildeshowIntroduction />
-            <Divider />
+            <div className="md:p-4 p-0 w-full">
+                <SildeshowIntroduction />
+            </div>
             <ul className="flex flex-row flex-wrap">
                 {categoryListState.map((category, index) => {
                     return (

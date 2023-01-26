@@ -15,7 +15,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-export default function CourseItemIntro() {
+export default function ClassItemIntro() {
     const [expanded, setExpanded] = React.useState(false);
 
     const handleExpandClick = () => {

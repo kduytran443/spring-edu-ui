@@ -1,6 +1,6 @@
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 import { Editor } from 'react-draft-wysiwyg';
 import { EditorState } from 'draft-js';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -36,7 +36,16 @@ function ClassIntroPage() {
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
-                <h1 className="text-4xl font-black">{classDataState.name}</h1>
+                <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
+
+                <div className="flex flex-row items-center mb-4 md:mb-0">
+                    <Avatar
+                        src="https://mui.com/static/images/avatar/2.jpg"
+                        variant="circular"
+                        style={{ width: '64px', height: '64px' }}
+                    />
+                    <h1 className="ml-2 font-bold text-xl">Alex Hunter</h1>
+                </div>
                 <div>
                     <div className="my-4">{classDataState.description}</div>
                     <div className="h-full">

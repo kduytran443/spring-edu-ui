@@ -52,7 +52,7 @@ function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = t
                         <li key={index} className={`lg:max-w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 lg:w-1/3 w-[100%]`}>
                             <div className="w-full">
                                 <ClassCard
-                                    navigateTo={'/category/' + item.id}
+                                    navigateTo={'/class/' + item.id + '/intro'}
                                     name={item.name}
                                     img={item.img}
                                     description={item.description}

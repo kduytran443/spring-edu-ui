@@ -71,6 +71,12 @@ function HomePage() {
             description: `Tranh vẽ nói chung hay còn gọi là hội họa, là ngành nghệ thuật tạo hình phong phú, hấp dẫn và rộng lớn. Tranh phản ánh nhiều mặt về thế giới ...`,
             img: 'https://bucket.nhanh.vn/6dc534-15668/art/artCT/20210516_t1T2PwS2bz8hy7YeEnqFKFhK.jpg',
         },
+        {
+            id: 6,
+            name: 'Ẩm thực',
+            description: `Tranh vẽ nói chung hay còn gọi là hội họa, là ngành nghệ thuật tạo hình phong phú, hấp dẫn và rộng lớn. Tranh phản ánh nhiều mặt về thế giới ...`,
+            img: 'https://ss-images.saostar.vn/pc/1636740476217/saostar-1mqcmwlqx5ma32zf.jpg',
+        },
     ]);
 
     return (

@@ -24,7 +24,7 @@ function SidebarMenu({ preAction = () => {} }) {
     };
 
     return (
-        <ul className="flex flex-col items-center mt-8">
+        <ul className="flex flex-col items-center mt-0 lg:mt-4">
             <li
                 className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
                     selected && ' bg-gray-200 border-[1px] shadow'

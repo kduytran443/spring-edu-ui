@@ -2,7 +2,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
-import CourseListIntro from '~/components/ClassListIntro';
+import ClassListIntro from '~/components/ClassListIntro';
 
 function CategoryPage() {
     const [categoryDataState, setCategoryDataState] = useState({
@@ -17,7 +17,7 @@ function CategoryPage() {
             {
                 id: 1,
                 name: 'Kiến Thức Nhập Môn IT',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
+                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) ...`,
                 img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
             },
             {
@@ -90,7 +90,7 @@ function CategoryPage() {
                 </div>
                 <div>{quantityState} lớp học</div>
             </div>
-            <CourseListIntro
+            <ClassListIntro
                 listItem={classListState}
                 hiddenHeader
                 scroll={false}

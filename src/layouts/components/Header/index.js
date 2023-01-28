@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import images from '~/assets/images';
 import CustomizedInputBase from '~/components/CustomizedInputBase';
-import { LOGIN_PAGE_URL } from '~/constants';
+import { HOME_PAGE_URL, LOGIN_PAGE_URL } from '~/constants';
 import { authorize } from '~/services/userService';
 import HomeIcon from '@mui/icons-material/Home';
 import HeaderAvatar from '~/components/HeaderAvatar';
@@ -14,6 +14,8 @@ import FullScreenDialog from '~/components/FullScreenDialog';
 import MobileHeaderMenu from '~/components/MobileHeaderMenu';
 import SearchIcon from '@mui/icons-material/Search';
 import MailIcon from '@mui/icons-material/Mail';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import HeaderNotifier from '~/components/HeaderNotifier';
 
 function Header() {
     const navigate = useNavigate();
@@ -30,7 +32,12 @@ function Header() {
                         <SearchIcon />
                     </IconButton>
                 </div>
-                <div className="h-full  flex-row justify-center items-center md:flex hidden">
+                <div
+                    className="h-full  flex-row justify-center items-center md:flex hidden select-none cursor-pointer"
+                    onClick={(e) => {
+                        navigate(HOME_PAGE_URL);
+                    }}
+                >
                     <img alt="logo" src={images.logo} className="h-full p-2" />
                     <h1 className="font-black text-xl ">Spring Edu</h1>
                 </div>
@@ -40,9 +47,7 @@ function Header() {
                 {authenticatedState ? (
                     <div className="flex flex-row justify-center items-center">
                         <div className="p-[10px] mr-4">
-                            <Badge badgeContent={4} color="primary">
-                                <MailIcon color="action" />
-                            </Badge>
+                            <HeaderNotifier />
                         </div>
                         <HeaderAvatar />
                     </div>

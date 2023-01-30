@@ -1,6 +1,6 @@
 import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
-import { CALENDAR_PAGE_URL, HOME_PAGE_URL } from '~/constants';
+import { CALENDAR_PAGE_URL, HOME_PAGE_URL, JOINED_CLASS_PAGE_URL } from '~/constants';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import { IconButton } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -41,6 +41,9 @@ function SidebarMenu({ preAction = () => {} }) {
                 className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
                     selected && ' bg-gray-200 border-[1px] shadow'
                 }`}
+                onClick={(e) => {
+                    doNavigate(JOINED_CLASS_PAGE_URL);
+                }}
             >
                 <SchoolIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Đã đăng ký</span>

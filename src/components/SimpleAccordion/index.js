@@ -7,8 +7,16 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function SimpleAccordion() {
+    const { classId } = useParams();
+    const navigate = useNavigate();
+
+    const navigateToLesson = (lessonId) => {
+        navigate('/class/' + classId + '/lesson/' + lessonId);
+    };
+
     return (
         <div className="my-2">
             <Accordion>
@@ -20,7 +28,12 @@ export default function SimpleAccordion() {
                 <AccordionDetails>
                     <Typography>
                         <ul>
-                            <ListItem>
+                            <ListItem
+                                className="cursor-pointer hover:bg-blue-100"
+                                onClick={(e) => {
+                                    navigateToLesson(1);
+                                }}
+                            >
                                 <ListItemAvatar>
                                     <Avatar>
                                         <FactCheckIcon />
@@ -31,7 +44,12 @@ export default function SimpleAccordion() {
                                     secondary="Jan 9, 2014"
                                 />
                             </ListItem>
-                            <ListItem>
+                            <ListItem
+                                className="cursor-pointer hover:bg-blue-100"
+                                onClick={(e) => {
+                                    navigateToLesson(1);
+                                }}
+                            >
                                 <ListItemAvatar>
                                     <Avatar>
                                         <FactCheckIcon />

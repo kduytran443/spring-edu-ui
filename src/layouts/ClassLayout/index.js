@@ -10,7 +10,7 @@ import Tab from '@mui/material/Tab';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 
 function ClassLayout({ children }) {
-    const { id } = useParams();
+    const { classId } = useParams();
     const location = useLocation();
 
     const [allTabsState, setAllTabsState] = useState([
@@ -34,11 +34,21 @@ function ClassLayout({ children }) {
             name: 'Điểm',
             path: '/mark',
         },
+        {
+            id: 5,
+            name: 'Live',
+            path: '/live',
+        },
+        {
+            id: 6,
+            name: 'Cài đặt',
+            path: '/setting',
+        },
     ]);
 
     const navigate = useNavigate();
     const navigateOtherTab = (path) => {
-        navigate('/class/' + id + path);
+        navigate('/class/' + classId + path);
     };
 
     const [value, setValue] = useState(1);
@@ -81,7 +91,7 @@ function ClassLayout({ children }) {
                     <div className="font-black text-4xl my-2 text-white">Lớp học Spring Boot</div>
                 </div>
                 <div className="max-w-full w-full overflow-x-scroll">
-                    <div className="w-[460px] md:w-full">
+                    <div className="w-[620px] py-2 md:py-0 md:w-full">
                         <Box sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

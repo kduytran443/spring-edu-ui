@@ -6,11 +6,15 @@ const PERSONAL_PAGE_URL = '/personal';
 const CATEGORY_PAGE_URL = '/category/:id';
 const CALENDAR_PAGE_URL = '/calendar';
 const JOINED_CLASS_PAGE_URL = '/joined-class';
-const CLASS_INTRO_PAGE_URL = '/class/:id/intro';
-const CLASS_PAGE_URL = '/class/:id';
-const CLASS_EXERCISE_PAGE_URL = '/class/:id/exercise';
-const CLASS_EVERYONE_PAGE_URL = '/class/:id/everyone';
-const CLASS_MARK_PAGE_URL = '/class/:id/mark';
+const CLASS_INTRO_PAGE_URL = '/class/:classId/intro';
+const CLASS_PAGE_URL = '/class/:classId';
+const CLASS_EXERCISE_PAGE_URL = '/class/:classId/exercise';
+const CLASS_SPECIFIC_EXERCISE_PAGE_URL = '/class/:classId/exercise/:exerciseId';
+const CLASS_EVERYONE_PAGE_URL = '/class/:classId/everyone';
+const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
+const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
+const CLASS_LESSON_PAGE_URL = '/class/:classId/lesson/:lessonId';
+const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
 
 export {
     HOME_PAGE_URL,
@@ -26,4 +30,8 @@ export {
     CLASS_EXERCISE_PAGE_URL,
     CLASS_EVERYONE_PAGE_URL,
     CLASS_MARK_PAGE_URL,
+    CLASS_SETTING_PAGE_URL,
+    CLASS_LESSON_PAGE_URL,
+    CLASS_LIVE_PAGE_URL,
+    CLASS_SPECIFIC_EXERCISE_PAGE_URL,
 };

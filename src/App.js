@@ -2,10 +2,11 @@ import './App.css';
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './routes';
 import FullLayout from './layouts/FullLayout';
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { authorize } from './services/userService';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ScrollToTop from './components/ScrollToTop';
+import { HOME_PAGE_URL } from './constants';
 
 const theme = createTheme({
     typography: {
@@ -32,6 +33,15 @@ const theme = createTheme({
 });
 
 function App() {
+    const [isAuthenticatedState, setIsAuthenticatedState] = useState(null);
+
+    useEffect(() => {
+        const login = authorize().then((data) => data);
+        login.then((data) => {
+            setIsAuthenticatedState(data);
+        });
+    }, [isAuthenticatedState]);
+
     return (
         <ThemeProvider theme={theme}>
             <Router>
@@ -76,12 +86,12 @@ function App() {
                                         key={privateRoute.path}
                                         path={privateRoute.path}
                                         element={
-                                            isAuthenticated ? (
+                                            isAuthenticatedState === false ? (
+                                                <Navigate to={HOME_PAGE_URL} />
+                                            ) : (
                                                 <Layout>
                                                     <Page />
                                                 </Layout>
-                                            ) : (
-                                                <Navigate to="/home" />
                                             )
                                         }
                                     />

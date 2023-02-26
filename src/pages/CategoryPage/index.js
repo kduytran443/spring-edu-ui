@@ -1,74 +1,80 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Pagination } from '@mui/material';
+import { Button, Pagination, Skeleton } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import ClassListIntro from '~/components/ClassListIntro';
+import LoadingProcess from '~/components/LoadingProcess';
+import { API_BASE_URL } from '~/constants';
 
 function CategoryPage() {
-    const [categoryDataState, setCategoryDataState] = useState({
-        title: 'Lập trình',
-        icon: 'https://cdn-icons-png.flaticon.com/512/3662/3662830.png',
-        description: `Lập trình là một công việc mà người lập trình viên thiết kế, xây dựng và bảo trì các chương trình máy tính (phần mềm). Những người làm nghề lập trình được gọi là lập trình viên.
-        Bằng cách sử dụng các đoạn mã lệnh (code), ngôn ngữ lập trình, và các tiện ích có sẵn, họ xây dựng, sửa lỗi hay nâng cấp các chương trình, ứng dụng, trò chơi, phần mềm, các trang web, hệ thống xử lí,… Giúp người dùng tương tác với nhau thông qua các thiết bị điện tử hoặc thực hiện các mệnh lệnh với máy tính.`,
-    });
+    const { categoryCode } = useParams();
 
-    const [classListState, setClassListState] = useState(() => {
-        return [
-            {
-                id: 1,
-                name: 'Kiến Thức Nhập Môn IT',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-        ];
-    });
+    const [categoryDataState, setCategoryDataState] = useState({});
 
-    const [quantityState, setQuantityState] = useState(classListState.length);
+    const [classListState, setClassListState] = useState(null);
+
+    const [quantityState, setQuantityState] = useState(0);
 
     useEffect(() => {
-        setQuantityState(classListState.length);
-    }, [classListState.length]);
+        if (classListState) setQuantityState(classListState.length);
+    }, [classListState]);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/category/${categoryCode}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setCategoryDataState(data);
+            });
+    }, []);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/class/${categoryCode}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setClassListState(data);
+            });
+    }, []);
 
     return (
         <div className="flex flex-col p-4">
             <div className="flex flex-col">
                 <div className="flex flex-row items-center ">
-                    <div className="mr-4 w-[40px] select-none overflow-hidden rounded">
-                        <img className="w-full" alt="logo" src={categoryDataState.icon} />
-                    </div>
-                    <span className="text-2xl md:text-4xl font-black">{categoryDataState.title}</span>
+                    {categoryDataState.icon ? (
+                        <div className="mr-4 w-[40px] select-none overflow-hidden rounded">
+                            <img className="w-full" alt="logo" src={categoryDataState.icon} />
+                        </div>
+                    ) : (
+                        <div className="mr-4">
+                            <Skeleton
+                                width={64}
+                                height={64}
+                                variant="circular"
+                                className="text-2xl md:text-4xl w-[50%]"
+                            />
+                        </div>
+                    )}
+
+                    <span className="text-2xl md:text-4xl font-black">
+                        {categoryDataState.name ? (
+                            categoryDataState.name
+                        ) : (
+                            <Skeleton variant="text" width={200} height={64} className="text-2xl md:text-4xl w-[50%]" />
+                        )}
+                    </span>
                 </div>
-                <p className="py-2 text-slate-700">{categoryDataState.description}</p>
+                <p className="py-2 text-slate-700">
+                    {categoryDataState.description ? (
+                        categoryDataState.description
+                    ) : (
+                        <Skeleton
+                            variant="rounded"
+                            width="100%"
+                            height={200}
+                            className="text-2xl md:text-4xl w-[50%]"
+                        />
+                    )}
+                </p>
                 <p className="py-4">
                     <span>
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
@@ -90,13 +96,18 @@ function CategoryPage() {
                 </div>
                 <div>{quantityState} lớp học</div>
             </div>
-            <ClassListIntro
-                listItem={classListState}
-                hiddenHeader
-                scroll={false}
-                title="Lập trình"
-                icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
-            />
+            {classListState === null ? (
+                <LoadingProcess />
+            ) : (
+                <ClassListIntro
+                    listItem={classListState}
+                    hiddenHeader
+                    scroll={false}
+                    title="Lập trình"
+                    icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                />
+            )}
+
             <div className="my-8">
                 <Pagination count={10} color="primary" />
             </div>

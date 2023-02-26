@@ -3,7 +3,7 @@ const LOGIN_PAGE_URL = '/login';
 const SIGNUP_PAGE_URL = '/sign-up';
 const INTRO_PAGE_URL = '/intro';
 const PERSONAL_PAGE_URL = '/personal';
-const CATEGORY_PAGE_URL = '/category/:id';
+const CATEGORY_PAGE_URL = '/category/:categoryCode';
 const CALENDAR_PAGE_URL = '/calendar';
 const JOINED_CLASS_PAGE_URL = '/joined-class';
 const CLASS_INTRO_PAGE_URL = '/class/:classId/intro';
@@ -15,6 +15,8 @@ const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
 const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
 const CLASS_LESSON_PAGE_URL = '/class/:classId/lesson/:lessonId';
 const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
+
+const API_BASE_URL = 'http://192.168.1.4:8084';
 
 export {
     HOME_PAGE_URL,
@@ -34,4 +36,5 @@ export {
     CLASS_LESSON_PAGE_URL,
     CLASS_LIVE_PAGE_URL,
     CLASS_SPECIFIC_EXERCISE_PAGE_URL,
+    API_BASE_URL,
 };

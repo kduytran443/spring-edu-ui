@@ -4,9 +4,6 @@ import { useNavigate } from 'react-router-dom';
 function CategoryCard({ id, name, description, img, navigateTo }) {
     const navigate = useNavigate();
 
-    const bgImage =
-        'https://www.pluggedin.com/wp-content/uploads/2020/01/assassins-creed-unity-review-image-1024x587.jpg';
-
     return (
         <div className="w-full h-full">
             <div className="w-full p-4 h-full">

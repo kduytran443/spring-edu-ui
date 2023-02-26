@@ -1,10 +1,11 @@
-import { Divider } from '@mui/material';
-import { useState } from 'react';
+import { CircularProgress, Divider } from '@mui/material';
+import { useEffect, useState } from 'react';
 import CategoryCard from '~/components/CategoryCard';
 import CourseListIntro from '~/components/ClassListIntro';
+import LoadingProcess from '~/components/LoadingProcess';
 import SildeshowIntroduction from '~/components/SildeshowIntroduction';
 import TeacherListIntro from '~/components/TeacherListIntro';
-import { CATEGORY_PAGE_URL } from '~/constants';
+import { API_BASE_URL, CATEGORY_PAGE_URL } from '~/constants';
 
 /*
 
@@ -37,11 +38,8 @@ import { CATEGORY_PAGE_URL } from '~/constants';
             <div className="mt-10">
                 <Divider />
             </div>
-*/
 
-function HomePage() {
-    const [categoryListState, setCategoryListState] = useState([
-        {
+{
             id: 1,
             name: 'Lập trình',
             description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
@@ -77,7 +75,19 @@ function HomePage() {
             description: `Tranh vẽ nói chung hay còn gọi là hội họa, là ngành nghệ thuật tạo hình phong phú, hấp dẫn và rộng lớn. Tranh phản ánh nhiều mặt về thế giới ...`,
             img: 'https://ss-images.saostar.vn/pc/1636740476217/saostar-1mqcmwlqx5ma32zf.jpg',
         },
-    ]);
+
+*/
+
+function HomePage() {
+    const [categoryListState, setCategoryListState] = useState(null);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/category`)
+            .then((res) => res.json())
+            .then((data) => {
+                setCategoryListState(data);
+            });
+    }, []);
 
     return (
         <>
@@ -85,20 +95,27 @@ function HomePage() {
                 <SildeshowIntroduction />
             </div>
             <ul className="flex flex-row flex-wrap">
-                {categoryListState.map((category, index) => {
-                    return (
-                        <li key={index} className={`lg:max-w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 lg:w-1/3 w-[100%]`}>
-                            <div className="w-full">
-                                <CategoryCard
-                                    navigateTo={'/category/' + category.id}
-                                    name={category.name}
-                                    img={category.img}
-                                    description={category.description}
-                                />
-                            </div>
-                        </li>
-                    );
-                })}
+                {categoryListState === null ? (
+                    <LoadingProcess />
+                ) : (
+                    categoryListState.map((category, index) => {
+                        return (
+                            <li
+                                key={index}
+                                className={`lg:max-w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 lg:w-1/3 w-[100%]`}
+                            >
+                                <div className="w-full">
+                                    <CategoryCard
+                                        navigateTo={'/category/' + category.code}
+                                        name={category.name}
+                                        img={category.image}
+                                        description={category.description}
+                                    />
+                                </div>
+                            </li>
+                        );
+                    })
+                )}
             </ul>
         </>
     );

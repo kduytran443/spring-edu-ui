@@ -20,28 +20,16 @@ const divStyle = {
 
 const slideImages = [
     {
-        url: 'https://cdn.pixabay.com/photo/2022/07/11/08/44/tower-7314495_960_720.jpg',
-        caption: 'Slide 1',
+        url: 'https://img.freepik.com/free-vector/education-horizontal-typography-banner-set-with-learning-knowledge-symbols-flat-illustration_1284-29493.jpg?w=2000',
     },
     {
-        url: 'https://cdn.pixabay.com/photo/2015/12/01/20/28/forest-1072828_960_720.jpg',
-        caption: 'Slide 2',
+        url: 'https://media.istockphoto.com/id/1165187444/vector/education-banner.jpg?s=1024x1024&w=is&k=20&c=ZuiIeRUJC3m1I-BbsbuMhD5QdgNm5T3xcl-rF9uyl_Q=',
     },
     {
-        url: 'https://cdn.pixabay.com/photo/2023/01/10/00/17/italy-7708552_960_720.jpg',
-        caption: 'Slide 3',
+        url: 'https://img.freepik.com/premium-vector/proper-education-banner_1325-210.jpg?w=2000',
     },
     {
-        url: 'https://cdn.pixabay.com/photo/2022/12/15/20/26/frozen-lake-7658478_960_720.jpg',
-        caption: 'Slide 1',
-    },
-    {
-        url: 'https://cdn.pixabay.com/photo/2023/01/09/10/39/egret-7707108_960_720.jpg',
-        caption: 'Slide 2',
-    },
-    {
-        url: 'https://cdn.pixabay.com/photo/2023/01/08/05/52/mountain-7704597_960_720.jpg',
-        caption: 'Slide 3',
+        url: 'https://as1.ftcdn.net/v2/jpg/01/07/23/04/1000_F_107230427_eSb9HS26aoakxIqF39fVpeATA6zklbpG.jpg',
     },
 ];
 
@@ -64,9 +52,13 @@ const SildeshowIntroduction = () => {
             <Slide {...properties} transitionDuration={500}>
                 {slideImages.map((slideImage, index) => (
                     <div key={index}>
-                        <div style={{ ...divStyle, backgroundImage: `url(${slideImage.url})` }}>
-                            <span style={spanStyle}>{slideImage.caption}</span>
-                        </div>
+                        <div
+                            style={{
+                                ...divStyle,
+                                backgroundImage: `url(${slideImage.url})`,
+                                backgroundPosition: 'center',
+                            }}
+                        ></div>
                     </div>
                 ))}
             </Slide>

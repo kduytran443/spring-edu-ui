@@ -1,11 +1,18 @@
-import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Avatar, Button } from '@mui/material';
+import { Avatar, Button, Rating, Tab } from '@mui/material';
 import { Editor } from 'react-draft-wysiwyg';
 import { EditorState } from 'draft-js';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
+import { useParams } from 'react-router-dom';
+import { API_BASE_URL } from '~/constants';
+import LoadingProcess from '~/components/LoadingProcess';
+import ReviewCard from '~/components/ReviewCard';
+import Line from '~/components/Line';
+import { Box } from '@mui/system';
+import { TabContext, TabList } from '@mui/lab';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -32,11 +39,42 @@ function ClassIntroPage() {
     });
 
     const [editorValueState, setEditorValueState] = useState('');
+    const [visibleEdittingState, setVisibleEdittingState] = useState(false);
+    const [reviewListState, setReviewListState] = useState(null);
+    const { classId } = useParams();
+
+    const [allTabsState, setAllTabsState] = useState([
+        {
+            id: 1,
+            name: 'Đánh giá',
+        },
+        {
+            id: 2,
+            name: 'Bình luận',
+            path: '',
+        },
+    ]);
+    const [value, setValue] = useState(1);
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/review/${classId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                setReviewListState(data);
+            });
+    }, []);
 
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
+                <div className="my-4">
+                    <Rating name="half-rating" readOnly defaultValue={2.5} precision={0.5} />
+                </div>
 
                 <div className="flex flex-row items-center mb-4 md:mb-0">
                     <Avatar
@@ -47,9 +85,86 @@ function ClassIntroPage() {
                     <h1 className="ml-2 font-bold text-xl">Alex Hunter</h1>
                 </div>
                 <div>
-                    <div className="my-4">{classDataState.description}</div>
+                    <div className="my-4">
+                        <span>
+                            <b>Mô tả ngắn:</b>
+                        </span>
+                        <p>{classDataState.description}</p>
+                    </div>
                     <div className="h-full">
-                        <ReactQuill theme="snow" value={editorValueState} onChange={setEditorValueState} />
+                        {visibleEdittingState ? (
+                            <div>
+                                <ReactQuill theme="snow" value={editorValueState} onChange={setEditorValueState} />
+                                <div className="flex flex-row justify-end">
+                                    <div>
+                                        <Button
+                                            onClick={(e) => {
+                                                setVisibleEdittingState(false);
+                                            }}
+                                            variant="outlined"
+                                            startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
+                                        >
+                                            Thay đổi
+                                        </Button>
+                                    </div>
+                                    <div className="ml-4">
+                                        <Button
+                                            color="error"
+                                            onClick={(e) => {
+                                                setVisibleEdittingState(false);
+                                            }}
+                                            startIcon={<FontAwesomeIcon icon={faX} />}
+                                        >
+                                            Hủy
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <Button
+                                    onClick={(e) => {
+                                        setVisibleEdittingState(true);
+                                    }}
+                                    variant="outlined"
+                                    startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
+                                >
+                                    Sửa
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="mt-10">
+                        <Box sx={{ width: '100%', typography: 'body1' }}>
+                            <TabContext>
+                                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                                    <TabList onChange={handleChange} aria-label="lab API tabs example">
+                                        {allTabsState.map((tab) => {
+                                            return <Tab label={tab.name} value={tab.id} key={tab.id} />;
+                                        })}
+                                    </TabList>
+                                </Box>
+                            </TabContext>
+                        </Box>
+                        {reviewListState === null ? (
+                            <LoadingProcess />
+                        ) : (
+                            <ul className="border border-slate-200 rounded-lg shadow">
+                                {reviewListState.map((review, index) => {
+                                    return (
+                                        <li key={index}>
+                                            <ReviewCard
+                                                avatar={review.userAvatar}
+                                                comment={review.comment}
+                                                stars={review.stars}
+                                                username={review.userName}
+                                            />
+                                            {index < reviewListState.length - 1 && <Line />}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
                     </div>
                 </div>
             </div>
@@ -76,6 +191,11 @@ function ClassIntroPage() {
                             <li>
                                 <span>
                                     Ngày kết thúc: <b>{classDataState.endDate}</b>
+                                </span>
+                            </li>
+                            <li>
+                                <span>
+                                    <b>{classDataState.schedule}</b>
                                 </span>
                             </li>
                         </ul>

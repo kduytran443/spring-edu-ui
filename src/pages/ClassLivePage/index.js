@@ -146,7 +146,7 @@ function ClassLivePage() {
             displayName: 'Khánh duy',
             moderator: false,
             avatarUrl:
-                'https://library.sportingnews.com/styles/twitter_card_120x120/s3/2022-12/Lionel%20Messi%20Argentina%20kiss%20World%20Cup%20trophy%20121822.jpg?itok=tKsCqx9f',
+                'https://assets-global.website-files.com/62196607bf1b46c300301846/62196607bf1b46ebfb301f19_5f5bc69416e7fb495275b378_how%2520leaders%2520run%2520meetings%2520tips%2520from%2520top%2520execs.jpeg',
         };
     });
 

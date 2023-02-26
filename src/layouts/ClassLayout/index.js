@@ -41,6 +41,11 @@ function ClassLayout({ children }) {
         },
         {
             id: 6,
+            name: 'Nhắn tin',
+            path: '/setting',
+        },
+        {
+            id: 7,
             name: 'Cài đặt',
             path: '/setting',
         },

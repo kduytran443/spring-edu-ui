@@ -1,5 +1,5 @@
 const authorize = async () => {
-    return false;
+    return true;
 };
 
 export { authorize };

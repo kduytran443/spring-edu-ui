@@ -7,14 +7,18 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
+import { useNavigate } from 'react-router-dom';
+import { PERSONAL_PAGE_URL } from '~/constants';
 
 function HeaderAccountOptions() {
+    const navigate = useNavigate();
+
     return (
         <div className="bg-white p-4 w-[200px] min-h-[100px] shadow-lg rounded-lg">
             <Box sx={{ width: '100%', maxWidth: 200, bgcolor: 'background.paper' }}>
                 <nav aria-label="main mailbox folders">
                     <List>
-                        <ListItem disablePadding>
+                        <ListItem disablePadding onClick={(e) => navigate(PERSONAL_PAGE_URL)}>
                             <ListItemButton>
                                 <ListItemIcon>
                                     <DraftsIcon />

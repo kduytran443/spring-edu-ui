@@ -29,7 +29,7 @@ function CategoryPage() {
     }, []);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class/${categoryCode}`)
+        fetch(`${API_BASE_URL}/public/api/class-review/${categoryCode}`)
             .then((res) => res.json())
             .then((data) => {
                 setClassListState(data);

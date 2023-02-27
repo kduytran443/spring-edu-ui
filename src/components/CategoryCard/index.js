@@ -5,7 +5,7 @@ function CategoryCard({ id, name, description, img, navigateTo }) {
     const navigate = useNavigate();
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full hover:scale-105 duration-200">
             <div className="w-full p-4 h-full">
                 <div
                     style={{

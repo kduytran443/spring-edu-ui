@@ -41,20 +41,22 @@ function ClassIntroPage() {
     const [editorValueState, setEditorValueState] = useState('');
     const [visibleEdittingState, setVisibleEdittingState] = useState(false);
     const [reviewListState, setReviewListState] = useState(null);
+    const [commentListState, setCommentListState] = useState(null);
     const { classId } = useParams();
 
     const [allTabsState, setAllTabsState] = useState([
         {
             id: 1,
             name: 'Đánh giá',
+            type: 'review',
         },
         {
             id: 2,
             name: 'Bình luận',
-            path: '',
+            type: 'comment',
         },
     ]);
-    const [value, setValue] = useState(1);
+    const [value, setValue] = useState('review');
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -68,23 +70,43 @@ function ClassIntroPage() {
             });
     }, []);
 
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                setClassDataState(data);
+            });
+    }, []);
+
+    let startTime = null;
+    let endTime = null;
+    if (classDataState.classSchedule) {
+        startTime = new Date(classDataState.classSchedule.startTime);
+        endTime = new Date(classDataState.classSchedule.endTime);
+        console.log(startTime);
+        console.log(endTime);
+    }
+
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
                 <div className="my-4">
-                    <Rating name="half-rating" readOnly defaultValue={2.5} precision={0.5} />
+                    {classDataState.stars && (
+                        <Rating name="half-rating" readOnly defaultValue={classDataState.stars} precision={0.5} />
+                    )}
                 </div>
 
                 <div className="flex flex-row items-center mb-4 md:mb-0">
                     <Avatar
-                        src="https://mui.com/static/images/avatar/2.jpg"
+                        src={classDataState.userAvatar}
                         variant="circular"
                         style={{ width: '64px', height: '64px' }}
                     />
-                    <h1 className="ml-2 font-bold text-xl">Alex Hunter</h1>
+                    <h1 className="ml-2 font-bold text-xl">{classDataState.userFullname}</h1>
                 </div>
-                <div>
+                <div className="w-full">
                     <div className="my-4">
                         <span>
                             <b>Mô tả ngắn:</b>
@@ -94,7 +116,11 @@ function ClassIntroPage() {
                     <div className="h-full">
                         {visibleEdittingState ? (
                             <div>
-                                <ReactQuill theme="snow" value={editorValueState} onChange={setEditorValueState} />
+                                <ReactQuill
+                                    theme="snow"
+                                    value={classDataState.textData}
+                                    onChange={setEditorValueState}
+                                />
                                 <div className="flex flex-row justify-end">
                                     <div>
                                         <Button
@@ -134,35 +160,57 @@ function ClassIntroPage() {
                             </div>
                         )}
                     </div>
-                    <div className="mt-10">
+                    <div className="mt-10 w-full">
                         <Box sx={{ width: '100%', typography: 'body1' }}>
-                            <TabContext>
+                            <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                     <TabList onChange={handleChange} aria-label="lab API tabs example">
                                         {allTabsState.map((tab) => {
-                                            return <Tab label={tab.name} value={tab.id} key={tab.id} />;
+                                            return <Tab label={tab.name} value={tab.type} key={tab.id} />;
                                         })}
                                     </TabList>
                                 </Box>
                             </TabContext>
                         </Box>
-                        {reviewListState === null ? (
-                            <LoadingProcess />
+                        {value === 'review' ? (
+                            <ul className="border border-slate-200 rounded-lg shadow">
+                                {reviewListState === null ? (
+                                    <LoadingProcess />
+                                ) : (
+                                    reviewListState.map((review, index) => {
+                                        return (
+                                            <li key={index}>
+                                                <ReviewCard
+                                                    avatar={review.userAvatar}
+                                                    comment={review.comment}
+                                                    stars={review.stars}
+                                                    username={review.userName}
+                                                />
+                                                {index < reviewListState.length - 1 && <Line />}
+                                            </li>
+                                        );
+                                    })
+                                )}
+                            </ul>
                         ) : (
                             <ul className="border border-slate-200 rounded-lg shadow">
-                                {reviewListState.map((review, index) => {
-                                    return (
-                                        <li key={index}>
-                                            <ReviewCard
-                                                avatar={review.userAvatar}
-                                                comment={review.comment}
-                                                stars={review.stars}
-                                                username={review.userName}
-                                            />
-                                            {index < reviewListState.length - 1 && <Line />}
-                                        </li>
-                                    );
-                                })}
+                                {commentListState === null ? (
+                                    <LoadingProcess />
+                                ) : (
+                                    commentListState.map((review, index) => {
+                                        return (
+                                            <li key={index}>
+                                                <ReviewCard
+                                                    avatar={review.userAvatar}
+                                                    comment={review.comment}
+                                                    stars={review.stars}
+                                                    username={review.userName}
+                                                />
+                                                {index < commentListState.length - 1 && <Line />}
+                                            </li>
+                                        );
+                                    })
+                                )}
                             </ul>
                         )}
                     </div>
@@ -171,7 +219,7 @@ function ClassIntroPage() {
             <div className="w-full top-0 left-0 w-full xl:w-[480px] lg:w-[360px] relative flex flex-col">
                 <div className="flex flex-col w-full xl:w-[480px] lg:w-[360px] items-center justify-start mb-6 lg:mb-0 lg:fixed">
                     <div className="w-full p-0 lg:p-4">
-                        <CustomVideoPlayer />
+                        <CustomVideoPlayer src={classDataState.video} />
                     </div>
                     <div className="flex flex-col items-center">
                         <span className={'text-3xl font-bold text-orange-400 text-center'}>
@@ -182,23 +230,31 @@ function ClassIntroPage() {
                                 Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
                             </Button>
                         </div>
-                        <ul>
-                            <li>
-                                <span>
-                                    Ngày bắt đầu: <b>{classDataState.startDate}</b>
-                                </span>
-                            </li>
-                            <li>
-                                <span>
-                                    Ngày kết thúc: <b>{classDataState.endDate}</b>
-                                </span>
-                            </li>
-                            <li>
-                                <span>
-                                    <b>{classDataState.schedule}</b>
-                                </span>
-                            </li>
-                        </ul>
+                        {classDataState.classSchedule && (
+                            <ul>
+                                <li>
+                                    <span>
+                                        Ngày bắt đầu:{' '}
+                                        <b>{`${startTime.getDate()}/${
+                                            startTime.getMonth() + 1
+                                        }/${startTime.getFullYear()}`}</b>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>
+                                        Ngày kết thúc:{' '}
+                                        <b>{`${endTime.getDate()}/${
+                                            endTime.getMonth() + 1
+                                        }/${endTime.getFullYear()}`}</b>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span>
+                                        <b>{classDataState.classSchedule.schedule}</b>
+                                    </span>
+                                </li>
+                            </ul>
+                        )}
                     </div>
                 </div>
             </div>

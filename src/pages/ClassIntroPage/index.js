@@ -1,4 +1,4 @@
-import { faCartShopping, faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faPenToSquare, faReply, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, Rating, Tab } from '@mui/material';
 import { Editor } from 'react-draft-wysiwyg';
@@ -6,43 +6,50 @@ import { EditorState } from 'draft-js';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
-import { useParams } from 'react-router-dom';
-import { API_BASE_URL } from '~/constants';
+import { useNavigate, useParams } from 'react-router-dom';
+import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
 import LoadingProcess from '~/components/LoadingProcess';
 import ReviewCard from '~/components/ReviewCard';
 import Line from '~/components/Line';
 import { Box } from '@mui/system';
 import { TabContext, TabList } from '@mui/lab';
+import CommentCard from '~/components/CommentCard';
+import parse from 'html-react-parser';
+import { DataGrid } from '@mui/x-data-grid';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
     currency: 'VND',
 });
 
+const columns = [
+    { field: 'day', headerName: 'Thứ', width: 100 },
+    { field: 'start', headerName: 'Giờ bắt đầu', width: 130 },
+    { field: 'end', headerName: 'Giờ kết thúc', width: 130 },
+];
+
 function ClassIntroPage() {
     const [classDataState, setClassDataState] = useState(() => {
         return {
-            name: 'Lớp học piano StarsPluck',
-            description: `Trong khóa này chúng ta sẽ học về cách xây dựng giao diện web responsive với Grid System, tương tự Bootstrap 4.
-            Bạn sẽ học được gì?
-            Biết cách xây dựng website Responsive
-            Hiểu được tư tưởng thiết kế với Grid system
-            Tự tay xây dựng được thư viện CSS Grid
-            Tự hiểu được Grid layout trong bootstrap`,
+            name: 'Tên lớp học',
+            description: `Mô tả ngắn`,
             price: '99000',
-            creDate: '23/01/2023',
-            startDate: '30/01/2023',
-            endDate: '5/01/2023',
-            schedule: '7h - 11h Thứ 3 hàng tuần',
+            creDate: 'dd/mm/yyyy',
+            startDate: 'dd/mm/yyyy',
+            endDate: 'dd/mm/yyyy',
+            schedule: 'Lịch hàng tuần',
             status: 'Đã bắt đầu',
         };
     });
+    const navigate = useNavigate();
 
     const [editorValueState, setEditorValueState] = useState('');
     const [visibleEdittingState, setVisibleEdittingState] = useState(false);
     const [reviewListState, setReviewListState] = useState(null);
     const [commentListState, setCommentListState] = useState(null);
     const { classId } = useParams();
+
+    const [rowsState, setRowsState] = useState([]);
 
     const [allTabsState, setAllTabsState] = useState([
         {
@@ -62,11 +69,35 @@ function ClassIntroPage() {
     };
 
     useEffect(() => {
+        if (classDataState.classSchedule && classDataState.classScheduleWeeklyClassSchedule) {
+            //classScheduleWeeklyClassSchedule
+            const rows = classDataState.classScheduleWeeklyClassSchedule.map((item, index) => {
+                //{ id: 3, day: '6', start: '7:00', end: '11:00' },
+                return {
+                    id: index,
+                    day: item.weeklyClassSchedule.name,
+                    start: `${item.startHours}:${item.startMinutes}`,
+                    end: `${item.endHours}:${item.endMinutes}`,
+                };
+            });
+
+            setRowsState(rows);
+        }
+    }, [classDataState]);
+
+    useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/review/${classId}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 setReviewListState(data);
+            });
+    }, []);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/comment/${classId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                setCommentListState(data);
             });
     }, []);
 
@@ -84,13 +115,34 @@ function ClassIntroPage() {
     if (classDataState.classSchedule) {
         startTime = new Date(classDataState.classSchedule.startTime);
         endTime = new Date(classDataState.classSchedule.endTime);
-        console.log(startTime);
-        console.log(endTime);
+    }
+
+    let discount = null;
+
+    if (classDataState?.discount) {
+        const timeNow = new Date().getTime();
+        console.log('discount', timeNow, classDataState.discount.startDate, classDataState.discount.endDate);
+        if (timeNow >= classDataState.discount.startDate && timeNow <= classDataState.discount.endDate) {
+            console.log('phù hợp');
+            discount = classDataState.discount.discountPercent;
+            console.log(classDataState.fee, classDataState.discountPercent);
+            console.log('giá sau khi', classDataState.fee - classDataState.fee * discount);
+        }
     }
 
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
+                <div className="mb-[6px] lg:block hidden">
+                    <Button
+                        onClick={(e) => {
+                            navigate(HOME_PAGE_URL);
+                        }}
+                        startIcon={<FontAwesomeIcon icon={faReply} />}
+                    >
+                        Trang chủ
+                    </Button>
+                </div>
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
                 <div className="my-4">
                     {classDataState.stars && (
@@ -107,11 +159,15 @@ function ClassIntroPage() {
                     <h1 className="ml-2 font-bold text-xl">{classDataState.userFullname}</h1>
                 </div>
                 <div className="w-full">
+                    <h3 className="text-xl font-bold mt-8 mb-2">Thời khóa biểu</h3>
+                    <div style={{ height: 280, width: '100%' }}>
+                        <DataGrid rows={rowsState} columns={columns} />
+                    </div>
                     <div className="my-4">
                         <span>
                             <b>Mô tả ngắn:</b>
                         </span>
-                        <p>{classDataState.description}</p>
+                        {classDataState.textData && <p>{parse(classDataState.textData)}</p>}
                     </div>
                     <div className="h-full">
                         {visibleEdittingState ? (
@@ -173,7 +229,7 @@ function ClassIntroPage() {
                             </TabContext>
                         </Box>
                         {value === 'review' ? (
-                            <ul className="border border-slate-200 rounded-lg shadow">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
                                 {reviewListState === null ? (
                                     <LoadingProcess />
                                 ) : (
@@ -193,18 +249,19 @@ function ClassIntroPage() {
                                 )}
                             </ul>
                         ) : (
-                            <ul className="border border-slate-200 rounded-lg shadow">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
                                 {commentListState === null ? (
                                     <LoadingProcess />
                                 ) : (
                                     commentListState.map((review, index) => {
                                         return (
                                             <li key={index}>
-                                                <ReviewCard
+                                                <CommentCard
                                                     avatar={review.userAvatar}
                                                     comment={review.comment}
-                                                    stars={review.stars}
                                                     username={review.userName}
+                                                    fullname={review.fullname}
+                                                    date={review.createdDate}
                                                 />
                                                 {index < commentListState.length - 1 && <Line />}
                                             </li>
@@ -218,13 +275,39 @@ function ClassIntroPage() {
             </div>
             <div className="w-full top-0 left-0 w-full xl:w-[480px] lg:w-[360px] relative flex flex-col">
                 <div className="flex flex-col w-full xl:w-[480px] lg:w-[360px] items-center justify-start mb-6 lg:mb-0 lg:fixed">
+                    <div className="mb-[6px] lg:hidden block">
+                        <Button
+                            onClick={(e) => {
+                                navigate(HOME_PAGE_URL);
+                            }}
+                            startIcon={<FontAwesomeIcon icon={faReply} />}
+                        >
+                            Trang chủ
+                        </Button>
+                    </div>
                     <div className="w-full p-0 lg:p-4">
                         <CustomVideoPlayer src={classDataState.video} />
                     </div>
-                    <div className="flex flex-col items-center">
-                        <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                            {classDataState.price > 0 ? VND.format(classDataState.price) : 'Miễn phí'}
-                        </span>
+                    <div className="flex flex-col items-center mt-4 sm:mt-0">
+                        <div>
+                            {discount === null ? (
+                                <span className={'text-3xl font-bold text-orange-400 text-center'}>
+                                    <div>{classDataState.fee > 0 ? VND.format(classDataState.fee) : 'Miễn phí'}</div>
+                                </span>
+                            ) : (
+                                <div className="flex flex-col justify-center items-center">
+                                    <p className="text-lg">
+                                        <del>{VND.format(classDataState.fee)}</del>
+                                        <span className="ml-4 text-blue-500">
+                                            <b>Giảm {discount}%</b>
+                                        </span>
+                                    </p>
+                                    <span className={'text-3xl font-bold text-orange-400 text-center'}>
+                                        {VND.format(classDataState.fee - classDataState.fee * (discount / 100))}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
                         <div className="my-4">
                             <Button size="large" className="bg-orange-400" variant="contained">
                                 Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />

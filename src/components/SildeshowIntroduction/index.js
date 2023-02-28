@@ -53,6 +53,7 @@ const SildeshowIntroduction = () => {
                 {slideImages.map((slideImage, index) => (
                     <div key={index}>
                         <div
+                            className="hover:cursor-grab active:cursor-grabbing"
                             style={{
                                 ...divStyle,
                                 backgroundImage: `url(${slideImage.url})`,

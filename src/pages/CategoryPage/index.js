@@ -1,11 +1,12 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faReply, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination, Skeleton } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ClassListIntro from '~/components/ClassListIntro';
 import LoadingProcess from '~/components/LoadingProcess';
-import { API_BASE_URL } from '~/constants';
+import NoClassFound from '~/components/NoClassFound';
+import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
 
 function CategoryPage() {
     const { categoryCode } = useParams();
@@ -15,6 +16,7 @@ function CategoryPage() {
     const [classListState, setClassListState] = useState(null);
 
     const [quantityState, setQuantityState] = useState(0);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (classListState) setQuantityState(classListState.length);
@@ -39,6 +41,16 @@ function CategoryPage() {
     return (
         <div className="flex flex-col p-4">
             <div className="flex flex-col">
+                <div className="mb-[6px]">
+                    <Button
+                        onClick={(e) => {
+                            navigate(HOME_PAGE_URL);
+                        }}
+                        startIcon={<FontAwesomeIcon icon={faReply} />}
+                    >
+                        Trang chủ
+                    </Button>
+                </div>
                 <div className="flex flex-row items-center ">
                     {categoryDataState.icon ? (
                         <div className="mr-4 w-[40px] select-none overflow-hidden rounded">
@@ -99,18 +111,22 @@ function CategoryPage() {
             {classListState === null ? (
                 <LoadingProcess />
             ) : (
-                <ClassListIntro
-                    listItem={classListState}
-                    hiddenHeader
-                    scroll={false}
-                    title="Lập trình"
-                    icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
-                />
+                <>
+                    <ClassListIntro
+                        listItem={classListState}
+                        hiddenHeader
+                        scroll={false}
+                        title="Lập trình"
+                        icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                    />
+                </>
             )}
-
-            <div className="my-8">
-                <Pagination count={10} color="primary" />
-            </div>
+            {classListState !== null && classListState.length === 0 && <NoClassFound />}
+            {classListState !== null && classListState.length > 0 && (
+                <div className="my-8">
+                    <Pagination count={10} color="primary" />
+                </div>
+            )}
         </div>
     );
 }

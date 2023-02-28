@@ -9,6 +9,9 @@ module.exports = {
             height: {
                 'header-height': 'var(--header-height)',
             },
+            animation: {
+                'fade-out': 'fadeOut 2s ease-in-out',
+            },
         },
         screens: {
             sm: '480px',

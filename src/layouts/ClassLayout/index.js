@@ -3,11 +3,12 @@ import { Alert, AlertTitle, Breadcrumbs, Button, Divider, Typography } from '@mu
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClassTopic from '~/components/ClassTopic';
 import SimpleAccordion from '~/components/SimpleAccordion';
-import { useLayoutEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { API_BASE_URL } from '~/constants';
 
 function ClassLayout({ children }) {
     const { classId } = useParams();
@@ -56,6 +57,18 @@ function ClassLayout({ children }) {
         navigate('/class/' + classId + path);
     };
 
+    const [classDataState, setClassDataState] = useState(null);
+
+    useEffect(() => {
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.status === 500) {
+                    navigate('/page-not-found');
+                } else setClassDataState(data);
+            });
+    }, []);
+
     const [value, setValue] = useState(1);
 
     useLayoutEffect(() => {
@@ -93,7 +106,7 @@ function ClassLayout({ children }) {
                         backgroundImage: `url(${'https://www.gstatic.com/classroom/themes/img_graduation.jpg'})`,
                     }}
                 >
-                    <div className="font-black text-4xl my-2 text-white">Lớp học Spring Boot</div>
+                    <div className="font-black text-4xl my-2 text-white">{classDataState && classDataState.name}</div>
                 </div>
                 <div className="max-w-full w-full overflow-x-scroll">
                     <div className="w-[620px] py-2 md:py-0 md:w-full">

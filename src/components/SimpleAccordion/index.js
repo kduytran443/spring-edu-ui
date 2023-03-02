@@ -9,9 +9,13 @@ import ImageIcon from '@mui/icons-material/Image';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { useNavigate, useParams } from 'react-router-dom';
 
-export default function SimpleAccordion() {
+export default function SimpleAccordion({ name, ordinalNumber, classLessons = [] }) {
     const { classId } = useParams();
     const navigate = useNavigate();
+
+    const [openState, setOpenState] = React.useState(() => {
+        return classLessons.length > 0;
+    });
 
     const navigateToLesson = (lessonId) => {
         navigate('/class/' + classId + '/lesson/' + lessonId);
@@ -19,47 +23,49 @@ export default function SimpleAccordion() {
 
     return (
         <div className="my-2">
-            <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <Accordion expanded={openState}>
+                <AccordionSummary
+                    onClick={(e) => {
+                        setOpenState(!openState);
+                    }}
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                >
                     <Typography>
-                        <div className="font-bold text-2xl">Topic 1</div>
+                        <div className="font-bold text-xl">
+                            {ordinalNumber}. {name}
+                        </div>
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>
                         <ul>
-                            <ListItem
-                                className="cursor-pointer hover:bg-blue-100"
-                                onClick={(e) => {
-                                    navigateToLesson(1);
-                                }}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <FactCheckIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary="Nộp Đồ án kiểm thử thủ công (Test plan, test scenario, testcases, video)"
-                                    secondary="Jan 9, 2014"
-                                />
-                            </ListItem>
-                            <ListItem
-                                className="cursor-pointer hover:bg-blue-100"
-                                onClick={(e) => {
-                                    navigateToLesson(1);
-                                }}
-                            >
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <FactCheckIcon />
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText
-                                    primary="Nộp Đồ án kiểm thử thủ công (Test plan, test scenario, testcases, video)"
-                                    secondary="Jan 9, 2014"
-                                />
-                            </ListItem>
+                            {classLessons !== null && classLessons.length > 0 ? (
+                                classLessons.map((lesson, index) => {
+                                    const dateNow = new Date(lesson.createdDate);
+                                    const dateString = `${dateNow.getDate()}/${
+                                        dateNow.getMonth() + 1
+                                    }/${dateNow.getFullYear()}`;
+                                    return (
+                                        <ListItem
+                                            className="cursor-pointer hover:bg-blue-100"
+                                            onClick={(e) => {
+                                                navigateToLesson(lesson.id);
+                                            }}
+                                        >
+                                            <ListItemAvatar>
+                                                <Avatar>
+                                                    <FactCheckIcon />
+                                                </Avatar>
+                                            </ListItemAvatar>
+                                            <ListItemText primary={`${lesson.name}`} secondary={dateString} />
+                                        </ListItem>
+                                    );
+                                })
+                            ) : (
+                                <div>Chưa có bài học nào</div>
+                            )}
                         </ul>
                     </Typography>
                 </AccordionDetails>

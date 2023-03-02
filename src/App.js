@@ -7,6 +7,7 @@ import { authorize } from './services/userService';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ScrollToTop from './components/ScrollToTop';
 import { HOME_PAGE_URL } from './constants';
+import NotFoundPage from './pages/NotFoundPage';
 
 const theme = createTheme({
     typography: {
@@ -97,6 +98,7 @@ function App() {
                                     />
                                 );
                             })}
+                            <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </ScrollToTop>
                 </div>

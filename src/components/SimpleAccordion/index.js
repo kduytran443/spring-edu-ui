@@ -8,6 +8,7 @@ import { Avatar, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import ImageIcon from '@mui/icons-material/Image';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { useNavigate, useParams } from 'react-router-dom';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 export default function SimpleAccordion({ name, ordinalNumber, classLessons = [] }) {
     const { classId } = useParams();
@@ -49,14 +50,14 @@ export default function SimpleAccordion({ name, ordinalNumber, classLessons = []
                                     }/${dateNow.getFullYear()}`;
                                     return (
                                         <ListItem
-                                            className="cursor-pointer hover:bg-blue-100"
+                                            className="cursor-pointer hover:bg-blue-400 rounded hover:text-white"
                                             onClick={(e) => {
                                                 navigateToLesson(lesson.id);
                                             }}
                                         >
                                             <ListItemAvatar>
-                                                <Avatar>
-                                                    <FactCheckIcon />
+                                                <Avatar sx={{ backgroundColor: 'white' }}>
+                                                    <MenuBookIcon color="primary" />
                                                 </Avatar>
                                             </ListItemAvatar>
                                             <ListItemText primary={`${lesson.name}`} secondary={dateString} />

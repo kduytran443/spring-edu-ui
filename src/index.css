@@ -5,6 +5,10 @@
 @import 'react-big-calendar/lib/css/react-big-calendar.css';
 @import 'react-slideshow-image/dist/styles.css';
 
+html {
+    @apply text-gray-900;
+}
+
 html *::-webkit-scrollbar {
     border-radius: 0;
     width: 8px;

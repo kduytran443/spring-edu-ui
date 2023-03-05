@@ -15,7 +15,7 @@ const divStyle = {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundSize: 'cover',
-    height: '400px',
+    height: '320px',
 };
 
 const slideImages = [
@@ -35,14 +35,18 @@ const slideImages = [
 
 const properties = {
     prevArrow: (
-        <Button sx={{ width: '48px', height: '48px', borderRadius: '9999' }} variant="outlined">
-            <FontAwesomeIcon className="text-xl" icon={faArrowLeft} />
-        </Button>
+        <div className="bg-white rounded-full shadow-md">
+            <IconButton sx={{ width: '48px', height: '48px', borderRadius: '9999' }} color="primary">
+                <FontAwesomeIcon className="text-xl" icon={faArrowLeft} />
+            </IconButton>
+        </div>
     ),
     nextArrow: (
-        <Button sx={{ width: '48px', height: '48px', borderRadius: '9999' }} variant="outlined">
-            <FontAwesomeIcon className="text-xl" icon={faArrowRight} />
-        </Button>
+        <div className="bg-white rounded-full shadow-md">
+            <IconButton sx={{ width: '48px', height: '48px', borderRadius: '9999' }} color="primary">
+                <FontAwesomeIcon className="text-xl" icon={faArrowRight} />
+            </IconButton>
+        </div>
     ),
 };
 

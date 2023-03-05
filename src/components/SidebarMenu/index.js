@@ -33,7 +33,7 @@ function SidebarMenu({ preAction = () => {} }) {
                     doNavigate(HOME_PAGE_URL);
                 }}
             >
-                <HomeIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
+                <HomeIcon style={{ padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Trang chủ</span>
             </li>
 
@@ -45,7 +45,7 @@ function SidebarMenu({ preAction = () => {} }) {
                     doNavigate(JOINED_CLASS_PAGE_URL);
                 }}
             >
-                <SchoolIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
+                <SchoolIcon style={{ padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Đã đăng ký</span>
             </li>
             <li
@@ -56,7 +56,7 @@ function SidebarMenu({ preAction = () => {} }) {
                     doNavigate(CALENDAR_PAGE_URL);
                 }}
             >
-                <CalendarMonthIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
+                <CalendarMonthIcon style={{ padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold">Lịch</span>
             </li>
             <li
@@ -64,7 +64,7 @@ function SidebarMenu({ preAction = () => {} }) {
                     selected && ' bg-gray-200 border-[1px] shadow'
                 }`}
             >
-                <BallotIcon style={{ color: 'black', padding: '4px', margin: '0' }} fontSize="large" />
+                <BallotIcon style={{ padding: '4px', margin: '0' }} fontSize="large" />
                 <span className="text-xs font-bold text-center">Việc cần làm</span>
             </li>
             <li>

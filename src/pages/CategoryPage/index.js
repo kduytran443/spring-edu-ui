@@ -111,7 +111,7 @@ function CategoryPage() {
             {classListState === null ? (
                 <LoadingProcess />
             ) : (
-                <>
+                <div className="w-full mt-6">
                     <ClassListIntro
                         listItem={classListState}
                         hiddenHeader
@@ -119,7 +119,7 @@ function CategoryPage() {
                         title="Lập trình"
                         icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
                     />
-                </>
+                </div>
             )}
             {classListState !== null && classListState.length === 0 && <NoClassFound />}
             {classListState !== null && classListState.length > 0 && (

@@ -15,6 +15,7 @@ const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
 const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
 const CLASS_LESSON_PAGE_URL = '/class/:classId/lesson/:lessonId';
 const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
+const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
 
 const API_BASE_URL = 'http://192.168.1.4:8084';
 
@@ -37,4 +38,5 @@ export {
     CLASS_LIVE_PAGE_URL,
     CLASS_SPECIFIC_EXERCISE_PAGE_URL,
     API_BASE_URL,
+    CLASS_MESSAGE_PAGE_URL,
 };

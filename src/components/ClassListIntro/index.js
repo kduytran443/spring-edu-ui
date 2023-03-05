@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { CATEGORY_PAGE_URL } from '~/constants';
 import CategoryCard from '../CategoryCard';
 import ClassCard from '../ClassCard';
+import ClassReviewCard from '../ClassReviewCard';
 
 function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = true, hiddenHeader = false }) {
     //item: image, title, description, avatar, userLink, courseLink, review, courseQuantity, price, time
@@ -53,9 +54,9 @@ function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = t
                     let nav = '/intro';
 
                     return (
-                        <li key={index} className={`lg:max-w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 lg:w-1/3 w-[100%]`}>
+                        <li key={index} className={`lg:max-w-1/3 lg:w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 w-[100%]`}>
                             <div className="w-full">
-                                <ClassCard
+                                <ClassReviewCard
                                     navigateTo={`/class/${item.id}` + nav}
                                     name={item.name}
                                     img={item.avatar}

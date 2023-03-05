@@ -43,7 +43,7 @@ function ClassLayout({ children }) {
         {
             id: 6,
             name: 'Nhắn tin',
-            path: '/setting',
+            path: '/message',
         },
         {
             id: 7,
@@ -67,7 +67,7 @@ function ClassLayout({ children }) {
                     navigate('/page-not-found');
                 } else setClassDataState(data);
             });
-    }, []);
+    }, [classId]);
 
     const [value, setValue] = useState(1);
 
@@ -91,13 +91,14 @@ function ClassLayout({ children }) {
             <div className="w-full">
                 <div className="my-2 pl-4">
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link underline="hover" color="inherit" href="/">
-                            MUI
+                        <Link
+                            underline="hover"
+                            color="inherit"
+                            to={classDataState ? '/category/' + classDataState.categoryCode : '/home'}
+                        >
+                            {classDataState && classDataState.categoryName}
                         </Link>
-                        <Link underline="hover" color="inherit" href="/material-ui/getting-started/installation/">
-                            Core
-                        </Link>
-                        <Typography color="text.primary">Breadcrumbs</Typography>
+                        <Typography color="text.primary">{classDataState && classDataState.name}</Typography>
                     </Breadcrumbs>
                 </div>
                 <div
@@ -109,7 +110,7 @@ function ClassLayout({ children }) {
                     <div className="font-black text-4xl my-2 text-white">{classDataState && classDataState.name}</div>
                 </div>
                 <div className="max-w-full w-full overflow-x-scroll">
-                    <div className="w-[620px] py-2 md:py-0 md:w-full">
+                    <div className="w-[720px] py-2 md:py-0 md:w-full">
                         <Box sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

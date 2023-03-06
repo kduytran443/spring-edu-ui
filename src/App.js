@@ -1,13 +1,14 @@
 import './App.css';
-import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './routes';
 import FullLayout from './layouts/FullLayout';
 import { Fragment, useEffect, useState } from 'react';
-import { authorize } from './services/userService';
+import { authorize, getUserInfo } from './services/userService';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ScrollToTop from './components/ScrollToTop';
 import { HOME_PAGE_URL } from './constants';
 import NotFoundPage from './pages/NotFoundPage';
+import { setUserInfo, useUser } from './stores/UserStore';
 
 const theme = createTheme({
     typography: {
@@ -35,6 +36,7 @@ const theme = createTheme({
 
 function App() {
     const [isAuthenticatedState, setIsAuthenticatedState] = useState(null);
+    const [userState, dispatchUserState] = useUser();
 
     useEffect(() => {
         const login = authorize().then((data) => data);
@@ -42,6 +44,32 @@ function App() {
             setIsAuthenticatedState(data);
         });
     }, [isAuthenticatedState]);
+
+    useEffect(() => {
+        const doFetch = async () => {
+            const getUser = getUserInfo();
+            getUser.then((data) => {
+                if (data) {
+                    console.log('userdata ???', data);
+                    dispatchUserState(setUserInfo(data));
+                }
+            });
+        };
+        doFetch();
+    }, []);
+
+    const test = () => {
+        const doFetch = async () => {
+            const getUser = getUserInfo();
+            getUser.then((data) => {
+                if (data) {
+                    console.log('userdata???', data);
+                    dispatchUserState(setUserInfo(data));
+                }
+            });
+        };
+        doFetch();
+    };
 
     return (
         <ThemeProvider theme={theme}>

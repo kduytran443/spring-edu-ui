@@ -6,11 +6,16 @@ import App from '~/App';
 import reportWebVitals from './reportWebVitals';
 import 'react-quill/dist/quill.snow.css';
 import 'react-photo-view/dist/react-photo-view.css';
+import Provider from './stores/Provider';
+import { createBrowserHistory } from 'history';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
     <React.StrictMode>
-        <App />
+        <Provider>
+            <App />
+        </Provider>
     </React.StrictMode>,
 );
 

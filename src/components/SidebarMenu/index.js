@@ -10,9 +10,6 @@ import BallotIcon from '@mui/icons-material/Ballot';
 
 function SidebarMenu({ preAction = () => {} }) {
     const location = useLocation();
-    console.log('hash', location.hash);
-    console.log('pathname', location.pathname);
-    console.log('search', location.search);
 
     const selected = false;
 

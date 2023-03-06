@@ -1,14 +1,18 @@
 import { faLock, faRightToBracket, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Http } from '@mui/icons-material';
 import { Button, Checkbox, FormControlLabel, FormGroup, InputAdornment, TextField } from '@mui/material';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Line from '~/components/Line';
-import { HOME_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { API_BASE_URL, HOME_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { setUserInfo, useUser } from '~/stores/UserStore';
 
 function LoginPage() {
     const navigate = useNavigate();
 
+    const [userState, dispatchUserState] = useUser();
     const [usernameState, setUsernameState] = useState('');
     const [passwordState, setPasswordState] = useState('');
     const [saveUsernameState, setSaveUsernameState] = useState(false);
@@ -21,7 +25,32 @@ function LoginPage() {
         setPasswordErrorState('');
     };
 
-    const submitForm = () => {
+    const login = async (data) => {
+        const options = {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        fetch(`${API_BASE_URL}/api/login`, options)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.status === 403) {
+                    console.log('Fail to login!');
+                } else {
+                    console.log('thành công', data);
+                    dispatchUserState(setUserInfo(data));
+
+                    navigate('/home');
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const submitForm = async () => {
         let validForm = true;
         clearError();
 
@@ -39,8 +68,7 @@ function LoginPage() {
             console.log(usernameState, passwordState);
 
             //fetch-api
-
-            navigate(HOME_PAGE_URL);
+            await login({ username: usernameState, password: passwordState });
         }
     };
 

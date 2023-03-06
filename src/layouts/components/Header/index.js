@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import images from '~/assets/images';
 import CustomizedInputBase from '~/components/CustomizedInputBase';
 import { HOME_PAGE_URL, LOGIN_PAGE_URL } from '~/constants';
-import { authorize } from '~/services/userService';
+import { authorize, getUserInfo } from '~/services/userService';
 import HomeIcon from '@mui/icons-material/Home';
 import HeaderAvatar from '~/components/HeaderAvatar';
 import FullScreenDialog from '~/components/FullScreenDialog';
@@ -16,10 +16,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import HeaderNotifier from '~/components/HeaderNotifier';
+import { useUser } from '~/stores/UserStore';
+import { useEffect } from 'react';
 
 function Header() {
     const navigate = useNavigate();
     const [authenticatedState, setAuthenticatedState] = useState(true);
+    const [userState, dispatchUserState] = useUser();
 
     return (
         <header className="sticky z-50 top-0 w-full relative bg-white">
@@ -44,12 +47,12 @@ function Header() {
                 <div className="md:block hidden">
                     <CustomizedInputBase />
                 </div>
-                {authenticatedState ? (
+                {userState.username ? (
                     <div className="flex flex-row justify-center items-center">
                         <div className="p-[10px] mr-4">
                             <HeaderNotifier />
                         </div>
-                        <HeaderAvatar />
+                        <HeaderAvatar image={userState.avatar} username={userState.username} />
                     </div>
                 ) : (
                     <div>

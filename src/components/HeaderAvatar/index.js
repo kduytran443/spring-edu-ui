@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react/headless';
 import { useState } from 'react';
 import HeaderAccountOptions from '../HeaderAccountOptions';
 
-function HeaderAvatar() {
+function HeaderAvatar({ image, username }) {
     const [visible, setVisible] = useState(false);
     const show = () => setVisible(true);
     const hide = () => setVisible(false);
@@ -26,12 +26,7 @@ function HeaderAvatar() {
                 }}
                 className={`cursor-pointer ${visible && ' outline outline-4 shadow-md outline-sky-500 rounded-full'}`}
             >
-                <Avatar
-                    sx={{ width: 44, height: 44 }}
-                    src={
-                        'https://assets-global.website-files.com/62196607bf1b46c300301846/62196607bf1b4642e7301e28_5fb42ba3f6da8426682c53df_in%2520the%2520meeting%2520vs%2520at%2520the%2520meeting%2520grammar.jpeg'
-                    }
-                />
+                <Avatar sx={{ width: 44, height: 44 }} src={image} />
             </div>
         </Tippy>
     );

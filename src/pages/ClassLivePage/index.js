@@ -1,6 +1,104 @@
 import { JitsiMeeting } from '@jitsi/react-sdk';
+import { useEffect } from 'react';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Meeting from '~/components/Meeting';
+import { API_BASE_URL } from '~/constants';
+import { getUserJWT } from '~/services/userService';
+import { useUser } from '~/stores/UserStore';
 
+function ClassLivePage() {
+    const [userConfigOverwriteState, setUserConfigOverwriteState] = useState({
+        requireDisplayName: false,
+        prejoinPageEnabled: false,
+        startWithAudioMuted: true,
+        enableLobbyChat: true,
+        prejoinPageEnabled: false,
+        subject: 'Meeting',
+        startWithVideoMuted: true,
+        startWithAudioMuted: true,
+        disableShortcuts: true,
+        enableWelcomePage: false,
+        enableClosePage: true,
+    });
+
+    const [adminInterfaceConfigOverwriteState, setInterfaceConfigOverwriteState] = useState({
+        MOBILE_APP_PROMO: false, // don't works
+        DEFAULT_LOCAL_DISPLAY_NAME: 'Eu', //ok
+        SHOW_CHROME_EXTENSION_BANNER: false, //ok
+        TOOLBAR_ALWAYS_VISIBLE: true, // ok
+        SETTINGS_SECTIONS: ['devices', 'language'], //ok,
+        TOOLBAR_BUTTONS: [
+            'microphone',
+            'camera',
+            'closedcaptions',
+            'desktop',
+            'fullscreen',
+            'fodeviceselection',
+            'profile',
+            'chat',
+            'recording',
+            'etherpad',
+            'sharedvideo',
+            'settings',
+            'raisehand',
+            'videoquality',
+            'filmstrip',
+            'feedback',
+            'stats',
+            'shortcuts',
+            'tileview',
+        ], // ok
+    });
+
+    const [meetingDataState, setMeetingDataState] = useState(null);
+    const [userState, dispatchUserState] = useUser();
+    const { classId } = useParams();
+
+    const [userInfoState, setUserInfoState] = useState({
+        email: userState.email,
+        displayName: userState.fullname,
+        moderator: false,
+        avatarUrl: 'https://oyster.ignimgs.com/mediawiki/apis.ign.com/assassins-creed-5/0/06/ACUnity_CoverThumb.jpg',
+    });
+
+    useEffect(() => {
+        let jwt = getUserJWT();
+        jwt = jwt.substring(7, jwt.length);
+        console.log('jwt', jwt);
+        fetch(`${API_BASE_URL}/api/meeting?classId=${classId}`, {
+            method: 'GET',
+            headers: {
+                Authorization: jwt,
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data);
+                setMeetingDataState(data);
+            });
+    }, []);
+
+    return (
+        <div>
+            {meetingDataState !== null && (
+                <div>
+                    <Meeting
+                        configOverwrite={userConfigOverwriteState}
+                        userInfo={userInfoState}
+                        roomName={meetingDataState.url}
+                        interfaceConfigOverwrite={adminInterfaceConfigOverwriteState}
+                        getIFrameRef={(node) => (node.style.height = '800px')}
+                    />
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default ClassLivePage;
+
+/*
 const domain = 'meet.jit.si';
 const options = {
     roomName: 'testthuwebsite123',
@@ -90,77 +188,4 @@ const adminOptions = {
         enableClosePage: true,
     },
 };
-
-function ClassLivePage() {
-    const [userConfigOverwriteState, setUserConfigOverwriteState] = useState(() => {
-        return {
-            requireDisplayName: false,
-            prejoinPageEnabled: false,
-            startWithAudioMuted: true,
-            enableLobbyChat: true,
-            prejoinPageEnabled: false,
-            subject: 'Meeting',
-            startWithVideoMuted: true,
-            startWithAudioMuted: true,
-            disableShortcuts: true,
-            enableWelcomePage: false,
-            enableClosePage: true,
-        };
-    });
-    const [interfaceConfigOverwriteState, setInterfaceConfigOverwriteState] = useState(() => {
-        return {
-            MOBILE_APP_PROMO: false, // don't works
-            DEFAULT_LOCAL_DISPLAY_NAME: 'Eu', //ok
-            SHOW_CHROME_EXTENSION_BANNER: false, //ok
-            TOOLBAR_ALWAYS_VISIBLE: true, // ok
-            SETTINGS_SECTIONS: ['devices', 'language'], //ok,
-            TOOLBAR_BUTTONS: [
-                'microphone',
-                'camera',
-                'closedcaptions',
-                'desktop',
-                'fullscreen',
-                'fodeviceselection',
-                'hangup',
-                'profile',
-                'chat',
-                'recording',
-                'etherpad',
-                'sharedvideo',
-                'settings',
-                'raisehand',
-                'videoquality',
-                'filmstrip',
-                'feedback',
-                'stats',
-                'shortcuts',
-                'tileview',
-            ], // ok
-        };
-    });
-
-    const [roomNameState, setRoomNameState] = useState('dai_hoc_can_tho_test_luan_van');
-    const [userInfoState, setUserInfoState] = useState(() => {
-        return {
-            email: 'email@jitsiexamplemail.com',
-            displayName: 'Khánh duy',
-            moderator: false,
-            avatarUrl:
-                'https://assets-global.website-files.com/62196607bf1b46c300301846/62196607bf1b46ebfb301f19_5f5bc69416e7fb495275b378_how%2520leaders%2520run%2520meetings%2520tips%2520from%2520top%2520execs.jpeg',
-        };
-    });
-
-    return (
-        <div>
-            <JitsiMeeting
-                configOverwrite={userConfigOverwriteState}
-                userInfo={userInfoState}
-                roomName={roomNameState}
-                interfaceConfigOverwrite={interfaceConfigOverwriteState}
-                getIFrameRef={(node) => (node.style.height = '800px')}
-            />
-        </div>
-    );
-}
-
-export default ClassLivePage;
+*/

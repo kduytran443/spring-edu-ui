@@ -21,13 +21,22 @@ import {
     Select,
     TextField,
 } from '@mui/material';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Line from '~/components/Line';
 import { HOME_PAGE_URL, LOGIN_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { useUser } from '~/stores/UserStore';
 
 function SignUpPage() {
     const navigate = useNavigate();
+    const [userState, userDispatch] = useUser();
+
+    useEffect(() => {
+        if (userState.jwt) {
+            navigate(HOME_PAGE_URL);
+        }
+    }, []);
 
     //all data state
     const [usernameState, setUsernameState] = useState('');

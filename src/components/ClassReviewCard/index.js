@@ -18,6 +18,7 @@ function ClassReviewCard({
     review = 4,
     reviewPeople = 0,
     navigateTo,
+    userFullname,
     avatar = 'https://pbs.twimg.com/media/FJE1rt2X0AAI_6X?format=jpg&name=4096x4096',
     fee = 7200000,
 }) {
@@ -37,7 +38,7 @@ function ClassReviewCard({
                 <div className="my-4">
                     <div className="flex flex-row items-center mb-2">
                         <Avatar src={avatar} />
-                        <p className="ml-2 font-semibold text-gray-700">Lionel Messi</p>
+                        <p className="ml-2 font-semibold text-gray-700">{userFullname}</p>
                     </div>
                     <h3 className="text-lg">{name}</h3>
                     <div className="font-semibold">{VND.format(fee)}</div>

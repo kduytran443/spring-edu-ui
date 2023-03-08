@@ -8,7 +8,12 @@ function reducer(state, action) {
     switch (action.type) {
         case ACTION_SET_USER_INFO: {
             const newObj = { ...state, ...action.payload };
-            localStorage.setItem('spring_edu', JSON.stringify(newObj));
+            const obj = JSON.parse(localStorage.getItem('spring_edu'));
+            obj.user = newObj;
+            if (newObj.jwt) {
+                obj.jwt = newObj.jwt;
+            }
+            localStorage.setItem('spring_edu', JSON.stringify(obj));
             return newObj;
         }
         case ACTION_GET_USER_INFO: {

@@ -1,4 +1,4 @@
-import { faCartShopping, faPenToSquare, faReply, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCartShopping, faDoorOpen, faPenToSquare, faReply, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, Rating, Tab } from '@mui/material';
 import { Editor } from 'react-draft-wysiwyg';
@@ -16,6 +16,7 @@ import { TabContext, TabList } from '@mui/lab';
 import CommentCard from '~/components/CommentCard';
 import parse from 'html-react-parser';
 import { DataGrid } from '@mui/x-data-grid';
+import { getConfig } from '~/services/config';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -102,10 +103,10 @@ function ClassIntroPage() {
     }, []);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`)
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 setClassDataState(data);
             });
     }, []);
@@ -289,29 +290,46 @@ function ClassIntroPage() {
                         <CustomVideoPlayer src={classDataState.video} />
                     </div>
                     <div className="flex flex-col items-center mt-4 sm:mt-0">
-                        <div>
-                            {discount === null ? (
-                                <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                    <div>{classDataState.fee > 0 ? VND.format(classDataState.fee) : 'Miễn phí'}</div>
-                                </span>
-                            ) : (
-                                <div className="flex flex-col justify-center items-center">
-                                    <p className="text-lg">
-                                        <del>{VND.format(classDataState.fee)}</del>
-                                        <span className="ml-4 text-blue-500">
-                                            <b>Giảm {discount}%</b>
-                                        </span>
-                                    </p>
+                        {classDataState && !classDataState.userRoleCode && (
+                            <div>
+                                {discount === null ? (
                                     <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                        {VND.format(classDataState.fee - classDataState.fee * (discount / 100))}
+                                        <div>
+                                            {classDataState.fee > 0 ? VND.format(classDataState.fee) : 'Miễn phí'}
+                                        </div>
                                     </span>
-                                </div>
-                            )}
-                        </div>
+                                ) : (
+                                    <div className="flex flex-col justify-center items-center">
+                                        <p className="text-lg">
+                                            <del>{VND.format(classDataState.fee)}</del>
+                                            <span className="ml-4 text-blue-500">
+                                                <b>Giảm {discount}%</b>
+                                            </span>
+                                        </p>
+                                        <span className={'text-3xl font-bold text-orange-400 text-center'}>
+                                            {VND.format(classDataState.fee - classDataState.fee * (discount / 100))}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className="my-4">
-                            <Button size="large" className="bg-orange-400" variant="contained">
-                                Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
-                            </Button>
+                            {classDataState && classDataState.userRoleCode ? (
+                                <Button
+                                    onClick={(e) => {
+                                        navigate('/class/' + classId);
+                                    }}
+                                    size="large"
+                                    className="bg-orange-400"
+                                    variant="contained"
+                                >
+                                    Vào lớp <FontAwesomeIcon className="ml-2" icon={faDoorOpen} />
+                                </Button>
+                            ) : (
+                                <Button size="large" className="bg-red-400" variant="contained">
+                                    Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
+                                </Button>
+                            )}
                         </div>
                         {classDataState.classSchedule && (
                             <ul>

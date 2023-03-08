@@ -1,5 +1,6 @@
 import { API_BASE_URL } from '~/constants';
 import { useUser } from '~/stores/UserStore';
+import { getConfig } from '../config';
 
 const authorize = async () => {
     return true;
@@ -12,8 +13,8 @@ const setUserInfo = (data) => {
 const getUserInfo = async () => {
     let jwt = JSON.parse(localStorage.getItem('spring_edu')).jwt + '';
     if (jwt) {
-        jwt = jwt.substring(7, jwt.length);
-        const response = await fetch(`${API_BASE_URL}/public/api/user?jwt=${encodeURI(jwt)}`);
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/api/user?jwt=${encodeURI(jwt)}`, config);
         return response.json();
     }
     return null;

@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import UploadWidget from '~/components/UploadWidget';
 import { API_BASE_URL } from '~/constants';
+import { getConfig } from '~/services/config';
 
 function ClassSettingPage() {
     const { classId } = useParams();
@@ -15,7 +16,8 @@ function ClassSettingPage() {
     const [imageState, setImageState] = useState('https://www.gstatic.com/classroom/themes/img_graduation.jpg');
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`)
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
                 if (data.status === 500) {

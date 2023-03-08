@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { API_BASE_URL } from '~/constants';
+import { getConfig } from '~/services/config';
 
 function ClassLayout({ children }) {
     const { classId } = useParams();
@@ -60,7 +61,9 @@ function ClassLayout({ children }) {
     const [classDataState, setClassDataState] = useState(null);
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`)
+        const config = getConfig();
+
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
                 if (data.status === 500) {

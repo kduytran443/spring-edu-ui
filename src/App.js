@@ -41,6 +41,7 @@ function App() {
     useEffect(() => {
         const login = authorize().then((data) => data);
         login.then((data) => {
+            dispatchUserState(setUserInfo(data));
             setIsAuthenticatedState(data);
         });
     }, [isAuthenticatedState]);
@@ -49,7 +50,7 @@ function App() {
         const doFetch = async () => {
             const getUser = getUserInfo();
             getUser.then((data) => {
-                if (data) {
+                if (!data.error) {
                     console.log('userdata ???', data);
                     dispatchUserState(setUserInfo(data));
                 }
@@ -57,19 +58,6 @@ function App() {
         };
         doFetch();
     }, []);
-
-    const test = () => {
-        const doFetch = async () => {
-            const getUser = getUserInfo();
-            getUser.then((data) => {
-                if (data) {
-                    console.log('userdata???', data);
-                    dispatchUserState(setUserInfo(data));
-                }
-            });
-        };
-        doFetch();
-    };
 
     return (
         <ThemeProvider theme={theme}>

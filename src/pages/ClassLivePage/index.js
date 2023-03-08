@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Meeting from '~/components/Meeting';
 import { API_BASE_URL } from '~/constants';
+import { getConfig } from '~/services/config';
 import { getUserJWT } from '~/services/userService';
 import { useUser } from '~/stores/UserStore';
 
@@ -63,15 +64,8 @@ function ClassLivePage() {
     });
 
     useEffect(() => {
-        let jwt = getUserJWT();
-        jwt = jwt.substring(7, jwt.length);
-        console.log('jwt', jwt);
-        fetch(`${API_BASE_URL}/api/meeting?classId=${classId}`, {
-            method: 'GET',
-            headers: {
-                Authorization: jwt,
-            },
-        })
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/api/meeting?classId=${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);

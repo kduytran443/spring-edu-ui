@@ -14,6 +14,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL } from '~/constants';
 import parse from 'html-react-parser';
+import { getConfig } from '~/services/config';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -29,7 +30,8 @@ function ClassLessonPage() {
 
     /*PRIVATE*/
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-lesson/${lessonId}`)
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/api/class-lesson/${lessonId}`, config)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);
@@ -44,7 +46,8 @@ function ClassLessonPage() {
 
     /*PRIVATE*/
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-lesson-review/${lessonId}?move=next`)
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/api/class-lesson-review/${lessonId}?move=next`, config)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);
@@ -59,7 +62,8 @@ function ClassLessonPage() {
     }, [lessonId]);
     /*PRIVATE*/
     useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-lesson-review/${lessonId}?move=previous`)
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/api/class-lesson-review/${lessonId}?move=previous`, config)
             .then((res) => res.json())
             .then((data) => {
                 console.log(data);

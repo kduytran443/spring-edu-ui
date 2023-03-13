@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ClassListIntro from '~/components/ClassListIntro';
+import { API_BASE_URL } from '~/constants';
 
 function JoinedClassPage() {
     const [categoryDataState, setCategoryDataState] = useState({
@@ -21,37 +22,6 @@ function JoinedClassPage() {
                 img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
                 registed: true,
             },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-                registed: true,
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
-            {
-                id: 1,
-                name: 'Lập trình',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) là việc lập ra ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-            },
         ];
     });
 
@@ -63,20 +33,6 @@ function JoinedClassPage() {
 
     return (
         <div className="flex flex-col p-4">
-            <div className="flex flex-row justify-between items-center p-4 bg-slate-100 rounded-lg">
-                <div className="flex flex-row items-center">
-                    <span className="hidden md:block">Sắp xếp theo</span>
-                    <div className="flex flex-row">
-                        <div className="mr-4">
-                            <Button variant="text">Mới nhất</Button>
-                        </div>
-                        <div className="">
-                            <Button variant="text">Hot nhất</Button>
-                        </div>
-                    </div>
-                </div>
-                <div>{quantityState} lớp học</div>
-            </div>
             <ClassListIntro
                 listItem={classListState}
                 hiddenHeader
@@ -84,9 +40,6 @@ function JoinedClassPage() {
                 title="Lập trình"
                 icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
             />
-            <div className="my-8">
-                <Pagination count={10} color="primary" />
-            </div>
         </div>
     );
 }

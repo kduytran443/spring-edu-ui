@@ -14,13 +14,17 @@ const CLASS_EVERYONE_PAGE_URL = '/class/:classId/everyone';
 const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
 const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
 const CLASS_LESSON_PAGE_URL = '/class/:classId/lesson/:lessonId';
+const CLASS_LESSON_CREATE_PAGE_URL = '/class/:classId/lesson-create';
+const CLASS_LESSON_EDIT_PAGE_URL = '/class/:classId/lesson-edit';
 const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
 const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
 
-const API_BASE_URL = 'http://192.168.1.4:8084';
+const API_BASE_URL = 'http://192.168.1.4:8085';
+const LOCAL_STORAGE_NAME = 'spring_edu';
 
 const ACTION_GET_USER_INFO = 'ACTION_GET_USER_INFO';
 const ACTION_SET_USER_INFO = 'ACTION_SET_USER_INFO';
+const ACTION_CLEAR_USER_INFO = 'ACTION_CLEAR_USER_INFO';
 
 export {
     HOME_PAGE_URL,
@@ -44,4 +48,8 @@ export {
     CLASS_MESSAGE_PAGE_URL,
     ACTION_GET_USER_INFO,
     ACTION_SET_USER_INFO,
+    LOCAL_STORAGE_NAME,
+    ACTION_CLEAR_USER_INFO,
+    CLASS_LESSON_CREATE_PAGE_URL,
+    CLASS_LESSON_EDIT_PAGE_URL,
 };

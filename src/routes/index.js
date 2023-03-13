@@ -16,6 +16,8 @@ import {
     CLASS_LIVE_PAGE_URL,
     CLASS_SPECIFIC_EXERCISE_PAGE_URL,
     CLASS_MESSAGE_PAGE_URL,
+    INTRO_PAGE_URL,
+    CLASS_LESSON_CREATE_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
@@ -26,6 +28,7 @@ import ClassEveryonePage from '~/pages/ClassEveryonePage';
 import ClassExercisePage from '~/pages/ClassExercisePage';
 import ClassIntroPage from '~/pages/ClassIntroPage';
 import ClassLessonPage from '~/pages/ClassLessonPage';
+import ClassLessonCreatePage from '~/pages/ClassLessonPage/ClassLessonCreatePage';
 import ClassLivePage from '~/pages/ClassLivePage';
 import ClassMarkPage from '~/pages/ClassMarkPage';
 import ClassMessagePage from '~/pages/ClassMessagePage';
@@ -33,6 +36,7 @@ import ClassPage from '~/pages/ClassPage';
 import ClassSettingPage from '~/pages/ClassSettingPage';
 import ClassSpecificExercisePage from '~/pages/ClassSpecificExercisePage';
 import HomePage from '~/pages/HomePage';
+import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
 import LoginPage from '~/pages/LoginPage';
 import PersonalPage from '~/pages/PersonalPage';
@@ -67,6 +71,11 @@ const publicRoutes = [
     {
         path: `${CLASS_INTRO_PAGE_URL}`,
         component: ClassIntroPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${INTRO_PAGE_URL}`,
+        component: IntroPage,
         layout: FullLayout,
     },
 ];
@@ -130,6 +139,16 @@ const privateRoutes = [
     {
         path: `${CLASS_MESSAGE_PAGE_URL}`,
         component: ClassMessagePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_LESSON_CREATE_PAGE_URL}`,
+        component: ClassLessonCreatePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_LESSON_CREATE_PAGE_URL}`,
+        component: ClassLessonCreatePage,
         layout: ClassLayout,
     },
 ];

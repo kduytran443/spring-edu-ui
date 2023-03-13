@@ -1,16 +1,49 @@
+import { LOCAL_STORAGE_NAME } from '~/constants';
+
 const postConfig = (data) => {
     const jwt = getUserJWT();
 
     return {
-        method: 'GET',
+        method: 'POST',
         headers: {
             Authorization: jwt,
+            'Content-Type': 'application/json',
         },
+        body: JSON.stringify(data),
+    };
+};
+
+const putConfig = (data) => {
+    const jwt = getUserJWT();
+
+    return {
+        method: 'PUT',
+        headers: {
+            Authorization: jwt,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    };
+};
+
+const deleteConfig = (data) => {
+    const jwt = getUserJWT();
+
+    return {
+        method: 'DELETE',
+        headers: {
+            Authorization: jwt,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
     };
 };
 
 const getUserJWT = () => {
-    return JSON.parse(localStorage.getItem('spring_edu')).jwt + '';
+    if (JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME))) {
+        return JSON.parse(localStorage.getItem(LOCAL_STORAGE_NAME)).jwt + '';
+    }
+    return '';
 };
 
 const getConfig = () => {
@@ -26,8 +59,9 @@ const getConfig = () => {
         method: 'GET',
         headers: {
             Authorization: jwt,
+            'Content-Type': 'application/json',
         },
     };
 };
 
-export { getConfig, postConfig };
+export { getConfig, postConfig, deleteConfig, getUserJWT, putConfig };

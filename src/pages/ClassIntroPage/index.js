@@ -1,4 +1,12 @@
-import { faCartShopping, faDoorOpen, faPenToSquare, faReply, faX } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowLeft,
+    faBug,
+    faCartShopping,
+    faDoorOpen,
+    faPenToSquare,
+    faReply,
+    faX,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, Rating, Tab } from '@mui/material';
 import { Editor } from 'react-draft-wysiwyg';
@@ -7,7 +15,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
 import { useNavigate, useParams } from 'react-router-dom';
-import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
+import { API_BASE_URL, HOME_PAGE_URL, LOGIN_PAGE_URL } from '~/constants';
 import LoadingProcess from '~/components/LoadingProcess';
 import ReviewCard from '~/components/ReviewCard';
 import Line from '~/components/Line';
@@ -17,6 +25,10 @@ import CommentCard from '~/components/CommentCard';
 import parse from 'html-react-parser';
 import { DataGrid } from '@mui/x-data-grid';
 import { getConfig } from '~/services/config';
+import { classMemberService } from '~/services/classMemberService';
+import SimpleDialog from '~/components/SimpleDialog';
+import GreatIconButton from '~/components/GreatIconButton';
+import { useUser } from '~/stores/UserStore';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -70,13 +82,13 @@ function ClassIntroPage() {
     };
 
     useEffect(() => {
-        if (classDataState.classSchedule && classDataState.classScheduleWeeklyClassSchedule) {
+        if (classDataState.classSchedules) {
             //classScheduleWeeklyClassSchedule
-            const rows = classDataState.classScheduleWeeklyClassSchedule.map((item, index) => {
+            const rows = classDataState.classSchedules.map((item, index) => {
                 //{ id: 3, day: '6', start: '7:00', end: '11:00' },
                 return {
-                    id: index,
-                    day: item.weeklyClassSchedule.name,
+                    id: item.id,
+                    day: item.dateName,
                     start: `${item.startHours}:${item.startMinutes}`,
                     end: `${item.endHours}:${item.endMinutes}`,
                 };
@@ -111,25 +123,67 @@ function ClassIntroPage() {
             });
     }, []);
 
+    /*
+    private Long userId;
+	private String username;
+	private String fullname;
+	private String avatar;
+	private String email;
+	private Long classId;
+	private String classRole;
+	private float fee;
+	private Timestamp createdDate;
+	private int memberAccepted;
+	private int classAccepted;
+	private int discount;
+	private Long discountId;
+    */
+
+    const [successfulEnrollmentState, setSuccessfulEnrollmentState] = useState(0);
+
+    const enrollClass = () => {
+        const classMember = {
+            classId: classId,
+            classRole: 'student',
+            memberAccepted: 1,
+            classAccepted: 0,
+        };
+
+        console.log('???', classMember);
+
+        classMemberService.postClassMember(classMember).then((data) => {
+            if (data.status !== 500) {
+                setSuccessfulEnrollmentState(1);
+                console.log('???  ok ok ok ok', classMember);
+                setTimeout(() => {
+                    navigate('/class/' + classId);
+                }, 4000);
+            } else {
+            }
+        });
+    };
+
     let startTime = null;
     let endTime = null;
-    if (classDataState.classSchedule) {
-        startTime = new Date(classDataState.classSchedule.startTime);
-        endTime = new Date(classDataState.classSchedule.endTime);
+    if (classDataState.startTime) {
+        startTime = new Date(classDataState.startTime);
+    }
+    if (classDataState.endTime) {
+        endTime = new Date(classDataState.endTime);
     }
 
     let discount = null;
 
     if (classDataState?.discount) {
         const timeNow = new Date().getTime();
-        console.log('discount', timeNow, classDataState.discount.startDate, classDataState.discount.endDate);
         if (timeNow >= classDataState.discount.startDate && timeNow <= classDataState.discount.endDate) {
             console.log('phù hợp');
             discount = classDataState.discount.discountPercent;
             console.log(classDataState.fee, classDataState.discountPercent);
-            console.log('giá sau khi', classDataState.fee - classDataState.fee * discount);
         }
     }
+
+    const [userState, userDispatch] = useUser();
 
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
@@ -137,11 +191,11 @@ function ClassIntroPage() {
                 <div className="mb-[6px] lg:block hidden">
                     <Button
                         onClick={(e) => {
-                            navigate(HOME_PAGE_URL);
+                            navigate('/category/' + classDataState.categoryCode);
                         }}
                         startIcon={<FontAwesomeIcon icon={faReply} />}
                     >
-                        Trang chủ
+                        {classDataState.categoryName}
                     </Button>
                 </div>
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
@@ -205,15 +259,17 @@ function ClassIntroPage() {
                             </div>
                         ) : (
                             <div>
-                                <Button
-                                    onClick={(e) => {
-                                        setVisibleEdittingState(true);
-                                    }}
-                                    variant="outlined"
-                                    startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
-                                >
-                                    Sửa
-                                </Button>
+                                {classDataState.userRoleCode && (
+                                    <Button
+                                        onClick={(e) => {
+                                            setVisibleEdittingState(true);
+                                        }}
+                                        variant="outlined"
+                                        startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
+                                    >
+                                        Sửa
+                                    </Button>
+                                )}
                             </div>
                         )}
                     </div>
@@ -294,20 +350,18 @@ function ClassIntroPage() {
                             <div>
                                 {discount === null ? (
                                     <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                        <div>
-                                            {classDataState.fee > 0 ? VND.format(classDataState.fee) : 'Miễn phí'}
-                                        </div>
+                                        <div>{classDataState.fee > 0 ? classDataState.fee : 'Miễn phí'} usd</div>
                                     </span>
                                 ) : (
                                     <div className="flex flex-col justify-center items-center">
                                         <p className="text-lg">
-                                            <del>{VND.format(classDataState.fee)}</del>
+                                            <del>{classDataState.fee}</del>
                                             <span className="ml-4 text-blue-500">
                                                 <b>Giảm {discount}%</b>
                                             </span>
                                         </p>
                                         <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                            {VND.format(classDataState.fee - classDataState.fee * (discount / 100))}
+                                            {classDataState.fee - classDataState.fee * (discount / 100)} usd
                                         </span>
                                     </div>
                                 )}
@@ -326,12 +380,52 @@ function ClassIntroPage() {
                                     Vào lớp <FontAwesomeIcon className="ml-2" icon={faDoorOpen} />
                                 </Button>
                             ) : (
-                                <Button size="large" className="bg-red-400" variant="contained">
-                                    Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
-                                </Button>
+                                <>
+                                    <SimpleDialog
+                                        openButton={
+                                            <Button
+                                                onClick={(e) => {
+                                                    if (!userState.username) {
+                                                        navigate(LOGIN_PAGE_URL);
+                                                    }
+                                                }}
+                                                size="large"
+                                                className="bg-red-400"
+                                                variant="contained"
+                                            >
+                                                Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
+                                            </Button>
+                                        }
+                                        agreeAction={enrollClass}
+                                        title={'Đăng ký học'}
+                                        visibleButton={
+                                            !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
+                                        }
+                                        closeAftarAgree={false}
+                                    >
+                                        <>
+                                            {successfulEnrollmentState === 1 && (
+                                                <div className="flex flex-col items-center justify-center mt-4">
+                                                    <GreatIconButton />
+                                                    <p>Đã đăng ký thành công, đang chuyển hướng</p>
+                                                </div>
+                                            )}
+                                            {successfulEnrollmentState === 0 && <div>Xác nhận đăng ký lớp này</div>}
+                                            {successfulEnrollmentState === -1 && (
+                                                <div className="flex flex-col items-center justify-center mt-4">
+                                                    <GreatIconButton
+                                                        icon={<FontAwesomeIcon icon={faBug} />}
+                                                        color="bg-red-500 shadow-red-300"
+                                                    />
+                                                    <p>Không đăng ký thành công, hãy thử lại!</p>
+                                                </div>
+                                            )}
+                                        </>
+                                    </SimpleDialog>
+                                </>
                             )}
                         </div>
-                        {classDataState.classSchedule && (
+                        {classDataState.classSchedules && (
                             <ul>
                                 <li>
                                     <span>
@@ -347,11 +441,6 @@ function ClassIntroPage() {
                                         <b>{`${endTime.getDate()}/${
                                             endTime.getMonth() + 1
                                         }/${endTime.getFullYear()}`}</b>
-                                    </span>
-                                </li>
-                                <li>
-                                    <span>
-                                        <b>{classDataState.classSchedule.schedule}</b>
                                     </span>
                                 </li>
                             </ul>

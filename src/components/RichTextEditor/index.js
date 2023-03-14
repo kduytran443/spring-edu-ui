@@ -1,30 +1,99 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import Editor from 'ckeditor5-custom-build/build/ckeditor';
+import { useEffect } from 'react';
+import { useRef } from 'react';
 
-function RichTextEditor() {
+function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
+    const editorRef = useRef();
+
+    const getTextData = () => {
+        const content = editorRef.current.getElementsByClassName('ck-restricted-editing_mode_standard')[0];
+        if (content) {
+            setData(content.innerHTML);
+        }
+    };
+
+    const checkOnLoad = () => {
+        if (disabled) {
+            const toolbar = editorRef.current.getElementsByClassName('ck-editor__top')[0];
+            toolbar.style.display = 'none';
+        }
+    };
+
     return (
-        <div>
+        <div ref={editorRef}>
             <CKEditor
                 editor={Editor}
-                data="<p>Hello from CKEditor 5!</p>"
+                disabled={disabled}
+                data={data}
                 onReady={(editor) => {
-                    // You can store the "editor" and use when it is needed.
-                    console.log('Editor is ready to use!', editor);
+                    checkOnLoad();
                 }}
                 onChange={(event, editor) => {
                     const data = editor.getData();
-                    console.log({ event, editor, data });
+                    getTextData();
                 }}
                 onBlur={(event, editor) => {
-                    console.log('Blur.', editor);
+                    getTextData();
                 }}
                 onFocus={(event, editor) => {
-                    console.log('Focus.', editor);
+                    getTextData();
                 }}
             />
-
         </div>
     );
 }
 
 export default RichTextEditor;
+
+/*
+    const editorConfiguaration = {
+        toolbar: {
+            items: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'outdent',
+                'indent',
+                '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo',
+                'redo',
+                'alignment',
+                'code',
+                'codeBlock',
+                'findAndReplace',
+                'fontColor',
+                'fontFamily',
+                'fontSize',
+                'fontBackgroundColor',
+                'highlight',
+                'horizontalLine',
+                'htmlEmbed',
+                'imageInsert',
+            ],
+        },
+        language: 'en',
+        image: {
+            toolbar: [
+                'imageTextAlternative',
+                'toggleImageCaption',
+                'imageStyle:inline',
+                'imageStyle:block',
+                'imageStyle:side',
+            ],
+        },
+        table: {
+            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+        },
+        isReadOnly: true,
+    };
+    */

@@ -10,7 +10,7 @@ import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { useNavigate, useParams } from 'react-router-dom';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
-export default function SimpleAccordion({ name, ordinalNumber, classLessons = [] }) {
+export default function SimpleAccordion({ name, children, classLessons = [] }) {
     const { classId } = useParams();
     const navigate = useNavigate();
 
@@ -34,9 +34,7 @@ export default function SimpleAccordion({ name, ordinalNumber, classLessons = []
                     id="panel1a-header"
                 >
                     <Typography>
-                        <div className="font-bold text-xl">
-                            {ordinalNumber}. {name}
-                        </div>
+                        <div className="font-bold text-xl">{name}</div>
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -68,6 +66,7 @@ export default function SimpleAccordion({ name, ordinalNumber, classLessons = []
                                 <div>Chưa có bài học nào</div>
                             )}
                         </ul>
+                        {children}
                     </Typography>
                 </AccordionDetails>
             </Accordion>

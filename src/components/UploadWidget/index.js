@@ -64,6 +64,12 @@ function UploadWidget({
         setFileListState(files);
     };
 
+    useEffect(() => {
+        if (fileListState.length === 0) {
+            uploadFunction([]);
+        }
+    }, [fileListState]);
+
     return (
         <div className="flex flex-col items-center w-full p-4 my-6 border border-slate-200 shadow rounded-lg">
             <h2 className="text-2xl font-bold">Upload ({fileListState.length})</h2>

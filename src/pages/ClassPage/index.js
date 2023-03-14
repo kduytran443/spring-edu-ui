@@ -13,6 +13,7 @@ import { getConfig } from '~/services/config';
 import { topicService } from '~/services/topicService';
 import { useUser } from '~/stores/UserStore';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 
 function ClassPage() {
     const [classDataState, setClassDataState] = useState(() => {
@@ -254,8 +255,7 @@ function ClassPage() {
                                         )}
                                     <SimpleAccordion
                                         key={index}
-                                        name={topic.name}
-                                        ordinalNumber={topic.ordinalNumber}
+                                        name={topic.ordinalNumber + '. ' + topic.name}
                                         classLessons={topic.classLessonReviews}
                                     />
                                 </div>

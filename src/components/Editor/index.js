@@ -1,58 +1,42 @@
-import { ClassicEditor } from '@ckeditor/ckeditor5-build-classic';
-import { CKEditor } from 'ckeditor4-react';
+import React, { useEffect, useRef } from 'react';
 
-const API_URL = 'https://77em4-8080.sse.codesandbox.io';
-const UPLOAD_ENDPOINT = 'upload_files';
+function Editor({ onChange, editorLoaded, name, value }) {
+    const editorRef = useRef();
+    const { CKEditor, ClassicEditor } = editorRef.current || {};
 
-export default function MyEditor({ handleChange, ...props }) {
-    function uploadAdapter(loader) {
-        return {
-            upload: () => {
-                return new Promise((resolve, reject) => {
-                    const body = new FormData();
-                    loader.file.then((file) => {
-                        body.append('files', file);
-                        // let headers = new Headers();
-                        // headers.append("Origin", "http://localhost:3000");
-                        fetch(`${API_URL}/${UPLOAD_ENDPOINT}`, {
-                            method: 'post',
-                            body: body,
-                            // mode: "no-cors"
-                        })
-                            .then((res) => res.json())
-                            .then((res) => {
-                                resolve({
-                                    default: `${API_URL}/${res.filename}`,
-                                });
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            });
-                    });
-                });
-            },
+    useEffect(() => {
+        editorRef.current = {
+            CKEditor: require('@ckeditor/ckeditor5-react').CKEditor, // v3+
+            Editor: require('ckeditor5-custom-build/build/ckeditor'),
         };
-    }
-    function uploadPlugin(editor) {
-        editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
-            return uploadAdapter(loader);
-        };
-    }
+    }, []);
+
     return (
-        <div className="App">
-            <CKEditor
-                config={{
-                    extraPlugins: [uploadPlugin],
-                }}
-                editor={ClassicEditor}
-                onReady={(editor) => {}}
-                onBlur={(event, editor) => {}}
-                onFocus={(event, editor) => {}}
-                onChange={(event, editor) => {
-                    handleChange(editor.getData());
-                }}
-                {...props}
-            />
+        <div>
+            {editorLoaded ? (
+                <CKEditor
+                    type=""
+                    name={name}
+                    editor={Editor}
+                    config={{
+                        ckfinder: {
+                            // Upload the images to the server using the CKFinder QuickUpload command
+                            // You have to change this address to your server that has the ckfinder php connector
+                            uploadUrl: '', //Enter your upload url
+                        },
+                    }}
+                    data={value}
+                    onChange={(event, editor) => {
+                        const data = editor.getData();
+                        // console.log({ event, editor, data })
+                        onChange(data);
+                    }}
+                />
+            ) : (
+                <div>Editor loading</div>
+            )}
         </div>
     );
 }
+
+export default Editor;

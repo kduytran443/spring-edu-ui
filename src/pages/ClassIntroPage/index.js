@@ -9,8 +9,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, Rating, Tab } from '@mui/material';
-import { Editor } from 'react-draft-wysiwyg';
-import { EditorState } from 'draft-js';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';

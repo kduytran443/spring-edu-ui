@@ -1,10 +1,9 @@
 import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, TextField } from '@mui/material';
-import { CKEditor } from 'ckeditor4-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import MyEditor from '~/components/Editor';
+import RichTextEditor from '~/components/RichTextEditor';
 
 function ClassLessonCreatePage() {
     const navigate = useNavigate();
@@ -42,7 +41,7 @@ function ClassLessonCreatePage() {
                 </div>
                 <div className="w-full my-6">
                     <h2>Using CKEditor 5 build in React</h2>
-                    <CKEditor initData="<p>This is an example CKEditor 4 WYSIWYG editor instance.</p>" />;
+                    <RichTextEditor />
                 </div>
                 <div className="w-full p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl">
                     <FontAwesomeIcon icon={faPlus} className="mr-2" /> Thêm

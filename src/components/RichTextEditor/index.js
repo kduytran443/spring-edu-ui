@@ -1,71 +1,27 @@
-import { Button, FormGroup } from '@mui/material';
-import { useState } from 'react';
-import ReactQuill from 'react-quill';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import Editor from 'ckeditor5-custom-build/build/ckeditor';
 
 function RichTextEditor() {
-    const modulesQill = {
-        toolbar: [
-            [{ header: '1' }, { header: '2' }, { font: [] }],
-            [{ size: [] }],
-            ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-            [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-            ['link', 'image', 'video'],
-            ['clean'],
-        ],
-        clipboard: {
-            matchVisual: false,
-        },
-        history: {
-            delay: 1000,
-            maxStack: 50,
-            userOnly: false,
-        },
-        imageResize: {
-            displayStyles: {
-                backgroundColor: 'black',
-                border: 'none',
-                color: 'white',
-            },
-            modules: ['Resize', 'DisplaySize', 'Toolbar'],
-        },
-    };
-    const formats = [
-        'header',
-        'font',
-        'size',
-        'bold',
-        'italic',
-        'underline',
-        'strike',
-        'blockquote',
-        'list',
-        'bullet',
-        'indent',
-        'link',
-        'image',
-        'video',
-    ];
-
-    const [text, setText] = useState('');
-    const handleChange = (e) => {
-        setText(e.target.value);
-    };
-
     return (
         <div>
-            <FormGroup controlId="editor">
-                <ReactQuill
-                    value={text}
-                    onChange={handleChange}
-                    modules={modulesQill}
-                    formats={formats}
-                    placeholder={'Enter new content here...'}
-                    style={{ height: '300px' }}
-                />
-            </FormGroup>
-            <div className="btnSubmit">
-                <Button>Submit</Button>
-            </div>
+            <CKEditor
+                editor={Editor}
+                data="<p>Hello from CKEditor 5!</p>"
+                onReady={(editor) => {
+                    // You can store the "editor" and use when it is needed.
+                    console.log('Editor is ready to use!', editor);
+                }}
+                onChange={(event, editor) => {
+                    const data = editor.getData();
+                    console.log({ event, editor, data });
+                }}
+                onBlur={(event, editor) => {
+                    console.log('Blur.', editor);
+                }}
+                onFocus={(event, editor) => {
+                    console.log('Focus.', editor);
+                }}
+            />
         </div>
     );
 }

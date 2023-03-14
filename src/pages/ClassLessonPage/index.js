@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,18 +11,21 @@ import {
     faBackward,
     faBackwardStep,
     faClock,
+    faPen,
+    faTrash,
 } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL } from '~/constants';
 import parse from 'html-react-parser';
 import { getConfig } from '~/services/config';
 import { classLessonService } from '~/services/classLessonService';
-import RichTextEditor from '~/components/RichTextEditor';
 import FileReview from '~/components/FileReview';
 import { fileService } from '~/services/fileService';
 import SimpleAccordion from '~/components/SimpleAccordion';
 import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 import { renderToTime } from '~/utils';
+import { confirmAlert } from 'react-confirm-alert';
+import ShowTextData from '~/components/ShowTextData';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -122,6 +125,39 @@ function ClassLessonPage() {
 
     const time = renderToTime(lessonDataState.createdDate);
 
+    const deleteLesson = () => {
+        classLessonService.deleteClassLesson({ id: lessonId }).then((data) => {
+            if (data.status !== 500) {
+                console.log("navigate('/class/' + classId);", data);
+                navigate('/class/' + classId);
+            }
+        });
+    };
+
+    const submitDelete = () => {
+        console.log('??? có ok k v?');
+        confirmAlert({
+            title: 'Xác nhận xóa',
+            message: 'Bạn có muốn xóa bài học này không?',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => deleteLesson(),
+                },
+                {
+                    label: 'No',
+                    //onClick: () => alert('Click No')
+                },
+            ],
+        });
+    };
+
+    useEffect(() => {
+        if (lessonDataState.textData) {
+            const textComponent = parse(lessonDataState.textData);
+        }
+    }, [lessonDataState]);
+
     return (
         <div className="w-full p-4 md:p-0 text-justify">
             <div className="flex flex-row items-start justify-between">
@@ -172,7 +208,13 @@ function ClassLessonPage() {
 
             <div className="mt-8">
                 <h2 className="text-xl font-bold my-2">Nội dung bài học:</h2>
-                <p>{lessonDataState && <RichTextEditor disabled data={lessonDataState.textData} />}</p>
+                <p>
+                    {lessonDataState.textData && (
+                        <div>
+                            <ShowTextData data={lessonDataState.textData} />
+                        </div>
+                    )}{' '}
+                </p>
             </div>
             {(previousLessonState || nextLessonState) && (
                 <div className="flex bg-slate-100 border border-slate-200 flex-col shadow rounded-lg p-4 md:flex-row full justify-between items-center mt-16">
@@ -198,6 +240,18 @@ function ClassLessonPage() {
                     )}
                 </div>
             )}
+            <div className="flex flex-row items-center justify-end mt-10">
+                <div className="mr-4">
+                    <IconButton onClick={submitDelete} color="error">
+                        <FontAwesomeIcon icon={faTrash} />
+                    </IconButton>
+                </div>
+                <div>
+                    <IconButton color="primary">
+                        <FontAwesomeIcon icon={faPen} />
+                    </IconButton>
+                </div>
+            </div>
         </div>
     );
 }

@@ -14,6 +14,7 @@ import { topicService } from '~/services/topicService';
 import { useUser } from '~/stores/UserStore';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
+import TopicUpdateDialog from '~/components/TopicUpdateDialog';
 
 function ClassPage() {
     const [classDataState, setClassDataState] = useState(() => {
@@ -88,11 +89,6 @@ function ClassPage() {
     }, []);
 
     const [newTopicNameState, setNewTopicNameState] = useState('');
-    const insertTopic = () => {
-        topicService.postTopic({ name: newTopicNameState, classId: classId }).then((data) => {
-            loadTopic();
-        });
-    };
 
     const [newLessonState, setNewLessonState] = useState('');
     const [visibleAddNewLessonState, setVisibleAddNewLessonState] = useState([]);
@@ -141,31 +137,14 @@ function ClassPage() {
                 (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
                     <div className="flex flex-col md:flex-row items-center">
                         <div>
-                            <AlertDialog
-                                title="Thêm chủ đề"
-                                button={
-                                    <div
-                                        onClick={(e) => {
-                                            navigate('topic-create');
-                                        }}
-                                        className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
-                                    >
+                            <TopicUpdateDialog
+                                buttonOpen={
+                                    <div className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500">
                                         <FontAwesomeIcon icon={faPlus} /> Thêm chủ đề
                                     </div>
                                 }
-                                agreeAction={(e) => {
-                                    insertTopic();
-                                }}
-                            >
-                                <div className="my-2">
-                                    <TextField
-                                        onInput={(e) => {
-                                            setNewTopicNameState(e.target.value);
-                                        }}
-                                        label="Tên chủ đề"
-                                    />
-                                </div>
-                            </AlertDialog>
+                                loadTopic={loadTopic}
+                            />
                         </div>
                         <div>
                             <div

@@ -8,6 +8,7 @@ import 'react-quill/dist/quill.snow.css';
 import 'react-photo-view/dist/react-photo-view.css';
 import Provider from './stores/Provider';
 import { createBrowserHistory } from 'history';
+import 'react-confirm-alert/src/react-confirm-alert.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

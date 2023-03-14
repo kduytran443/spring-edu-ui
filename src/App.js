@@ -39,19 +39,10 @@ function App() {
     const [userState, dispatchUserState] = useUser();
 
     useEffect(() => {
-        const login = authorize().then((data) => data);
-        login.then((data) => {
-            dispatchUserState(setUserInfo(data));
-            setIsAuthenticatedState(data);
-        });
-    }, [isAuthenticatedState]);
-
-    useEffect(() => {
         const doFetch = async () => {
             const getUser = getUserInfo();
             getUser.then((data) => {
-                if (!data.error) {
-                    console.log('userdata ???', data);
+                if (data && !data.error) {
                     dispatchUserState(setUserInfo(data));
                 }
             });

@@ -1,4 +1,4 @@
-import { Accordion, AccordionSummary, Avatar, Divider, Typography } from '@mui/material';
+import { Accordion, AccordionSummary, Avatar, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import UserAccordion from '~/components/UserAccordion';
@@ -6,6 +6,7 @@ import UserItemCard from '~/components/UserItemCard';
 import { API_BASE_URL } from '~/constants';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
+import { classMemberService } from '~/services/classMemberService';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -13,6 +14,14 @@ function ClassEveryonePage() {
 
     useEffect(() => {
         /*PRIVATE*/
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            console.log(data);
+            setPeopleListState(data);
+        });
+    }, [classId]);
+
+    /*
+    useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/class-member?classId=${classId}`)
             .then((res) => res.json())
             .then((data) => {
@@ -20,6 +29,7 @@ function ClassEveryonePage() {
                 setPeopleListState(data);
             });
     }, [classId]);
+    */
 
     return (
         <div>
@@ -84,7 +94,12 @@ function ClassEveryonePage() {
                 <Divider />
             </div>
 
-            <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Học viên</h1>
+            <div className="flex flex-row items-center justify-between">
+                <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Học viên</h1>
+                <div>
+                    <Button>Thêm</Button>
+                </div>
+            </div>
             <ul>
                 {peopleListState.map((people) => {
                     if (people.classRole === 'student') {

@@ -9,10 +9,12 @@ import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL, PERSONAL_PAGE_URL } from '~/constants';
+import { clearUserInfo, useUser } from '~/stores/UserStore';
 import { setUserInfo } from '~/services/userService';
 
 function HeaderAccountOptions() {
     const navigate = useNavigate();
+    const [userState, dispatchUserState] = useUser();
 
     const logout = () => {
         const options = {
@@ -25,7 +27,7 @@ function HeaderAccountOptions() {
         fetch(`${API_BASE_URL}/api/logout`, options)
             .then((res) => res.json())
             .then((data) => {
-                setUserInfo({});
+                dispatchUserState(clearUserInfo({}));
                 navigate('/login');
             })
             .catch((error) => {

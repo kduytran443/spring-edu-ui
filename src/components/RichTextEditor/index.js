@@ -2,9 +2,12 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import Editor from 'ckeditor5-custom-build/build/ckeditor';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import parse from 'html-react-parser';
+import { useState } from 'react';
 
 function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
     const editorRef = useRef();
+    const [dataState, setDataState] = useState(data);
 
     const getTextData = () => {
         const content = editorRef.current.getElementsByClassName('ck-restricted-editing_mode_standard')[0];
@@ -25,7 +28,7 @@ function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
             <CKEditor
                 editor={Editor}
                 disabled={disabled}
-                data={data}
+                data={dataState}
                 onReady={(editor) => {
                     checkOnLoad();
                 }}

@@ -12,13 +12,14 @@ function UploadWidget({
         </Button>
     ),
     uploadFunction = () => {},
+    fileList = [],
     multiple = false,
 }) {
     const fileRef = useRef();
 
     console.log('multiple', multiple);
 
-    const [fileListState, setFileListState] = useState([]);
+    const [fileListState, setFileListState] = useState(fileList);
 
     const uploadFile = (e) => {
         console.log('Uploaded multiple');

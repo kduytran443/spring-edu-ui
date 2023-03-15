@@ -147,12 +147,25 @@ function ClassIntroPage() {
             classAccepted: 0,
         };
 
-        console.log('???', classMember);
+        classMemberService.postClassMember(classMember).then((data) => {
+            if (data.status !== 500) {
+                setSuccessfulEnrollmentState(2);
+            } else {
+            }
+        });
+    };
+
+    const buyClass = () => {
+        const classMember = {
+            classId: classId,
+            classRole: 'student',
+            memberAccepted: 1,
+            classAccepted: 1,
+        };
 
         classMemberService.postClassMember(classMember).then((data) => {
             if (data.status !== 500) {
                 setSuccessfulEnrollmentState(1);
-                console.log('???  ok ok ok ok', classMember);
                 setTimeout(() => {
                     navigate('/class/' + classId);
                 }, 4000);
@@ -394,7 +407,11 @@ function ClassIntroPage() {
                                                 Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
                                             </Button>
                                         }
-                                        agreeAction={enrollClass}
+                                        agreeAction={
+                                            classDataState.fee - classDataState.fee * (discount / 100) > 0
+                                                ? buyClass
+                                                : enrollClass
+                                        }
                                         title={'Đăng ký học'}
                                         visibleButton={
                                             !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
@@ -402,6 +419,12 @@ function ClassIntroPage() {
                                         closeAftarAgree={false}
                                     >
                                         <>
+                                            {successfulEnrollmentState === 2 && (
+                                                <div className="flex flex-col items-center justify-center mt-4">
+                                                    <GreatIconButton />
+                                                    <p>Đã gửi lời mời, đang đợi chấp thuận</p>
+                                                </div>
+                                            )}
                                             {successfulEnrollmentState === 1 && (
                                                 <div className="flex flex-col items-center justify-center mt-4">
                                                     <GreatIconButton />

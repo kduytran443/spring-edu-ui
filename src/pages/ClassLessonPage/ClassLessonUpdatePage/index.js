@@ -1,4 +1,4 @@
-import { faArrowLeft, faPen, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Box } from '@mui/system';
@@ -10,8 +10,9 @@ import UploadWidget from '~/components/UploadWidget';
 import { classLessonService } from '~/services/classLessonService';
 import { fileService } from '~/services/fileService';
 import { topicService } from '~/services/topicService';
+import parse from 'html-react-parser';
 
-function ClassLessonCreatePage() {
+function ClassLessonUpdatePage() {
     const navigate = useNavigate();
     const { classId, lessonId } = useParams();
 
@@ -27,8 +28,8 @@ function ClassLessonCreatePage() {
     const loadTopic = () => {
         topicService.getTopicByClassId(classId).then((data) => {
             if (data.status !== 500) {
+                console.log(data);
                 setTopicListState(data);
-                setTopicIdState(data[0]);
             }
         });
     };
@@ -54,6 +55,7 @@ function ClassLessonCreatePage() {
     };
 
     const uploadFileList = (files) => {
+        console.log(fileListState);
         setFileListState(files); //name, data, size, type
     };
 
@@ -89,31 +91,70 @@ function ClassLessonCreatePage() {
         }
     };
 
+    useEffect(() => {}, [textDataState]);
+
     const [editorLoaded, setEditorLoaded] = useState(false);
     const [data, setData] = useState('');
 
+    const updateLesson = () => {
+        if (nameState && topicIdState && textDataState) {
+            const obj = {
+                id: lessonId,
+                name: nameState,
+                topicId: topicIdState,
+                textData: textDataState,
+            };
+
+            classLessonService.putClassLesson(obj).then((data) => {
+                if (data.status !== 500) {
+                    if (fileListState.length > 0) {
+                        fileListState.forEach((file) => {
+                            uploadFiles(data.id, file);
+                        });
+                    }
+
+                    navigate('/class/' + classId);
+                }
+            });
+
+            if (fileListState.length > 0) {
+                fileListState.forEach((file) => {
+                    console.log('file', file);
+                });
+            }
+        }
+    };
+
     useEffect(() => {
-        setEditorLoaded(true);
-    }, []);
+        classLessonService.getClassLessonServiceById(lessonId).then((data) => {
+            if (data.id) {
+                setTextData(data.textData);
+                setNameState(data.name);
+                console.log('datadata', data.textData);
+                setTopicIdState(data.topicId);
+                setFileListState(data.files);
+            }
+        });
+    }, [location]);
 
     return (
         <div className="w-full">
             <div className="mb-6">
                 <Button
                     onClick={(e) => {
-                        navigate('/class/' + classId);
+                        navigate(`/class/${classId}/lesson/${lessonId}`);
                     }}
                     startIcon={<FontAwesomeIcon icon={faArrowLeft} />}
                 >
-                    Giao diện chính
+                    Quay lại bài học
                 </Button>
             </div>
-            <h2 className="font-bold text-3xl">Tạo bài học</h2>
+            <h2 className="font-bold text-3xl">Sửa bài học</h2>
             <div className="w-full flex-col my-8">
                 <div className="w-full my-6">
                     <TextField className="w-full" label="Tên bài học" value={nameState} onInput={onInputName} />
                 </div>
-                {topicListState && (
+                {topicListState && topicIdState && (
                     <div>
                         <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth>
@@ -122,6 +163,7 @@ function ClassLessonCreatePage() {
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={topicIdState}
+                                    defaultValue={topicIdState}
                                     label="Chủ đề"
                                     onChange={handleChange}
                                 >
@@ -137,20 +179,20 @@ function ClassLessonCreatePage() {
                 )}
                 <div className="w-full my-6">
                     <h2>Nội dung bài học</h2>
-                    <RichTextEditor setData={setTextData} />
+                    {textDataState && <RichTextEditor data={textDataState} setData={setTextData} />}
                 </div>
                 <div className="w-full">
-                    <UploadWidget multiple uploadFunction={uploadFileList} />
+                    <UploadWidget multiple fileList={fileListState} uploadFunction={uploadFileList} />
                 </div>
                 <div
-                    onClick={postLesson}
+                    onClick={updateLesson}
                     className="w-full mt-16 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
                 >
-                    <FontAwesomeIcon icon={faPen} className="mr-2" /> Sửa
+                    <FontAwesomeIcon icon={faPlus} className="mr-2" /> Thêm
                 </div>
             </div>
         </div>
     );
 }
 
-export default ClassLessonCreatePage;
+export default ClassLessonUpdatePage;

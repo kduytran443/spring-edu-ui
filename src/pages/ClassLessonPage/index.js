@@ -26,11 +26,15 @@ import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 import { renderToTime } from '~/utils';
 import { confirmAlert } from 'react-confirm-alert';
 import ShowTextData from '~/components/ShowTextData';
+import RichTextEditor from '~/components/RichTextEditor';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
+import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
     const { lessonId, classId } = useParams();
     const [lessonDataState, setLessonDataState] = useState({});
+    const [loadingState, setLoadingState] = useState(true);
 
     const [previousLessonState, setPreviousLessonState] = useState(null);
     const [nextLessonState, setNextLessonState] = useState(null);
@@ -54,6 +58,13 @@ function ClassLessonPage() {
 
     useEffect(() => {
         loadData();
+    }, [location]);
+
+    useEffect(() => {
+        console.log('LONG LOADING...');
+        const timeout = setTimeout(() => {
+            setLoadingState(false);
+        }, 2000);
     }, [location]);
 
     /*
@@ -109,6 +120,20 @@ function ClassLessonPage() {
     }, [lessonId]);
 
     const [fileListState, setFileListState] = useState([]);
+    useEffect(() => {
+        const config = getConfig();
+        fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
+            .then((res) => res.json())
+            .then((data) => {
+                if (data.userRoleCode) {
+                    setClassDataState(data);
+                } else {
+                    navigate('/page-not-found');
+                }
+            });
+    }, []);
+
+    const [classDataState, setClassDataState] = useState(() => {});
 
     const loadFile = () => {
         fileService.getFilesOnClassLessonId(lessonId).then((data) => {
@@ -135,7 +160,6 @@ function ClassLessonPage() {
     };
 
     const submitDelete = () => {
-        console.log('??? có ok k v?');
         confirmAlert({
             title: 'Xác nhận xóa',
             message: 'Bạn có muốn xóa bài học này không?',
@@ -160,6 +184,7 @@ function ClassLessonPage() {
 
     return (
         <div className="w-full p-4 md:p-0 text-justify">
+            {loadingState && <LoadingPageProcess />}
             <div className="flex flex-row items-start justify-between">
                 <Button
                     onClick={(e) => {
@@ -211,7 +236,7 @@ function ClassLessonPage() {
                 <p>
                     {lessonDataState.textData && (
                         <div>
-                            <ShowTextData data={lessonDataState.textData} />
+                            <RichTextEditor disabled data={lessonDataState.textData} />
                         </div>
                     )}{' '}
                 </p>
@@ -240,18 +265,26 @@ function ClassLessonPage() {
                     )}
                 </div>
             )}
-            <div className="flex flex-row items-center justify-end mt-10">
-                <div className="mr-4">
-                    <IconButton onClick={submitDelete} color="error">
-                        <FontAwesomeIcon icon={faTrash} />
-                    </IconButton>
-                </div>
-                <div>
-                    <IconButton color="primary">
-                        <FontAwesomeIcon icon={faPen} />
-                    </IconButton>
-                </div>
-            </div>
+            {classDataState &&
+                (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
+                    <div className="flex flex-row items-center justify-end mt-10">
+                        <div className="mr-4">
+                            <IconButton onClick={submitDelete} color="error">
+                                <FontAwesomeIcon icon={faTrash} />
+                            </IconButton>
+                        </div>
+                        <div>
+                            <IconButton
+                                onClick={(e) => {
+                                    navigate(`/class/${classId}/lesson-update/${lessonId}`);
+                                }}
+                                color="primary"
+                            >
+                                <FontAwesomeIcon icon={faPen} />
+                            </IconButton>
+                        </div>
+                    </div>
+                )}
         </div>
     );
 }

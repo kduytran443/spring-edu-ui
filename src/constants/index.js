@@ -15,6 +15,7 @@ const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
 const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
 const CLASS_LESSON_PAGE_URL = '/class/:classId/lesson/:lessonId';
 const CLASS_LESSON_CREATE_PAGE_URL = '/class/:classId/lesson-create';
+const CLASS_LESSON_UPDATE_PAGE_URL = '/class/:classId/lesson-update/:lessonId';
 const CLASS_LESSON_EDIT_PAGE_URL = '/class/:classId/lesson-edit';
 const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
 const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
@@ -50,6 +51,7 @@ export {
     ACTION_SET_USER_INFO,
     LOCAL_STORAGE_NAME,
     ACTION_CLEAR_USER_INFO,
-    CLASS_LESSON_CREATE_PAGE_URL,
+    CLASS_LESSON_UPDATE_PAGE_URL,
     CLASS_LESSON_EDIT_PAGE_URL,
+    CLASS_LESSON_CREATE_PAGE_URL,
 };

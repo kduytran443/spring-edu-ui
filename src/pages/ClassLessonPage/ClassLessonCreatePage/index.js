@@ -97,7 +97,7 @@ function ClassLessonCreatePage() {
     }, []);
 
     return (
-        <div className="w-full">
+        <div className="w-full p-4 md:p-0">
             <div className="mb-6">
                 <Button
                     onClick={(e) => {

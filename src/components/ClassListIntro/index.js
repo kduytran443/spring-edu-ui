@@ -64,6 +64,8 @@ function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = t
                                     avatar={item.userAvatar}
                                     fee={item.fee}
                                     userFullname={item.userFullname}
+                                    people={item.memberCount}
+                                    review={item.stars}
                                 />
                             </div>
                         </li>

@@ -49,7 +49,6 @@ function ClassReviewCard({
                         </div>
                         <div className="flex flex-row items-center">
                             <Rating name="half-rating" readOnly defaultValue={review} precision={0.5} />
-                            <div className="ml-2">({reviewPeople})</div>
                         </div>
                     </div>
                 </div>

@@ -1,9 +1,13 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faReply, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ClassListIntro from '~/components/ClassListIntro';
-import { API_BASE_URL } from '~/constants';
+import LoadingProcess from '~/components/LoadingProcess';
+import NoClassFound from '~/components/NoClassFound';
+import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
+import { classService } from '~/services/classService';
 
 function JoinedClassPage() {
     const [categoryDataState, setCategoryDataState] = useState({
@@ -13,17 +17,7 @@ function JoinedClassPage() {
         Bằng cách sử dụng các đoạn mã lệnh (code), ngôn ngữ lập trình, và các tiện ích có sẵn, họ xây dựng, sửa lỗi hay nâng cấp các chương trình, ứng dụng, trò chơi, phần mềm, các trang web, hệ thống xử lí,… Giúp người dùng tương tác với nhau thông qua các thiết bị điện tử hoặc thực hiện các mệnh lệnh với máy tính.`,
     });
 
-    const [classListState, setClassListState] = useState(() => {
-        return [
-            {
-                id: 1,
-                name: 'Kiến Thức Nhập Môn IT',
-                description: `Lập trình máy tính hay lập chương trình máy tính thường gọi tắt là lập trình (tiếng Anh: Computer programming, thường gọi tắt là programming) ...`,
-                img: 'https://caodangbachkhoahanoi.edu.vn/wp-content/uploads/2022/04/hoc-lap-trinh-bat-dau-tu-dau2.jpg',
-                registed: true,
-            },
-        ];
-    });
+    const [classListState, setClassListState] = useState([]);
 
     const [quantityState, setQuantityState] = useState(classListState.length);
 
@@ -31,15 +25,41 @@ function JoinedClassPage() {
         setQuantityState(classListState.length);
     }, [classListState.length]);
 
+    const navigate = useNavigate();
+    useEffect(() => {
+        classService.getClassReviewCardByUserId().then((data) => {
+            if (data.length >= 0) {
+                setClassListState(data);
+            }
+        });
+    }, []);
+
     return (
         <div className="flex flex-col p-4">
-            <ClassListIntro
-                listItem={classListState}
-                hiddenHeader
-                scroll={false}
-                title="Lập trình"
-                icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
-            />
+            <div className="mb-[6px]">
+                <Button
+                    onClick={(e) => {
+                        navigate(HOME_PAGE_URL);
+                    }}
+                    startIcon={<FontAwesomeIcon icon={faReply} />}
+                >
+                    Trang chủ
+                </Button>
+            </div>
+            {classListState === null ? (
+                <LoadingProcess />
+            ) : (
+                <div className="w-full mt-6">
+                    <ClassListIntro
+                        listItem={classListState}
+                        hiddenHeader
+                        scroll={false}
+                        title="Lập trình"
+                        icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                    />
+                </div>
+            )}
+            {classListState !== null && classListState.length === 0 && <NoClassFound />}
         </div>
     );
 }

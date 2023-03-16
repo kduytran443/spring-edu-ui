@@ -23,7 +23,13 @@ export const classService = {
     async getClassIntroById(id) {
         //classLessonId
         const config = getConfig();
-        const response = await fetch(`${API_BASE_URL}/public/${this.api}/${id}`, config);
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}-intro/${id}`, config);
+        return response.json();
+    },
+    async getClassReviewCardByUserId() {
+        //classLessonId
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}-review`, config);
         return response.json();
     },
 

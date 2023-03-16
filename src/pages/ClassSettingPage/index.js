@@ -1,4 +1,4 @@
-import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
@@ -180,15 +180,21 @@ function ClassSettingPage() {
         if (classVisibleState === 1) {
             setClassVisibleState(0);
             classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
-            console.log('??? OK OK');
         } else if (classVisibleState === 0) {
             setClassVisibleState(1);
             classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
-            console.log('??? OK OK');
         }
     };
 
-    const changeAvatar = () => {};
+    const deleteClass = () => {
+        const obj = {
+            status: 0,
+            id: classId,
+        };
+        classService.changeClassStatus(obj).then((data) => {
+            navigate('/home');
+        });
+    };
 
     return (
         <div className="p-2 md:p-0">
@@ -340,6 +346,25 @@ function ClassSettingPage() {
                         </div>
                     </div>
                 )}
+            </div>
+            <div className="mt-12 mb-4">
+                <Button
+                    onClick={(e) => {
+                        navigate('/edit-class/' + classId);
+                    }}
+                    variant="outlined"
+                    startIcon={<FontAwesomeIcon icon={faPen} />}
+                >
+                    Thay đổi thông tin cơ bản
+                </Button>
+                <Button
+                    color="error"
+                    onClick={deleteClass}
+                    variant="outlined"
+                    startIcon={<FontAwesomeIcon icon={faTrash} />}
+                >
+                    Xóa lớp học
+                </Button>
             </div>
         </div>
     );

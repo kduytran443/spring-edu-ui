@@ -66,7 +66,7 @@ function ClassLayout({ children }) {
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
-                if (data.status === 500) {
+                if (data.status === 0) {
                     navigate('/page-not-found');
                 } else setClassDataState(data);
             });

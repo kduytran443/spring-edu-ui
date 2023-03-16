@@ -5,13 +5,16 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import enUS from 'date-fns/locale/en-US';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button, IconButton, TextField } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faUser, faX, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import CalendarItem from '../CalendarItem';
 import DateTimePicker from 'react-datetime-picker';
 import ImageUploader from '../ImageUploader';
+import { useLocation } from 'react-router-dom';
+import { classService } from '~/services/classService';
+import { classScheduleService } from '~/services/classScheduleService';
 
 const locales = {
     'en-US': enUS,
@@ -33,6 +36,7 @@ const myEventsList = [
         end: new Date(2023, 0, 19, 21, 0),
         description: 'Dạy lớp nâng cao - đáp ứng kỳ thi',
         img: 'https://mui.com/static/images/cards/contemplative-reptile.jpg',
+        classId: 1,
     },
     {
         id: 2,
@@ -41,6 +45,7 @@ const myEventsList = [
         end: new Date(2023, 0, 18, 18, 30),
         description: `Nhằm mục đích truyền các kỹ năng cho người học, sinh viên hoặc bất kỳ đối tượng nào khác trong bối cảnh của một cơ sở giáo dục. Dạy học có quan hệ mật thiết với việc học, hoạt động chiếm lĩnh tri thức này của học sinh.`,
         img: 'https://www.nordantech.com/media/pages/blog/community/8-tipps-fuer-ein-erfolgreiches-meeting/00022d9063-1643812301/meeting-tipps-erfolgreich-1200x630.jpg',
+        classId: 1,
     },
 ];
 
@@ -71,6 +76,55 @@ function SchedulerCalendar() {
         setAllEventsState(selectedEvents);
         setSelectedEventState();
     };
+
+    const location = useLocation();
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+    useEffect(() => {
+        classScheduleService.getClassSchedulesByUser().then((data) => {
+            //setAllEventsState(data);
+            if (data.length > 0) {
+                let scheduleDataList = [];
+
+                data.forEach((schedule) => {
+                    let start = new Date(schedule.startTimeOfClass);
+                    let end = new Date(schedule.endTimeOfClass);
+
+                    while (start < end) {
+                        const nameDayOfWeek = daysOfWeek[start.getDay()];
+                        if (nameDayOfWeek === schedule.weeklyClassScheduleCode) {
+                            var starTime = new Date(
+                                start.getFullYear(),
+                                start.getMonth(),
+                                start.getDate(),
+                                schedule.startHours,
+                                schedule.startMinutes,
+                            );
+                            var endTime = new Date(
+                                start.getFullYear(),
+                                start.getMonth(),
+                                start.getDate(),
+                                schedule.endHours,
+                                schedule.endMinutes,
+                            );
+                            scheduleDataList.push({
+                                id: schedule.id,
+                                title: schedule.className,
+                                start: starTime,
+                                end: endTime,
+                                description: 'Đã đến giờ vào lớp học rồi.',
+                                img: schedule.classAvatar,
+                                classId: schedule.classId,
+                            });
+                        }
+                        let newDate = start.setDate(start.getDate() + 1);
+                        start = new Date(newDate);
+                    }
+                });
+                setAllEventsState(scheduleDataList);
+            }
+        });
+    }, [location]);
 
     const openVisibleAddingNewEventState = () => {
         setVisibleAddingNewEventState(true);
@@ -189,6 +243,7 @@ function SchedulerCalendar() {
                                 end: e.end,
                                 img: e.img,
                                 id: e.id,
+                                classId: e.classId,
                             });
                         }}
                         localizer={localizer}

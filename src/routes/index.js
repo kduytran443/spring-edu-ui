@@ -19,6 +19,7 @@ import {
     INTRO_PAGE_URL,
     CLASS_LESSON_CREATE_PAGE_URL,
     CLASS_LESSON_UPDATE_PAGE_URL,
+    CLASS_SCHEDULE_EDIT_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
@@ -35,6 +36,7 @@ import ClassLivePage from '~/pages/ClassLivePage';
 import ClassMarkPage from '~/pages/ClassMarkPage';
 import ClassMessagePage from '~/pages/ClassMessagePage';
 import ClassPage from '~/pages/ClassPage';
+import ClassScheduleEditPage from '~/pages/ClassScheduleEditPage';
 import ClassSettingPage from '~/pages/ClassSettingPage';
 import ClassSpecificExercisePage from '~/pages/ClassSpecificExercisePage';
 import HomePage from '~/pages/HomePage';
@@ -151,6 +153,11 @@ const privateRoutes = [
     {
         path: `${CLASS_LESSON_UPDATE_PAGE_URL}`,
         component: ClassLessonUpdatePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_SCHEDULE_EDIT_PAGE_URL}`,
+        component: ClassScheduleEditPage,
         layout: ClassLayout,
     },
 ];

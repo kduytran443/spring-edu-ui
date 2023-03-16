@@ -10,6 +10,7 @@ import DateTimePicker from 'react-datetime-picker';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import AlertDialogSlide from '../AlertDialogSlide';
+import { useNavigate } from 'react-router-dom';
 
 export default function CalendarItem({
     data = {
@@ -63,6 +64,8 @@ export default function CalendarItem({
     const cancelUpdate = () => {
         setDataState(data);
     };
+
+    const navigate = useNavigate();
 
     return (
         <Card className="relative w-full h-full flex flex-col">
@@ -148,10 +151,25 @@ export default function CalendarItem({
                 </Typography>
             </CardContent>
             <CardActions>
+                <Button
+                    size="small"
+                    onClick={(e) => {
+                        navigate('/class/' + data.classId + '/live');
+                    }}
+                >
+                    Vào lớp
+                </Button>
+            </CardActions>
+        </Card>
+    );
+}
+
+/*
+<CardActions>
                 {!enableEditingState ? (
                     <>
                         <Button size="small" onClick={startEditing}>
-                            Sửa
+                            Vào lớp
                         </Button>
                         <Button color={'error'} size="small" onClick={showRemoveAlert}>
                             Xóa
@@ -191,6 +209,4 @@ export default function CalendarItem({
                     </>
                 )}
             </CardActions>
-        </Card>
-    );
-}
+*/

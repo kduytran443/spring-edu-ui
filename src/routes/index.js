@@ -20,12 +20,14 @@ import {
     CLASS_LESSON_CREATE_PAGE_URL,
     CLASS_LESSON_UPDATE_PAGE_URL,
     CLASS_SCHEDULE_EDIT_PAGE_URL,
+    CLASS_CREATE_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
 import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
+import ClassCreatePage from '~/pages/ClassCreatePage';
 import ClassEveryonePage from '~/pages/ClassEveryonePage';
 import ClassExercisePage from '~/pages/ClassExercisePage';
 import ClassIntroPage from '~/pages/ClassIntroPage';
@@ -159,6 +161,11 @@ const privateRoutes = [
         path: `${CLASS_SCHEDULE_EDIT_PAGE_URL}`,
         component: ClassScheduleEditPage,
         layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_CREATE_PAGE_URL}`,
+        component: ClassCreatePage,
+        layout: FullLayout,
     },
 ];
 

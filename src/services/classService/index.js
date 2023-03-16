@@ -44,4 +44,19 @@ export const classService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
+    async changeClassTime(classData) {
+        const config = putConfig(classData);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/time`, config);
+        return response.json();
+    },
+    async changeClassStatus(classData) {
+        const config = putConfig(classData);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/status`, config);
+        return response.json();
+    },
+    async changeClassVisible(classData) {
+        const config = putConfig(classData);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/visible`, config);
+        return response.json();
+    },
 };

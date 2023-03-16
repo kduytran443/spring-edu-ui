@@ -15,15 +15,18 @@ import {
 import { Box } from '@mui/system';
 import { DataGrid } from '@mui/x-data-grid';
 import { useEffect, useRef, useState } from 'react';
+import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import NormalAccordion from '~/components/NormalAccordion';
 import UploadWidget from '~/components/UploadWidget';
 import { API_BASE_URL } from '~/constants';
 import { classScheduleService } from '~/services/classScheduleService';
+import { classService } from '~/services/classService';
 import { getConfig } from '~/services/config';
 import { weeklyClassScheduleService } from '~/services/weeklyClassScheduleService';
 
 function ClassSettingPage() {
+    const location = useLocation();
     const { classId } = useParams();
     const [classDataState, setClassDataState] = useState({});
     const navigate = useNavigate();
@@ -64,8 +67,7 @@ function ClassSettingPage() {
             },
         },
     ];
-
-    useEffect(() => {
+    const loadClassData = () => {
         const config = getConfig();
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
@@ -74,8 +76,11 @@ function ClassSettingPage() {
                     navigate('/class/' + classId);
                 } else setClassDataState(data);
             });
-    }, [classId]);
-    const location = useLocation();
+    };
+
+    useEffect(() => {
+        loadClassData();
+    }, [location]);
     const editButtonOnClick = () => {};
 
     const [classScheduleListState, setClassScheduleListState] = useState([]);
@@ -132,12 +137,72 @@ function ClassSettingPage() {
         });
     };
 
+    const [startTimeState, setStartTimeState] = useState(new Date());
+    const [endTimeState, setEndTimeState] = useState(new Date());
+
+    const [changeDateState, setChangeDateState] = useState(false);
+    useEffect(() => {
+        if (classDataState.startTime && classDataState.endTime) {
+            setStartTimeState(new Date(classDataState.startTime));
+            setEndTimeState(new Date(classDataState.endTime));
+        }
+    }, [classDataState]);
+
+    const changeDateOfClass = () => {
+        if (classDataState.startTime && classDataState.endTime) {
+            setStartTimeState(new Date(classDataState.startTime));
+            setEndTimeState(new Date(classDataState.endTime));
+        }
+    };
+
+    const [dateError, setDateError] = useState(false);
+    const submitChangeTimeOfClass = () => {
+        if (startTimeState && endTimeState && startTimeState < endTimeState) {
+            const obj = { startTime: startTimeState, endTime: endTimeState, id: classId };
+            classService.changeClassTime(obj).then((data) => {
+                loadClassData();
+                setChangeDateState(false);
+                setDateError(false);
+            });
+        } else {
+            setDateError(true);
+        }
+    };
+
+    const [classVisibleState, setClassVisibleState] = useState(0);
+    useEffect(() => {
+        if (classDataState) {
+            setClassVisibleState(classDataState.visible);
+        }
+    }, [classDataState]);
+
+    const changeVisible = (state) => {
+        if (classVisibleState === 1) {
+            setClassVisibleState(0);
+            classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
+            console.log('??? OK OK');
+        } else if (classVisibleState === 0) {
+            setClassVisibleState(1);
+            classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
+            console.log('??? OK OK');
+        }
+    };
+
+    const changeAvatar = () => {};
+
     return (
         <div className="p-2 md:p-0">
             <h1 className="font-bold text-xl my-2">Cài đặt</h1>
             <FormGroup>
                 <FormControlLabel
-                    control={<Switch defaultChecked={classDataState.visible === 0} />}
+                    control={
+                        <Switch
+                            onChange={(e) => {
+                                changeVisible(e.target.value);
+                            }}
+                            defaultChecked={classVisibleState === 0}
+                        />
+                    }
                     label="Ẩn lớp học khỏi trang chính"
                 />
             </FormGroup>
@@ -161,6 +226,39 @@ function ClassSettingPage() {
                     <UploadWidget multiple={false} />
                 </div>
             )}
+            <div className="my-12">
+                <h2 className="text-xl font-bold mb-2">Thời gian mở lớp</h2>
+                <div className="flex lg:flex-row items-center flex-col">
+                    {startTimeState && (
+                        <div className="z-[40] w-full md:w-auto md:ml-4">
+                            <div className="font-bold">Bắt đầu:</div>
+                            <DateTimePicker
+                                className="h-[40px] w-full md:w-auto"
+                                onChange={(e) => {
+                                    setStartTimeState(new Date(e.getTime()));
+                                    setChangeDateState(true);
+                                }}
+                                value={startTimeState}
+                            />
+                        </div>
+                    )}
+                    {endTimeState && (
+                        <div className="z-[41] w-full md:w-auto md:ml-4">
+                            <div className="font-bold">Kết thúc:</div>
+                            <DateTimePicker
+                                className="h-[40px] w-full md:w-auto"
+                                onChange={(e) => {
+                                    setEndTimeState(new Date(e.getTime()));
+                                    setChangeDateState(true);
+                                }}
+                                value={endTimeState}
+                            />
+                        </div>
+                    )}
+                    {changeDateState && <Button onClick={submitChangeTimeOfClass}>Thay đổi ngày</Button>}
+                </div>
+                {dateError && <div className="text-red-500">*Ngày nhập không hợp lệ</div>}
+            </div>
             <div className="my-4 mt-8">
                 <h2 className="text-xl font-bold mb-2">Lịch học</h2>
                 <div>

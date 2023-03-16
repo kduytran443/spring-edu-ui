@@ -1,4 +1,4 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Badge, Button, IconButton } from '@mui/material';
 import { deepOrange } from '@mui/material/colors';
@@ -49,6 +49,16 @@ function Header() {
                 </div>
                 {userState.username ? (
                     <div className="flex flex-row justify-center items-center">
+                        <div className="mr-2">
+                            <Button
+                                onClick={(e) => {
+                                    navigate('/create-class');
+                                }}
+                                startIcon={<FontAwesomeIcon icon={faPlus} />}
+                            >
+                                Tạo lớp
+                            </Button>
+                        </div>
                         <div className="p-[10px] mr-4">
                             <HeaderNotifier />
                         </div>

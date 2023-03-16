@@ -32,7 +32,7 @@ function ClassReviewCard({
                 }}
                 className="w-full hover:bg-slate-100 flex flex-col p-2 md:p-4 cursor-pointer duration-200 rounded-xl shadow hover:shadow-md hover:scale-[1.02] group"
             >
-                <div className="duration-200 w-full overflow-hidden aspect-ratio rounded-xl group-hover:bg-black">
+                <div className="duration-200 max-h-[226px] overflow-hidden w-full overflow-hidden aspect-ratio rounded-xl group-hover:bg-black">
                     <img alt="avatar" src={img} className="duration-200 group-hover:opacity-90" />
                 </div>
                 <div className="my-4">

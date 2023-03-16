@@ -4,8 +4,12 @@ import { API_BASE_URL } from '~/constants';
 export const categoryService = {
     api: 'api/category',
 
+    async getCategorys() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}`, config);
+        return response.json();
+    },
     async getCategoryByCode(code) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${code}`, config);
         return response.json();

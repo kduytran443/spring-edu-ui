@@ -20,6 +20,7 @@ const CLASS_LESSON_EDIT_PAGE_URL = '/class/:classId/lesson-edit';
 const CLASS_LIVE_PAGE_URL = '/class/:classId/live';
 const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
 const CLASS_SCHEDULE_EDIT_PAGE_URL = '/class/:classId/schedule-edit/:scheduleId';
+const CLASS_CREATE_PAGE_URL = '/create-class';
 
 const API_BASE_URL = 'http://192.168.1.4:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
@@ -56,4 +57,5 @@ export {
     CLASS_LESSON_EDIT_PAGE_URL,
     CLASS_LESSON_CREATE_PAGE_URL,
     CLASS_SCHEDULE_EDIT_PAGE_URL,
+    CLASS_CREATE_PAGE_URL,
 };

@@ -8,11 +8,11 @@ import {
     faX,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Avatar, Button, Rating, Tab } from '@mui/material';
+import { Avatar, Button, Rating, Tab, TextField } from '@mui/material';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { API_BASE_URL, HOME_PAGE_URL, LOGIN_PAGE_URL } from '~/constants';
 import LoadingProcess from '~/components/LoadingProcess';
 import ReviewCard from '~/components/ReviewCard';
@@ -27,6 +27,9 @@ import { classMemberService } from '~/services/classMemberService';
 import SimpleDialog from '~/components/SimpleDialog';
 import GreatIconButton from '~/components/GreatIconButton';
 import { useUser } from '~/stores/UserStore';
+import ShowTextData from '~/components/ShowTextData';
+import { reviewService } from '~/services/reviewService';
+import SimpleSnackbar from '~/components/SimpleSnackbar';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -78,6 +81,7 @@ function ClassIntroPage() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+    const location = useLocation();
 
     useEffect(() => {
         if (classDataState.classSchedules) {
@@ -96,13 +100,16 @@ function ClassIntroPage() {
         }
     }, [classDataState]);
 
-    useEffect(() => {
+    const loadReviews = () => {
         fetch(`${API_BASE_URL}/public/api/review/${classId}`)
             .then((res) => res.json())
             .then((data) => {
                 setReviewListState(data);
             });
-    }, []);
+    };
+    useEffect(() => {
+        loadReviews();
+    }, [location]);
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/comment/${classId}`)
@@ -110,7 +117,7 @@ function ClassIntroPage() {
             .then((data) => {
                 setCommentListState(data);
             });
-    }, []);
+    }, [location]);
 
     useEffect(() => {
         const config = getConfig();
@@ -118,8 +125,9 @@ function ClassIntroPage() {
             .then((res) => res.json())
             .then((data) => {
                 setClassDataState(data);
+                setYoutubeVideo(data.video);
             });
-    }, []);
+    }, [location]);
 
     /*
     private Long userId;
@@ -196,6 +204,53 @@ function ClassIntroPage() {
 
     const [userState, userDispatch] = useUser();
 
+    function getId(url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+
+        return match && match[2].length === 11 ? match[2] : null;
+    }
+
+    const [youtubeVideo, setYoutubeVideo] = useState();
+
+    const ratingClass = (rating) => {};
+
+    const [reviewRatingState, setReviewRatingState] = useState({});
+
+    useEffect(() => {
+        reviewService.getReviewByUserAndClass(classId).then((data) => {
+            if (data.stars > 0) {
+                setReviewRatingState(data);
+            }
+        });
+    }, [location]);
+
+    const changeReviewRating = (e) => {
+        const obj = { ...reviewRatingState };
+        obj.stars = e.target.value;
+        setReviewRatingState(obj);
+    };
+    const changeReviewComment = (e) => {
+        const obj = { ...reviewRatingState };
+        obj.comment = e.target.value;
+        setReviewRatingState(obj);
+    };
+
+    const [alertState, setAlertState] = useState('');
+    const postReview = () => {
+        const review = {
+            stars: reviewRatingState.stars,
+            classId: classId,
+            comment: reviewRatingState.comment,
+        };
+        console.log(review);
+        setAlertState('Đã gửi thành công');
+
+        reviewService.postReview(review).then((data) => {
+            loadReviews();
+        });
+    };
+
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
@@ -211,8 +266,40 @@ function ClassIntroPage() {
                 </div>
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
                 <div className="my-4">
-                    {classDataState.stars && (
-                        <Rating name="half-rating" readOnly defaultValue={classDataState.stars} precision={0.5} />
+                    {classDataState.stars && classDataState.stars > 0 && (
+                        <div>
+                            {!classDataState.userRoleCode ? (
+                                <Rating
+                                    readOnly={true}
+                                    defaultValue={classDataState.stars}
+                                    value={classDataState.stars}
+                                    precision={1}
+                                />
+                            ) : (
+                                <Rating
+                                    readOnly={false}
+                                    defaultValue={reviewRatingState.stars}
+                                    value={reviewRatingState.stars}
+                                    precision={1}
+                                    onChange={changeReviewRating}
+                                />
+                            )}
+                            {classDataState.userRoleCode && (
+                                <>
+                                    <div className="w-full">
+                                        <p>Review của bạn về lớp này:</p>
+                                        <TextField
+                                            className="w-full"
+                                            multiline
+                                            rows={2}
+                                            onInput={changeReviewComment}
+                                            value={reviewRatingState.comment}
+                                        />
+                                    </div>
+                                    <Button onClick={postReview}>Thay đổi</Button>
+                                </>
+                            )}
+                        </div>
                     )}
                 </div>
 
@@ -225,64 +312,19 @@ function ClassIntroPage() {
                     <h1 className="ml-2 font-bold text-xl">{classDataState.userFullname}</h1>
                 </div>
                 <div className="w-full">
-                    <h3 className="text-xl font-bold mt-8 mb-2">Thời khóa biểu</h3>
-                    <div style={{ height: 280, width: '100%' }}>
-                        <DataGrid rows={rowsState} columns={columns} />
-                    </div>
+                    {rowsState.length > 0 && (
+                        <div>
+                            <h3 className="text-xl font-bold mt-8 mb-2">Thời khóa biểu</h3>
+                            <div style={{ height: 280, width: '100%' }}>
+                                <DataGrid rows={rowsState} columns={columns} />
+                            </div>
+                        </div>
+                    )}
                     <div className="my-4">
                         <span>
-                            <b>Mô tả ngắn:</b>
+                            <b>Mô tả:</b>
                         </span>
-                        {classDataState.textData && <p>{parse(classDataState.textData)}</p>}
-                    </div>
-                    <div className="h-full">
-                        {visibleEdittingState ? (
-                            <div>
-                                <ReactQuill
-                                    theme="snow"
-                                    value={classDataState.textData}
-                                    onChange={setEditorValueState}
-                                />
-                                <div className="flex flex-row justify-end">
-                                    <div>
-                                        <Button
-                                            onClick={(e) => {
-                                                setVisibleEdittingState(false);
-                                            }}
-                                            variant="outlined"
-                                            startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
-                                        >
-                                            Thay đổi
-                                        </Button>
-                                    </div>
-                                    <div className="ml-4">
-                                        <Button
-                                            color="error"
-                                            onClick={(e) => {
-                                                setVisibleEdittingState(false);
-                                            }}
-                                            startIcon={<FontAwesomeIcon icon={faX} />}
-                                        >
-                                            Hủy
-                                        </Button>
-                                    </div>
-                                </div>
-                            </div>
-                        ) : (
-                            <div>
-                                {classDataState.userRoleCode && (
-                                    <Button
-                                        onClick={(e) => {
-                                            setVisibleEdittingState(true);
-                                        }}
-                                        variant="outlined"
-                                        startIcon={<FontAwesomeIcon icon={faPenToSquare} />}
-                                    >
-                                        Sửa
-                                    </Button>
-                                )}
-                            </div>
-                        )}
+                        {classDataState.textData && <ShowTextData data={classDataState.textData} />}
                     </div>
                     <div className="mt-10 w-full">
                         <Box sx={{ width: '100%', typography: 'body1' }}>
@@ -301,19 +343,25 @@ function ClassIntroPage() {
                                 {reviewListState === null ? (
                                     <LoadingProcess />
                                 ) : (
-                                    reviewListState.map((review, index) => {
-                                        return (
-                                            <li key={index}>
-                                                <ReviewCard
-                                                    avatar={review.userAvatar}
-                                                    comment={review.comment}
-                                                    stars={review.stars}
-                                                    username={review.userName}
-                                                />
-                                                {index < reviewListState.length - 1 && <Line />}
-                                            </li>
-                                        );
-                                    })
+                                    <>
+                                        {reviewListState.length > 0 ? (
+                                            reviewListState.map((review, index) => {
+                                                return (
+                                                    <li key={index}>
+                                                        <ReviewCard
+                                                            avatar={review.userAvatar}
+                                                            comment={review.comment}
+                                                            stars={review.stars}
+                                                            username={review.userName}
+                                                        />
+                                                        {index < reviewListState.length - 1 && <Line />}
+                                                    </li>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="p-6">Chưa có đánh giá nào</div>
+                                        )}
+                                    </>
                                 )}
                             </ul>
                         ) : (
@@ -321,20 +369,26 @@ function ClassIntroPage() {
                                 {commentListState === null ? (
                                     <LoadingProcess />
                                 ) : (
-                                    commentListState.map((review, index) => {
-                                        return (
-                                            <li key={index}>
-                                                <CommentCard
-                                                    avatar={review.userAvatar}
-                                                    comment={review.comment}
-                                                    username={review.userName}
-                                                    fullname={review.fullname}
-                                                    date={review.createdDate}
-                                                />
-                                                {index < commentListState.length - 1 && <Line />}
-                                            </li>
-                                        );
-                                    })
+                                    <>
+                                        {commentListState.length > 0 ? (
+                                            commentListState.map((review, index) => {
+                                                return (
+                                                    <li key={index}>
+                                                        <CommentCard
+                                                            avatar={review.userAvatar}
+                                                            comment={review.comment}
+                                                            username={review.userName}
+                                                            fullname={review.fullname}
+                                                            date={review.createdDate}
+                                                        />
+                                                        {index < commentListState.length - 1 && <Line />}
+                                                    </li>
+                                                );
+                                            })
+                                        ) : (
+                                            <div className="p-6">Chưa có bình luận nào</div>
+                                        )}
+                                    </>
                                 )}
                             </ul>
                         )}
@@ -354,7 +408,17 @@ function ClassIntroPage() {
                         </Button>
                     </div>
                     <div className="w-full p-0 lg:p-4">
-                        <CustomVideoPlayer src={classDataState.video} />
+                        {classDataState.video && (
+                            <iframe
+                                width="100%"
+                                height="360"
+                                src={'https://www.youtube.com/embed/' + getId(classDataState.video)}
+                                title="Con đường trở thành lập trình viên Front-end! Học gì? Thứ tự học ra sao? Nên tập trung vào cái nào?"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                            ></iframe>
+                        )}
                     </div>
                     <div className="flex flex-col items-center mt-4 sm:mt-0">
                         {classDataState && !classDataState.userRoleCode && (
@@ -446,7 +510,7 @@ function ClassIntroPage() {
                                 </>
                             )}
                         </div>
-                        {classDataState.classSchedules && (
+                        {classDataState.classSchedules && startTime && endTime && (
                             <ul>
                                 <li>
                                     <span>

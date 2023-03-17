@@ -4,9 +4,24 @@ import { API_BASE_URL } from '~/constants';
 export const userDataService = {
     api: 'api/user',
 
+    async getUser() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
     async getUserByUsername(username) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${username}`, config);
+        return response.json();
+    },
+    async putUser(user) {
+        const config = putConfig(user);
+        const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
+    async deleteUser(username) {
+        const config = deleteConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/${username}`, config);
         return response.json();
     },
 };

@@ -10,7 +10,6 @@ function ShowTextData({ data }) {
             const listError = divElement.getElementsByClassName('ck-widget__type-around');
             for (let i = 0; i < listError.length; i++) {
                 const error = listError[i];
-                console.log('error', error);
                 error.style.display = 'none';
             }
         }
@@ -19,7 +18,6 @@ function ShowTextData({ data }) {
     if (data) {
         const textComponent = parse(data);
         //const errorList = textComponent.getElementsByClassName('ck-widget__type-around');
-        console.log('textComponent', textComponent);
         return <div ref={textRef}>{textComponent}</div>;
     }
 

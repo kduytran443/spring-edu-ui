@@ -22,6 +22,9 @@ import {
     CLASS_SCHEDULE_EDIT_PAGE_URL,
     CLASS_CREATE_PAGE_URL,
     CLASS_EDIT_PAGE_URL,
+    QUESTION_BANK_URL,
+    QUESTION_BANK_DETAILS_URL,
+    PERSONAL_EDIT_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
@@ -48,6 +51,9 @@ import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
 import LoginPage from '~/pages/LoginPage';
 import PersonalPage from '~/pages/PersonalPage';
+import PersonalEditPage from '~/pages/PersonalPage/PersonalEditPage';
+import QuestionBankDetailsPage from '~/pages/QuestionBankDetailsPage';
+import QuestionBankPage from '~/pages/QuestionBankPage';
 import SignUpPage from '~/pages/SignUpPage';
 
 const publicRoutes = [
@@ -173,6 +179,21 @@ const privateRoutes = [
         path: `${CLASS_EDIT_PAGE_URL}`,
         component: ClassEditPage,
         layout: ClassLayout,
+    },
+    {
+        path: `${QUESTION_BANK_URL}`,
+        component: QuestionBankPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${QUESTION_BANK_DETAILS_URL}`,
+        component: QuestionBankDetailsPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${PERSONAL_EDIT_PAGE_URL}`,
+        component: PersonalEditPage,
+        layout: FullLayout,
     },
 ];
 

@@ -1,7 +1,7 @@
-import { faPen, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faPlus, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UploadFile } from '@mui/icons-material';
-import { FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import { useEffect } from 'react';
 import { useRef } from 'react';
@@ -98,6 +98,16 @@ const [nameState, setNameState] = useState();
 
     return (
         <div>
+            <div className="mb-[6px]">
+                <Button
+                    onClick={(e) => {
+                        navigate('/class/' + classId + '/setting');
+                    }}
+                    startIcon={<FontAwesomeIcon icon={faReply} />}
+                >
+                    Quay lại
+                </Button>
+            </div>
             <h1 className="font-bold text-2xl my-6">Sửa lớp</h1>
             <div>
                 <div className="w-full">

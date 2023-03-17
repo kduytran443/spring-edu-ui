@@ -1,6 +1,7 @@
 import {
     faArrowLeft,
     faBug,
+    faCalendar,
     faCartShopping,
     faDoorOpen,
     faPenToSquare,
@@ -30,6 +31,7 @@ import { useUser } from '~/stores/UserStore';
 import ShowTextData from '~/components/ShowTextData';
 import { reviewService } from '~/services/reviewService';
 import SimpleSnackbar from '~/components/SimpleSnackbar';
+import { renderToDate } from '~/utils';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -265,6 +267,12 @@ function ClassIntroPage() {
                     </Button>
                 </div>
                 <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
+                <div className="flex flex-row items-center">
+                    <b>
+                        <FontAwesomeIcon className="mr-2" icon={faCalendar} /> Ngày khởi tạo lớp:{' '}
+                    </b>
+                    <div>{renderToDate(classDataState.createdDate)}</div>
+                </div>
                 <div className="my-4">
                     {classDataState.stars && classDataState.stars > 0 && (
                         <div>

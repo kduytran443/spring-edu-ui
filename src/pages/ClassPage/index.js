@@ -15,6 +15,9 @@ import { useUser } from '~/stores/UserStore';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 import TopicUpdateDialog from '~/components/TopicUpdateDialog';
+import EditTopicDialog from '~/components/EditTopicDialog';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import DeleteTopicDialog from '~/components/DeleteTopicDialog';
 
 function ClassPage() {
     const [classDataState, setClassDataState] = useState(() => {
@@ -113,8 +116,6 @@ function ClassPage() {
         } else return true;
     };
 
-    const addNewLesson = (topicId) => {};
-
     const deleteTopic = (topicId) => {
         topicService.deleteTopic({ id: topicId }).then((data) => {
             loadTopic();
@@ -136,7 +137,7 @@ function ClassPage() {
             {classDataState &&
                 (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
                     <div className="flex flex-col md:flex-row items-center">
-                        <div>
+                        <div className="aspect-ratio">
                             <TopicUpdateDialog
                                 buttonOpen={
                                     <div className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500">
@@ -146,7 +147,7 @@ function ClassPage() {
                                 loadTopic={loadTopic}
                             />
                         </div>
-                        <div>
+                        <div className="aspect-ratio">
                             <div
                                 onClick={(e) => {
                                     navigate('lesson-create');
@@ -154,6 +155,16 @@ function ClassPage() {
                                 className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
                             >
                                 <MenuBookIcon color="primary" /> Thêm bài học
+                            </div>
+                        </div>
+                        <div className="aspect-ratio">
+                            <div
+                                onClick={(e) => {
+                                    navigate('lesson-create');
+                                }}
+                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
+                            >
+                                <FactCheckIcon color="primary" /> Thêm bài tập
                             </div>
                         </div>
                     </div>
@@ -172,18 +183,12 @@ function ClassPage() {
                                             classDataState.userRoleCode === 'teacher') && (
                                             <div className="flex flex-col">
                                                 <div className="flex flex-row items-center mt-10 justify-between">
-                                                    <Button size="small" startIcon={<FontAwesomeIcon icon={faEdit} />}>
-                                                        Thay đổi
-                                                    </Button>
-                                                    <Button
-                                                        onClick={(e) => {
-                                                            deleteTopic(topic.id);
-                                                        }}
-                                                        size="small"
-                                                        startIcon={<FontAwesomeIcon icon={faEyeSlash} />}
-                                                    >
-                                                        Ẩn
-                                                    </Button>
+                                                    <EditTopicDialog topicId={topic.id} reload={loadTopic} />
+                                                    <DeleteTopicDialog
+                                                        topicId={topic.id}
+                                                        reload={loadTopic}
+                                                        topicName={topic.name}
+                                                    />
                                                     <div className="flex flex-row items-center mr-2">
                                                         {index !== topicListState.length - 1 && (
                                                             <div className="mr-2">
@@ -234,7 +239,7 @@ function ClassPage() {
                                         )}
                                     <SimpleAccordion
                                         key={index}
-                                        name={topic.ordinalNumber + '. ' + topic.name}
+                                        name={index + 1 + '. ' + topic.name}
                                         classLessons={topic.classLessonReviews}
                                     />
                                 </div>
@@ -248,3 +253,16 @@ function ClassPage() {
 }
 
 export default ClassPage;
+
+/*
+
+<Button
+                                                        onClick={(e) => {
+                                                            deleteTopic(topic.id);
+                                                        }}
+                                                        size="small"
+                                                        startIcon={<FontAwesomeIcon icon={faEyeSlash} />}
+                                                    >
+                                                        Ẩn
+                                                    </Button>
+*/

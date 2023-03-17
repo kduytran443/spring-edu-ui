@@ -3,6 +3,7 @@ const LOGIN_PAGE_URL = '/login';
 const SIGNUP_PAGE_URL = '/sign-up';
 const INTRO_PAGE_URL = '/intro';
 const PERSONAL_PAGE_URL = '/personal';
+const PERSONAL_EDIT_PAGE_URL = '/personal/edit';
 const CATEGORY_PAGE_URL = '/category/:categoryCode';
 const CALENDAR_PAGE_URL = '/calendar';
 const JOINED_CLASS_PAGE_URL = '/joined-class';
@@ -22,8 +23,10 @@ const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
 const CLASS_SCHEDULE_EDIT_PAGE_URL = '/class/:classId/schedule-edit/:scheduleId';
 const CLASS_CREATE_PAGE_URL = '/create-class';
 const CLASS_EDIT_PAGE_URL = '/edit-class/:classId';
+const QUESTION_BANK_URL = '/question-bank';
+const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
 
-const API_BASE_URL = 'http://192.168.1.4:8085';
+const API_BASE_URL = 'http://192.168.1.3:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
 
 const ACTION_GET_USER_INFO = 'ACTION_GET_USER_INFO';
@@ -60,4 +63,7 @@ export {
     CLASS_SCHEDULE_EDIT_PAGE_URL,
     CLASS_CREATE_PAGE_URL,
     CLASS_EDIT_PAGE_URL,
+    QUESTION_BANK_URL,
+    QUESTION_BANK_DETAILS_URL,
+    PERSONAL_EDIT_PAGE_URL,
 };

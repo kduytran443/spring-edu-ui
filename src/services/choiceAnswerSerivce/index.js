@@ -1,50 +1,30 @@
 import { deleteConfig, getConfig, postConfig, putConfig } from '~/services/config';
 import { API_BASE_URL } from '~/constants';
 
-/*
-    id
-	name
-	visiable
-	status
-	createdDate
-	avatar
-	accepted
-	category
-	backgroundImage
-	video
-	fee
-	shortDescription
-	creatorId
-*/
-
-export const topicService = {
-    api: 'api/topic',
-
-    async getTopicByClassId(id) {
+export const choiceAnswerSerivce = {
+    api: 'api/choice-answer',
+    async getChoiceAnswersByChoiceQuestionId(choiceQuestionId) {
         const config = getConfig();
-        const response = await fetch(`${API_BASE_URL}/${this.api}/class/${id}`, config);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/choice-question/${choiceQuestionId}`, config);
         return response.json();
     },
-    async getTopicById(id) {
+    async getChoiceAnswerById(id) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);
         return response.json();
     },
-
-    async postTopic(topic) {
-        const config = postConfig(topic);
+    async postChoiceAnswer(choiceAnswer) {
+        const config = postConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
-
-    async putTopic(topic) {
-        const config = putConfig(topic);
+    async putChoiceAnswer(choiceAnswer) {
+        const config = postConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
-
-    async deleteTopic(topic) {
-        const config = deleteConfig(topic);
+    async deleteChoiceAnswer(choiceAnswer) {
+        const config = postConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },

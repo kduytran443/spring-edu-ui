@@ -5,6 +5,7 @@ import { Box } from '@mui/system';
 import { Editor } from 'draft-js';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import CloudinaryUploadWidget from '~/components/CloudinaryUploadWidget';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { classLessonService } from '~/services/classLessonService';
@@ -139,6 +140,7 @@ function ClassLessonCreatePage() {
                     <h2>Nội dung bài học</h2>
                     <RichTextEditor setData={setTextData} />
                 </div>
+                <div></div>
                 <div className="w-full">
                     <UploadWidget multiple uploadFunction={uploadFileList} />
                 </div>
@@ -146,7 +148,7 @@ function ClassLessonCreatePage() {
                     onClick={postLesson}
                     className="w-full mt-16 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
                 >
-                    <FontAwesomeIcon icon={faPen} className="mr-2" /> Sửa
+                    <FontAwesomeIcon icon={faPen} className="mr-2" /> Tạo
                 </div>
             </div>
         </div>

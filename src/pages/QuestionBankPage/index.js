@@ -9,11 +9,13 @@ import QuestionBankItem from '~/components/QuestionBankItem';
 import { HOME_PAGE_URL } from '~/constants';
 import { choiceQuestionSerivce } from '~/services/choiceQuestionSerivce';
 import { questionBankService } from '~/services/questionBankService';
+import { useUser } from '~/stores/UserStore';
 
 function QuestionBankPage() {
     const location = useLocation();
     const [questionBankList, setQuestionBankList] = useState([]);
 
+    const navigate = useNavigate();
     const loadData = () => {
         questionBankService.getQuestionBankByUser().then((data) => {
             setQuestionBankList(data);
@@ -23,8 +25,6 @@ function QuestionBankPage() {
     useEffect(() => {
         loadData();
     }, [location]);
-
-    const navigate = useNavigate();
 
     return (
         <div className="p-4">
@@ -52,7 +52,7 @@ function QuestionBankPage() {
             <div className="flex flex-col flex-wrap items-start md:flex-row">
                 {questionBankList.map((questionBank) => {
                     return (
-                        <div className="p-4">
+                        <div className="p-4 max-w-full">
                             <QuestionBankItem itemData={questionBank} />
                         </div>
                     );

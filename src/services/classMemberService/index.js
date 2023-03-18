@@ -5,39 +5,38 @@ export const classMemberService = {
     api: 'api/class-member',
 
     async getClassMemberByClassId(classId) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}?classId=${classId}`, config);
         return response.json();
     },
+    async getClassMemberByUserAndClassId(classId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}/class/${classId}`, config);
+        return response.json();
+    },
     async getInvitedClassMemberByClassId(classId) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/invited?classId=${classId}`, config);
         return response.json();
     },
     async getRequestClassMemberByClassId(classId) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/request?classId=${classId}`, config);
         return response.json();
     },
 
     async getInvitedClassMemberByUsername(username) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/invited?username=${username}`, config);
         return response.json();
     },
     async getRequestClassMemberByUsername(username) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/request?username=${username}`, config);
         return response.json();
     },
 
     async getClassMemberByUserId(username) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}?username=${username}`, config);
         return response.json();

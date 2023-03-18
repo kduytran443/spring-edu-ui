@@ -8,7 +8,7 @@ function QuestionBankItem({ itemData = {} }) {
             onClick={(e) => {
                 navigate('/question-bank/' + itemData.id);
             }}
-            className="p-4 hover:bg-slate-100 duration-200 cursor-pointer rounded"
+            className="p-4 hover:bg-slate-100 max-w-full duration-200 cursor-pointer rounded"
         >
             <div>
                 <Avatar
@@ -17,7 +17,7 @@ function QuestionBankItem({ itemData = {} }) {
                     sx={{ width: '64px', height: '64px' }}
                 />
             </div>
-            <div>{itemData.name}</div>
+            <div className="max-w-[200px] overflow-hidden truncate">{itemData.name}</div>
         </div>
     );
 }

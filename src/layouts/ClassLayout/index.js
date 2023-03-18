@@ -10,10 +10,13 @@ import Tab from '@mui/material/Tab';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { API_BASE_URL } from '~/constants';
 import { getConfig } from '~/services/config';
+import { classMemberService } from '~/services/classMemberService';
+import { useUser } from '~/stores/UserStore';
 
 function ClassLayout({ children }) {
     const { classId } = useParams();
     const location = useLocation();
+    const [userState, dispatchUserState] = useUser();
 
     const [allTabsState, setAllTabsState] = useState([
         {
@@ -88,6 +91,29 @@ function ClassLayout({ children }) {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
+
+    const [userRole, setUserRole] = useState();
+    const loadUserData = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            console.log(data);
+            if (isValidRole(data.classRole)) {
+                setUserRole(data.classRole);
+            } else {
+                navigate('/not-found-page');
+            }
+        });
+    };
+
+    const isValidRole = (role) => {
+        if (role === 'teacher' || role === 'supporter' || role === 'student') {
+            return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, [location]);
 
     return (
         <FullLayout>

@@ -24,8 +24,8 @@ export const choiceQuestionSerivce = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
-    async deleteChoiceQuestion(putChoiceQuestion) {
-        const config = postConfig(putChoiceQuestion);
+    async deleteChoiceQuestion(choiceQuestion) {
+        const config = deleteConfig(choiceQuestion);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },

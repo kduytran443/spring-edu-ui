@@ -39,4 +39,15 @@ export const questionBankService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
+
+    async postQuestionBankToClass(classId, questionBank) {
+        const config = postConfig(questionBank);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/class/${classId}`, config);
+        return response.json();
+    },
+    async deleteQuestionBankFromClass(classId, questionBank) {
+        const config = deleteConfig(questionBank);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/class/${classId}`, config);
+        return response.json();
+    },
 };

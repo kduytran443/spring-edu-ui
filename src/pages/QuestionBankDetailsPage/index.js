@@ -1,5 +1,6 @@
 import {
     faCircleQuestion,
+    faEye,
     faFileCircleQuestion,
     faPlus,
     faQuestion,
@@ -19,27 +20,48 @@ import {
     Select,
     TextField,
 } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 import { useEffect } from 'react';
+import { useRef } from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import ChoiceQuestionDetailsDeleteDialog from '~/components/ChoiceQuestionDetailsDeleteDialog';
+import ChoiceQuestionDetailsDialog from '~/components/ChoiceQuestionDetailsDialog';
 import QuestionBankCreateDialog from '~/components/QuestionBankCreateDialog';
+import QuestionBankDeleteDialog from '~/components/QuestionBankDeleteDialog';
+import QuestionBankEditDialog from '~/components/QuestionBankEditDialog';
 import QuestionBankItem from '~/components/QuestionBankItem';
 import RichTextEditor from '~/components/RichTextEditor';
 import ShowTextData from '~/components/ShowTextData';
+import TableChoiceQuestion from '~/components/TableChoiceQuestion';
 import { QUESTION_BANK_URL } from '~/constants';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
 import { choiceQuestionSerivce } from '~/services/choiceQuestionSerivce';
 import { questionBankService } from '~/services/questionBankService';
+import { useUser } from '~/stores/UserStore';
 
 function QuestionBankDetailsPage() {
     const location = useLocation();
+
     const { questionBankId } = useParams();
     const [questionBankState, setQuestionBankState] = useState([]);
+    const navigate = useNavigate();
+    const [userState, dispatchUserState] = useUser();
 
     const [choiceQuestionList, setChoiceQuestionList] = useState([]);
 
+    const loadData = () => {
+        questionBankService.getQuestionBankById(questionBankId).then((data) => {
+            if (data.id && data.username === userState.username) {
+                setQuestionBankState(data);
+            } else {
+                navigate('/question-bank');
+            }
+        });
+    };
+
     useEffect(() => {
+        loadData();
         loadQuestion();
     }, [location]);
 
@@ -50,8 +72,6 @@ function QuestionBankDetailsPage() {
             }
         });
     };
-
-    const navigate = useNavigate();
 
     const [newQuestionName, setNewQuestionName] = useState('');
     const [newQuestionContent, setNewQuestionContent] = useState('');
@@ -92,6 +112,7 @@ function QuestionBankDetailsPage() {
         const arr = [...choiceAnswerController];
         const obj = arr[index];
         obj.type = e.target.value;
+        obj.content = '';
         setChoiceAnswerController(arr);
     };
 
@@ -107,7 +128,6 @@ function QuestionBankDetailsPage() {
         if (index > -1) {
             arr.splice(index, 1);
         }
-        console.log('arr', arr);
         setChoiceAnswerController(arr);
         clear();
     };
@@ -119,7 +139,6 @@ function QuestionBankDetailsPage() {
             let reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = () => {
-                //reader.result file.size file.name
                 const arr = [...choiceAnswerController];
                 const obj = arr[index];
                 obj.content = reader.result;
@@ -131,11 +150,18 @@ function QuestionBankDetailsPage() {
         }
     };
 
+    const clearDataNewQuestion = () => {
+        setChoiceAnswerController([]);
+        setNewQuestionContent('');
+        setNewQuestionName('');
+    };
+
     const clear = () => {
         setQuestionNameError('');
         setQuestionAnswerError('');
     };
 
+    const [submitSuccessfully, setSubmitSuccessfully] = useState(false);
     const submitNewQuestion = () => {
         let valid = true;
         if (!newQuestionName.trim()) {
@@ -178,6 +204,11 @@ function QuestionBankDetailsPage() {
                         choiceAnswerSerivce.postChoiceAnswer(obj).then((data) => {});
                     });
                     loadQuestion();
+                    clearDataNewQuestion();
+                    setSubmitSuccessfully(true);
+                    setTimeout(() => {
+                        setSubmitSuccessfully(false);
+                    }, 2000);
                 }
             });
         }
@@ -200,12 +231,17 @@ function QuestionBankDetailsPage() {
         {
             field: 'id',
             headerName: 'Thao tác',
-            width: 160,
+            width: 220,
             renderCell: (param) => {
                 return (
-                    <Link to={'/choice-question/' + param.value}>
-                        <div className="font-bold text-blue-500 shadow-blue-300 underline">Chi tiết</div>
-                    </Link>
+                    <>
+                        <div className="mr-4">
+                            <ChoiceQuestionDetailsDialog choiceQuestionId={param.value} />
+                        </div>
+                        <div>
+                            <ChoiceQuestionDetailsDeleteDialog reload={loadQuestion} choiceQuestionId={param.value} />
+                        </div>
+                    </>
                 );
             },
         },
@@ -224,11 +260,19 @@ function QuestionBankDetailsPage() {
                 </Button>
             </div>
             <h1 className="font-bold text-xl my-6 md:my-2">Ngân hàng câu hỏi</h1>
-            <h1 className="my-4 font-bold text-gray-700 text-3xl">
-                <FontAwesomeIcon icon={faFileCircleQuestion} /> {questionBankState.name}
+            <h1 className="my-4 font-bold text-gray-700 text-3xl flex flex-row items-center">
+                <FontAwesomeIcon className="mr-4" icon={faFileCircleQuestion} />
+                <div className="break-all flex-1">{questionBankState.name}</div>
+                <div className="ml-8">
+                    <QuestionBankEditDialog questionBankId={questionBankId} reload={loadData} />
+                </div>
             </h1>
             <div className="w-full">
-                <div className="w-full p-8 border border-slate-200 shadow rounded-lg">
+                <div
+                    className={`w-full p-2 md:p-8 border duration-200 border-slate-200 shadow rounded-lg ${
+                        submitSuccessfully ? 'bg-green-300' : ''
+                    }`}
+                >
                     <div className="font-bold text-xl mb-2 w-full">Câu hỏi mới</div>
                     <div className="w-full">
                         <div>Tên câu hỏi</div>
@@ -245,44 +289,65 @@ function QuestionBankDetailsPage() {
                     </div>
                     <div className="w-full mt-4">
                         <div>Nội dung</div>
-                        <RichTextEditor setData={setData} />
+                        <RichTextEditor data={newQuestionContent} setData={setData} />
                     </div>
                     {choiceAnswerController.map((choiceAnswer, index) => {
                         return (
                             <div key={index} className="w-full bg-slate-100 p-4 rounded my-8 md:my-6">
                                 <div className="flex flex-col-reverse md:flex-row items-center">
-                                    {choiceAnswer.type === 'text' && (
-                                        <TextField
-                                            className="w-full"
-                                            id="standard-basic"
-                                            label={'Đáp án ' + (index + 1)}
-                                            variant="standard"
-                                            value={choiceAnswer.content}
-                                            onInput={(e) => {
-                                                handleChangeContent(index, e);
-                                            }}
-                                        />
-                                    )}
-                                    {choiceAnswer.type === 'image' && (
-                                        <input
-                                            className="w-full"
-                                            onChange={(e) => {
-                                                uploadFile(index, e);
-                                            }}
-                                            type="file"
-                                            accept="image/*"
-                                        />
-                                    )}
-                                    {choiceAnswer.type === 'audio' && (
-                                        <input
-                                            className="w-full"
-                                            type="file"
-                                            onChange={(e) => {
-                                                uploadFile(index, e);
-                                            }}
-                                            accept="audio/mp3,audio/*;capture=microphone"
-                                        />
-                                    )}
+                                    <div className="flex flex-col w-full">
+                                        {choiceAnswer.type === 'text' && (
+                                            <TextField
+                                                className="w-full"
+                                                id="standard-basic"
+                                                label={'Đáp án ' + (index + 1)}
+                                                variant="standard"
+                                                value={choiceAnswer.content}
+                                                onInput={(e) => {
+                                                    handleChangeContent(index, e);
+                                                }}
+                                            />
+                                        )}
+                                        {choiceAnswer.type === 'image' && (
+                                            <>
+                                                <input
+                                                    className="w-full"
+                                                    onChange={(e) => {
+                                                        uploadFile(index, e);
+                                                    }}
+                                                    type="file"
+                                                    accept="image/*"
+                                                />
+                                                {choiceAnswer.content && (
+                                                    <div className="max-h-[240px] overflow-hidden">
+                                                        <img alt="image" src={choiceAnswer.content} />
+                                                    </div>
+                                                )}
+                                            </>
+                                        )}
+                                        {choiceAnswer.type === 'audio' && (
+                                            <>
+                                                <input
+                                                    className="w-full"
+                                                    type="file"
+                                                    onChange={(e) => {
+                                                        uploadFile(index, e);
+                                                    }}
+                                                    accept="audio/mp3,audio/*;capture=microphone"
+                                                />
+                                                {choiceAnswer.content && (
+                                                    <audio
+                                                        className="w-full"
+                                                        style={{ width: '100%' }}
+                                                        controls
+                                                        preload="auto"
+                                                        autobuffer
+                                                        src={choiceAnswer.content}
+                                                    />
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
                                     <FormControl fullWidth>
                                         <InputLabel id="select-label-gender-signup">Loại</InputLabel>
                                         <Select
@@ -335,10 +400,10 @@ function QuestionBankDetailsPage() {
                             Đáp án
                         </div>
                     </div>
-                    <div className="w-full flex flex-col justify-center items-center">
+                    <div className="w-full flex mt-16 md:mt-8 flex-col justify-center items-center">
                         <div
                             onClick={submitNewQuestion}
-                            className="w-full md:w-[75%] mt-8 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
+                            className="w-full md:w-[75%] p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
                         >
                             <FontAwesomeIcon icon={faPlus} className="mr-2" /> Tạo câu hỏi
                         </div>
@@ -350,11 +415,10 @@ function QuestionBankDetailsPage() {
                 Danh sách <span className="text-blue-500">{choiceQuestionList.length}</span> câu hỏi:
             </h3>
             <div className="w-full mt-2">
-                {choiceQuestionList && (
-                    <div className="bg-white" style={{ height: 480, width: '100%' }}>
-                        <DataGrid rows={choiceQuestionList} columns={columns} />
-                    </div>
-                )}
+                {choiceQuestionList && <TableChoiceQuestion rows={choiceQuestionList} columns={columns} />}
+            </div>
+            <div className="mt-12">
+                <QuestionBankDeleteDialog questionBankId={questionBankId} />
             </div>
         </div>
     );

@@ -1,8 +1,11 @@
+import { faPen } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
+import { useEffect } from 'react';
 import { useState } from 'react';
 import { questionBankService } from '~/services/questionBankService';
 
-export default function QuestionBankCreateDialog({ button, reload = () => {} }) {
+export default function QuestionBankEditDialog({ questionBankId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
@@ -13,12 +16,21 @@ export default function QuestionBankCreateDialog({ button, reload = () => {} }) 
         setOpen(false);
     };
 
+    const loadData = () => {
+        questionBankService.getQuestionBankById(questionBankId).then((data) => {
+            if (data) {
+                setNewQuestionBank(data.name);
+            }
+        });
+    };
+
     const handleAgree = () => {
         if (newQuestionBank.trim()) {
             const obj = {
+                id: questionBankId,
                 name: newQuestionBank.trim(),
             };
-            questionBankService.postQuestionBank(obj).then((data) => {
+            questionBankService.putQuestionBank(obj).then((data) => {
                 if (data.id) {
                     reload();
                 }
@@ -29,22 +41,28 @@ export default function QuestionBankCreateDialog({ button, reload = () => {} }) 
         }
     };
 
+    useEffect(() => {
+        loadData();
+    }, [open]);
+
     const [newQuestionBank, setNewQuestionBank] = useState('');
     const [error, setError] = useState(false);
 
     return (
         <div>
-            <div onClick={handleClickOpen}>{button}</div>
+            <div onClick={handleClickOpen}>
+                <Button startIcon={<FontAwesomeIcon icon={faPen} />}>Đổi tên</Button>
+            </div>
             <Dialog
                 open={open}
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Tạo ngân hàng câu hỏi</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Đổi tên ngân hàng câu hỏi</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <div className="mt-4 md:w-[300px]">
+                        <div className="mt-4 w-[300px]">
                             <TextField
                                 className="w-full"
                                 value={newQuestionBank}

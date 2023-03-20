@@ -14,11 +14,15 @@ function RequestClassMember({ username = 'nguyena', userId, date, classId, avata
     };
 
     const cancelRequest = () => {
-        classMemberService.deleteClassMember({ userId: userId, classId: classId }).then((data) => {});
+        classMemberService.deleteClassMember({ userId: userId, classId: classId }).then((data) => {
+            reload();
+        });
     };
 
     const acceptRequest = () => {
-        classMemberService.acceptClassMember({ userId: userId, classId: classId }).then((data) => {});
+        classMemberService.acceptClassMember({ userId: userId, classId: classId }).then((data) => {
+            reload();
+        });
     };
 
     const cancelUser = () => {
@@ -29,7 +33,8 @@ function RequestClassMember({ username = 'nguyena', userId, date, classId, avata
 
     const submitUser = () => {
         acceptRequest();
-        reload();
+        console.log('RELOAD');
+        handleClose();
     };
 
     return (

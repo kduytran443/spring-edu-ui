@@ -13,6 +13,11 @@ export const choiceAnswerSerivce = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);
         return response.json();
     },
+    async getChoiceAnswerByDrawQuizId(drawQuizId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/draw-quiz/${drawQuizId}`, config);
+        return response.json();
+    },
     async postChoiceAnswer(choiceAnswer) {
         const config = postConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);

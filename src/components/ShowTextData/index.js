@@ -18,7 +18,11 @@ function ShowTextData({ data }) {
     if (data) {
         const textComponent = parse(data);
         //const errorList = textComponent.getElementsByClassName('ck-widget__type-around');
-        return <div ref={textRef}>{textComponent}</div>;
+        return (
+            <div className="max-w-full overflow-hidden" ref={textRef}>
+                {textComponent}
+            </div>
+        );
     }
 
     return <div></div>;

@@ -18,6 +18,9 @@ import { classMemberService } from '~/services/classMemberService';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import QuestionBankShowList from '~/components/QuestionBankShowList';
+import { exerciseService } from '~/services/exerciseService';
+import { renderToTime } from '~/utils';
+import { submittedExerciseService } from '~/services/submittedExerciseService';
 
 function ClassExercisePage() {
     const { classId } = useParams();
@@ -48,48 +51,61 @@ function ClassExercisePage() {
         return false;
     };
 
+    const [classExerciseList, setClassExerciseList] = useState([]);
+    const loadData = () => {
+        exerciseService.getExercisesByClassId(classId).then((data) => {
+            if (data.length > 0) {
+                setClassExerciseList(data);
+            }
+        });
+    };
+    useEffect(() => {
+        loadData();
+    }, [location]);
+
     return (
         <div>
             <div>
                 {isValidRole(userRole) && (
-                    <div>
+                    <div className="bg-slate-100 rounded p-4">
                         <QuestionBankShowList />
                     </div>
                 )}
             </div>
+            <div className="my-8">
+                {isValidRole(userRole) && (
+                    <Button
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise-create`);
+                        }}
+                    >
+                        Tạo bài tập
+                    </Button>
+                )}
+            </div>
             <div>
-                <ListItem
-                    className="cursor-pointer hover:bg-blue-100"
-                    onClick={(e) => {
-                        navigateToExercise(1);
-                    }}
-                >
-                    <ListItemAvatar>
-                        <Avatar>
-                            <FactCheckIcon />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Nộp Đồ án kiểm thử thủ công (Test plan, test scenario, testcases, video)"
-                        secondary="Jan 9, 2014"
-                    />
-                </ListItem>
-                <ListItem
-                    className="cursor-pointer hover:bg-blue-100"
-                    onClick={(e) => {
-                        navigateToExercise(1);
-                    }}
-                >
-                    <ListItemAvatar>
-                        <Avatar>
-                            <FactCheckIcon />
-                        </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                        primary="Nộp Đồ án kiểm thử thủ công (Test plan, test scenario, testcases, video)"
-                        secondary="Jan 9, 2014 Hết hạn ngày 4/2/2023"
-                    />
-                </ListItem>
+                {classExerciseList.map((classExercise) => {
+                    return (
+                        <ListItem
+                            className="cursor-pointer hover:bg-blue-100"
+                            onClick={(e) => {
+                                navigate('/class/' + classId + '/exercise/' + classExercise.id);
+                            }}
+                        >
+                            <ListItemAvatar>
+                                <Avatar>
+                                    <FactCheckIcon />
+                                </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                                primary={classExercise.name}
+                                secondary={`Bắt đầu: ${renderToTime(
+                                    classExercise.startTime,
+                                )} | Kết thúc: ${renderToTime(classExercise.endTime)}`}
+                            />
+                        </ListItem>
+                    );
+                })}
             </div>
         </div>
     );

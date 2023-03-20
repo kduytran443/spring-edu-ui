@@ -1,6 +1,6 @@
 import { Accordion, AccordionSummary, Avatar, Button, Divider, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import UserAccordion from '~/components/UserAccordion';
 import UserItemCard from '~/components/UserItemCard';
 import { API_BASE_URL } from '~/constants';
@@ -20,14 +20,55 @@ function ClassEveryonePage() {
     const [invitedUserListState, setInvitedUserListState] = useState([]);
     const [requestUserListState, setRequestUserListState] = useState([]);
 
-    useEffect(() => {
-        /*PRIVATE*/
+    const loadInvitedUser = () => {
+        classMemberService.getInvitedClassMemberByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                setInvitedUserListState(data);
+            }
+        });
+    };
+
+    const loadRequestUser = () => {
+        classMemberService.getRequestClassMemberByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                setRequestUserListState(data);
+            }
+        });
+    };
+
+    const loadData = () => {
         classMemberService.getClassMemberByClassId(classId).then((data) => {
-            console.log(data);
+            console.log('new list nè', data);
             setPeopleListState(data);
         });
-    }, [classId]);
+        loadInvitedUser();
+        loadRequestUser();
+    };
+    const location = useLocation();
+    useEffect(() => {
+        /*PRIVATE*/
+        loadUserData();
+        loadData();
+    }, [location]);
 
+    const navigate = useNavigate();
+    const [userRole, setUserRole] = useState();
+    const loadUserData = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            console.log(data);
+            if (isValidRole(data.classRole)) {
+                setUserRole(data.classRole);
+            } else {
+                navigate('/not-found-page');
+            }
+        });
+    };
+    const isValidRole = (role) => {
+        if (role === 'teacher' || role === 'supporter' || role === 'student') {
+            return true;
+        }
+        return false;
+    };
     /*
     useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/class-member?classId=${classId}`)
@@ -39,59 +80,42 @@ function ClassEveryonePage() {
     }, [classId]);
     */
 
-    const loadInvitedUser = () => {
-        classMemberService.getInvitedClassMemberByClassId(classId).then((data) => {
-            if (data.length > 0) {
-                setInvitedUserListState(data);
-            }
-        });
-    };
-
-    const loadRequestUser = () => {
-        classMemberService.getRequestClassMemberByClassId(classId).then((data) => {
-            if (data.length > 0) {
-                setRequestUserListState(data);
-            }
-        });
-    };
-
-    useEffect(() => {
-        loadInvitedUser();
-        loadRequestUser();
-    }, []);
-
     return (
         <div>
-            <SimpleCustomAccordion name="Danh sách đang mời">
-                {invitedUserListState.map((user, index) => {
-                    return (
-                        <InvitedClassMember
-                            key={index}
-                            avatar={user.avatar}
-                            classId={classId}
-                            username={user.username}
-                            reload={loadInvitedUser}
-                            userId={user.userId}
-                            date={user.createdDate}
-                        />
-                    );
-                })}
-            </SimpleCustomAccordion>
-            <SimpleCustomAccordion name="Danh sách yêu cầu">
-                {requestUserListState.map((user, index) => {
-                    return (
-                        <RequestClassMember
-                            key={index}
-                            avatar={user.avatar}
-                            classId={classId}
-                            username={user.username}
-                            reload={loadInvitedUser}
-                            userId={user.userId}
-                            date={user.createdDate}
-                        />
-                    );
-                })}
-            </SimpleCustomAccordion>
+            {userRole && userRole === 'teacher' && (
+                <>
+                    <SimpleCustomAccordion name="Danh sách đang mời">
+                        {invitedUserListState.map((user, index) => {
+                            return (
+                                <InvitedClassMember
+                                    key={index}
+                                    avatar={user.avatar}
+                                    classId={classId}
+                                    username={user.username}
+                                    reload={loadData}
+                                    userId={user.userId}
+                                    date={user.createdDate}
+                                />
+                            );
+                        })}
+                    </SimpleCustomAccordion>
+                    <SimpleCustomAccordion name="Danh sách yêu cầu">
+                        {requestUserListState.map((user, index) => {
+                            return (
+                                <RequestClassMember
+                                    key={index}
+                                    avatar={user.avatar}
+                                    classId={classId}
+                                    username={user.username}
+                                    reload={loadData}
+                                    userId={user.userId}
+                                    date={user.createdDate}
+                                />
+                            );
+                        })}
+                    </SimpleCustomAccordion>
+                </>
+            )}
             <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Giáo viên</h1>
             <ul>
                 {peopleListState.map((people) => {
@@ -124,9 +148,11 @@ function ClassEveryonePage() {
             </div>
             <div className="flex flex-row items-center justify-between">
                 <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Giáo viên được mời</h1>
-                <div>
-                    <DialogAddNewMember role="supporter" currentList={peopleListState} classId={classId} />
-                </div>
+                {userRole && userRole === 'teacher' && (
+                    <div>
+                        <DialogAddNewMember role="supporter" currentList={peopleListState} classId={classId} />
+                    </div>
+                )}
             </div>
             <ul>
                 {peopleListState.map((people) => {
@@ -160,9 +186,11 @@ function ClassEveryonePage() {
 
             <div className="flex flex-row items-center justify-between">
                 <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Học viên</h1>
-                <div>
-                    <DialogAddNewMember role="student" currentList={peopleListState} classId={classId} />
-                </div>
+                {userRole && userRole === 'teacher' && (
+                    <div>
+                        <DialogAddNewMember role="student" currentList={peopleListState} classId={classId} />
+                    </div>
+                )}
             </div>
             <ul>
                 {peopleListState.map((people) => {

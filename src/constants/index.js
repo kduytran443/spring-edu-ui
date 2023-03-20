@@ -10,7 +10,11 @@ const JOINED_CLASS_PAGE_URL = '/joined-class';
 const CLASS_INTRO_PAGE_URL = '/class/:classId/intro';
 const CLASS_PAGE_URL = '/class/:classId';
 const CLASS_EXERCISE_PAGE_URL = '/class/:classId/exercise';
+const CLASS_EXERCISE_CREATE_PAGE_URL = '/class/:classId/exercise-create';
+const CLASS_EXERCISE_EDIT_PAGE_URL = '/class/:classId/exercise-edit/:exerciseId';
 const CLASS_SPECIFIC_EXERCISE_PAGE_URL = '/class/:classId/exercise/:exerciseId';
+const CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL = '/class/:classId/exercise/:exerciseId/do/:submittedExerciseId';
+const CLASS_RESULT_EXERCISE_PAGE_URL = '/class/:classId/exercise/:exerciseId/result/:submittedExerciseId';
 const CLASS_EVERYONE_PAGE_URL = '/class/:classId/everyone';
 const CLASS_MARK_PAGE_URL = '/class/:classId/mark';
 const CLASS_SETTING_PAGE_URL = '/class/:classId/setting';
@@ -66,4 +70,8 @@ export {
     QUESTION_BANK_URL,
     QUESTION_BANK_DETAILS_URL,
     PERSONAL_EDIT_PAGE_URL,
+    CLASS_EXERCISE_CREATE_PAGE_URL,
+    CLASS_EXERCISE_EDIT_PAGE_URL,
+    CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
+    CLASS_RESULT_EXERCISE_PAGE_URL,
 };

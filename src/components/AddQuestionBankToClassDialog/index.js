@@ -62,9 +62,7 @@ export default function AddQuestionBankToClassDialog({ reload = () => {} }) {
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <IconButton size="large">
-                    <FontAwesomeIcon icon={faPlus} />
-                </IconButton>
+                <Button startIcon={<FontAwesomeIcon icon={faPlus} />}>Thêm ngân hàng câu hỏi</Button>
             </div>
             <Dialog
                 open={open}

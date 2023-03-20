@@ -25,13 +25,19 @@ import {
     QUESTION_BANK_URL,
     QUESTION_BANK_DETAILS_URL,
     PERSONAL_EDIT_PAGE_URL,
+    CLASS_EXERCISE_CREATE_PAGE_URL,
+    CLASS_EXERCISE_EDIT_PAGE_URL,
+    CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
+    CLASS_RESULT_EXERCISE_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
 import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
+import ClassCreateExercisePage from '~/pages/ClassCreateExercisePage';
 import ClassCreatePage from '~/pages/ClassCreatePage';
+import ClassEditExercisePage from '~/pages/ClassEditExercisePage';
 import ClassEditPage from '~/pages/ClassEditPage';
 import ClassEveryonePage from '~/pages/ClassEveryonePage';
 import ClassExercisePage from '~/pages/ClassExercisePage';
@@ -46,6 +52,8 @@ import ClassPage from '~/pages/ClassPage';
 import ClassScheduleEditPage from '~/pages/ClassScheduleEditPage';
 import ClassSettingPage from '~/pages/ClassSettingPage';
 import ClassSpecificExercisePage from '~/pages/ClassSpecificExercisePage';
+import DoExercisePage from '~/pages/DoExercisePage';
+import ExerciseResultPage from '~/pages/ExerciseResultPage';
 import HomePage from '~/pages/HomePage';
 import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
@@ -194,6 +202,26 @@ const privateRoutes = [
         path: `${PERSONAL_EDIT_PAGE_URL}`,
         component: PersonalEditPage,
         layout: FullLayout,
+    },
+    {
+        path: `${CLASS_EXERCISE_CREATE_PAGE_URL}`,
+        component: ClassCreateExercisePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_EXERCISE_EDIT_PAGE_URL}`,
+        component: ClassEditExercisePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL}`,
+        component: DoExercisePage,
+        layout: ClassLayout,
+    },
+    {
+        path: `${CLASS_RESULT_EXERCISE_PAGE_URL}`,
+        component: ExerciseResultPage,
+        layout: ClassLayout,
     },
 ];
 

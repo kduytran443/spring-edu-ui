@@ -29,6 +29,7 @@ const CLASS_CREATE_PAGE_URL = '/create-class';
 const CLASS_EDIT_PAGE_URL = '/edit-class/:classId';
 const QUESTION_BANK_URL = '/question-bank';
 const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
+const SEARCH_PAGE_URL = '/search';
 
 const API_BASE_URL = 'http://192.168.1.3:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
@@ -74,4 +75,5 @@ export {
     CLASS_EXERCISE_EDIT_PAGE_URL,
     CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
     CLASS_RESULT_EXERCISE_PAGE_URL,
+    SEARCH_PAGE_URL,
 };

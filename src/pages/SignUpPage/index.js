@@ -1,4 +1,5 @@
 import {
+    faBirthdayCake,
     faEnvelope,
     faLock,
     faPhone,
@@ -23,20 +24,22 @@ import {
 } from '@mui/material';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Line from '~/components/Line';
 import { HOME_PAGE_URL, LOGIN_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { userDataService } from '~/services/userDataService';
 import { useUser } from '~/stores/UserStore';
 
 function SignUpPage() {
     const navigate = useNavigate();
     const [userState, userDispatch] = useUser();
+    const location = useLocation();
 
     useEffect(() => {
         if (userState.jwt) {
             navigate(HOME_PAGE_URL);
         }
-    }, []);
+    }, [location]);
 
     //all data state
     const [usernameState, setUsernameState] = useState('');
@@ -45,8 +48,8 @@ function SignUpPage() {
     const [fullnameState, setFullnameState] = useState('');
     const [phoneNumberState, setPhoneNumberState] = useState('');
     const [emailState, setEmailState] = useState('');
-    const [dateOfBirthState, setDateOfBirthState] = useState('');
     const [genderState, setGenderState] = useState('');
+    const [birthYearState, setBirthYearState] = useState('');
     const [policyCheckedState, setPolicyCheckedState] = useState(false);
 
     //all error state
@@ -56,8 +59,8 @@ function SignUpPage() {
     const [fullnameErrorState, setFullnameErrorState] = useState('');
     const [emailErrorState, setEmailErrorState] = useState('');
     const [phoneNumberErrorState, setPhoneNumberErrorState] = useState('');
-    const [dateOfBirthErrorState, setDateOfBirthErrorState] = useState('');
     const [genderErrorState, setGenderErrorState] = useState('');
+    const [birthYearErrorState, setBirthYearErrorState] = useState('');
     const [errorState, setErrorState] = useState('');
 
     const clearError = () => {
@@ -65,7 +68,7 @@ function SignUpPage() {
         setPasswordErrorState('');
         setFullnameErrorState('');
         setPhoneNumberErrorState('');
-        setDateOfBirthErrorState('');
+        setBirthYearErrorState('');
         setGenderErrorState('');
         setErrorState('');
         setRepasswordErrorState('');
@@ -80,11 +83,11 @@ function SignUpPage() {
             validForm = false;
             setUsernameErrorState('Không hợp lệ!');
         }
-        if (!passwordState) {
+        if (!passwordState || passwordState.length < 6) {
             validForm = false;
-            setPasswordErrorState('Không hợp lệ!');
+            setPasswordErrorState('Mật khẩu tối thiểu 6 kí tự!');
         }
-        if (!repasswordState) {
+        if (!repasswordState || repasswordState !== passwordState) {
             validForm = false;
             setRepasswordErrorState('Không hợp lệ!');
         }
@@ -96,9 +99,9 @@ function SignUpPage() {
             validForm = false;
             setPhoneNumberErrorState('Không hợp lệ!');
         }
-        if (!dateOfBirthState) {
+        if (!birthYearState) {
             validForm = false;
-            setDateOfBirthErrorState('Không hợp lệ!');
+            setBirthYearErrorState('Không hợp lệ!');
         }
         if (!genderState) {
             validForm = false;
@@ -116,10 +119,32 @@ function SignUpPage() {
             console.log(usernameState, passwordState);
 
             //fetch-api
+            const obj = {
+                username: usernameState,
+                fullname: fullnameState,
+                email: emailState,
+                phoneNumber: phoneNumberState,
+                gender: genderState,
+                brithYear: birthYearState,
+                password: passwordState,
+                avatar: '',
+            };
 
-            navigate(HOME_PAGE_URL);
-        } else {
-            setErrorState('Sai tên đăng nhập hoặc mật khẩu');
+            console.log('obj', obj);
+
+            userDataService.signUp(obj).then((data) => {
+                if (data.id) {
+                    navigate('/personal');
+                } else {
+                    setErrorState(data.message);
+                }
+            });
+        }
+    };
+
+    const onInput = (e, callback) => {
+        if (!isNaN(e.target.value) && !e.target.value.includes(' ')) {
+            callback(e.target.value);
         }
     };
 
@@ -127,7 +152,10 @@ function SignUpPage() {
         <div className="shadow-lg border rounded-lg bg-white p-6 min-h-[240px] max-w-md w-full flex flex-col sm:w-[420px]">
             <div className="my-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setUsernameState(e.target.value)}
+                    onChange={(e) => {
+                        setUsernameErrorState('');
+                        setUsernameState(e.target.value);
+                    }}
                     className="w-full"
                     value={usernameState}
                     label="Tài khoản"
@@ -147,7 +175,10 @@ function SignUpPage() {
 
             <div className="mb-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setPasswordState(e.target.value)}
+                    onChange={(e) => {
+                        setPasswordErrorState('');
+                        setPasswordState(e.target.value);
+                    }}
                     className="w-full"
                     label="Mật khẩu"
                     placeholder="Mật khẩu"
@@ -167,7 +198,10 @@ function SignUpPage() {
             </div>
             <div className="mb-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setRepasswordState(e.target.value)}
+                    onChange={(e) => {
+                        setRepasswordErrorState('');
+                        setRepasswordState(e.target.value);
+                    }}
                     className="w-full"
                     label="Nhập lại mật khẩu"
                     placeholder="Nhập lại mật khẩu"
@@ -187,7 +221,10 @@ function SignUpPage() {
             </div>
             <div className="mb-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setFullnameState(e.target.value)}
+                    onChange={(e) => {
+                        setFullnameErrorState('');
+                        setFullnameState(e.target.value);
+                    }}
                     className="w-full"
                     label="Họ và tên"
                     placeholder="Họ và tên"
@@ -207,7 +244,10 @@ function SignUpPage() {
             </div>
             <div className="mb-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setPhoneNumberState(e.target.value)}
+                    onChange={(e) => {
+                        setPhoneNumberErrorState('');
+                        setPhoneNumberState(e.target.value);
+                    }}
                     className="w-full"
                     label="Số điện thoại"
                     placeholder="Số điện thoại"
@@ -221,13 +261,16 @@ function SignUpPage() {
                             </InputAdornment>
                         ),
                     }}
-                    error={!!fullnameErrorState}
-                    helperText={fullnameErrorState}
+                    error={!!phoneNumberErrorState}
+                    helperText={phoneNumberErrorState}
                 />
             </div>
             <div className="mb-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setEmailState(e.target.value)}
+                    onChange={(e) => {
+                        setEmailErrorState('');
+                        setEmailState(e.target.value);
+                    }}
                     className="w-full"
                     label="Email"
                     placeholder="Email"
@@ -245,8 +288,27 @@ function SignUpPage() {
                     helperText={emailErrorState}
                 />
             </div>
+
             <div className="mb-2 mt-4 w-full">
-                Ngày sinh: <input type={'date'} />
+                <TextField
+                    error={!!birthYearErrorState}
+                    helperText={birthYearErrorState}
+                    label="Năm sinh"
+                    placeholder="Năm sinh"
+                    value={birthYearState}
+                    onInput={(e) => {
+                        setBirthYearErrorState('');
+                        onInput(e, setBirthYearState);
+                    }}
+                    className="w-full"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <FontAwesomeIcon icon={faBirthdayCake} />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
             </div>
             <div className="mb-2 mt-4 w-full">
                 <FormControl fullWidth>
@@ -256,12 +318,16 @@ function SignUpPage() {
                         id="select-gender-signup"
                         value={genderState}
                         label="Giới tính"
-                        onChange={(e) => setGenderState(e.target.value)}
+                        onChange={(e) => {
+                            setGenderErrorState('');
+                            setGenderState(e.target.value);
+                        }}
                     >
                         <MenuItem value={'male'}>Nam</MenuItem>
                         <MenuItem value={'female'}>Nữ</MenuItem>
                     </Select>
                 </FormControl>
+                {birthYearErrorState && <div className="text-red-600 text-xs ml-4">{birthYearErrorState}</div>}
             </div>
             <div className="select-none">
                 <FormGroup>

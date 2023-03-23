@@ -9,6 +9,10 @@ function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
     const editorRef = useRef();
     const [dataState, setDataState] = useState(data);
 
+    useEffect(() => {
+        setDataState(data);
+    }, [data]);
+
     const getTextData = () => {
         const content = editorRef.current.getElementsByClassName('ck-restricted-editing_mode_standard')[0];
         if (content) {

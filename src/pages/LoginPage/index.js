@@ -23,8 +23,10 @@ function LoginPage() {
     const clearError = () => {
         setUsernameErrorState('');
         setPasswordErrorState('');
+        setError('');
     };
 
+    const [error, setError] = useState('');
     const login = async (data) => {
         const options = {
             method: 'POST',
@@ -37,7 +39,7 @@ function LoginPage() {
             .then((res) => res.json())
             .then((data) => {
                 if (data.status === 403) {
-                    console.log('Fail to login!');
+                    setError('Sai tên đăng nhập hoặc mật khẩu');
                 } else {
                     console.log('thành công', data);
                     dispatchUserState(setUserInfo(data));
@@ -126,6 +128,7 @@ function LoginPage() {
                     />
                 </FormGroup>
             </div>
+            {error && <div className="text-red-500">*{error}</div>}
             <div className="mt-4 mb-0 w-full">
                 <Button variant="contained" className="w-full" onClick={submitForm}>
                     <div className="w-full font-extrabold p-2">Đăng nhập</div>

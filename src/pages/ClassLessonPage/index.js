@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -10,6 +10,7 @@ import {
     faBackspace,
     faBackward,
     faBackwardStep,
+    faBars,
     faClock,
     faPen,
     faTrash,
@@ -29,6 +30,9 @@ import ShowTextData from '~/components/ShowTextData';
 import RichTextEditor from '~/components/RichTextEditor';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
 import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import TemporaryDrawer from '~/components/TemporaryDrawer';
+import LoadingProcess from '~/components/LoadingProcess';
+import { topicService } from '~/services/topicService';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -56,9 +60,20 @@ function ClassLessonPage() {
         });
     };
 
+    const textDataRef = useRef();
     useEffect(() => {
+        console.log('load dataaaaaa');
         loadData();
     }, [location]);
+
+    useEffect(() => {
+        if (textDataRef.current) {
+            textDataRef.current.style.display = 'none';
+            setTimeout(() => {
+                textDataRef.current.style.display = 'block';
+            }, 100);
+        }
+    }, [lessonDataState]);
 
     useEffect(() => {
         console.log('LONG LOADING...');
@@ -99,7 +114,7 @@ function ClassLessonPage() {
                 setNextLessonState(null);
                 console.log('error', error);
             });
-    }, [lessonId]);
+    }, [location]);
     /*PRIVATE*/
     useEffect(() => {
         const config = getConfig();
@@ -117,7 +132,7 @@ function ClassLessonPage() {
                 setPreviousLessonState(null);
                 console.log('error', error);
             });
-    }, [lessonId]);
+    }, [location]);
 
     const [fileListState, setFileListState] = useState([]);
     useEffect(() => {
@@ -131,7 +146,7 @@ function ClassLessonPage() {
                     navigate('/page-not-found');
                 }
             });
-    }, []);
+    }, [location]);
 
     const [classDataState, setClassDataState] = useState(() => {});
 
@@ -180,7 +195,23 @@ function ClassLessonPage() {
         if (lessonDataState.textData) {
             const textComponent = parse(lessonDataState.textData);
         }
-    }, [lessonDataState]);
+    }, [location]);
+    const [visible, setVisible] = useState(false);
+    const show = () => setVisible(true);
+    const hide = () => setVisible(false);
+
+    const [topicListState, setTopicListState] = useState([]);
+    const loadTopic = () => {
+        topicService.getTopicByClassId(classId).then((data) => {
+            if (data.status !== 500) {
+                setTopicListState(data);
+            }
+        });
+    };
+
+    useEffect(() => {
+        loadTopic();
+    }, [location]);
 
     return (
         <div className="w-full p-4 md:p-0 text-justify">
@@ -194,12 +225,56 @@ function ClassLessonPage() {
                 >
                     Quay lại
                 </Button>
-                <div>
-                    <b>Topic:</b> {lessonDataState && lessonDataState.topicName}
+                <div className="flex flex-row items-center">
+                    <div>
+                        <b>Topic:</b> {lessonDataState && lessonDataState.topicName}
+                    </div>
+                    <div>
+                        <TemporaryDrawer
+                            button={
+                                <div
+                                    onClick={(e) => {
+                                        setVisible(!visible);
+                                    }}
+                                    className={`cursor-pointer`}
+                                >
+                                    <IconButton>
+                                        <FontAwesomeIcon icon={faBars} />
+                                    </IconButton>
+                                </div>
+                            }
+                        >
+                            <div className="flex flex-col my-2 w-full">
+                                {topicListState === null ? (
+                                    <LoadingProcess />
+                                ) : (
+                                    topicListState &&
+                                    topicListState?.map((topic, index) => {
+                                        return (
+                                            <div
+                                                onClick={(e) => {
+                                                    loadData();
+                                                }}
+                                                className="w-full flex flex-col"
+                                            >
+                                                <SimpleAccordion
+                                                    key={index}
+                                                    name={index + 1 + '. ' + topic.name}
+                                                    classLessons={topic.classLessonReviews}
+                                                />
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </div>
+                        </TemporaryDrawer>
+                    </div>
                 </div>
             </div>
 
-            <h1 className="font-bold text-2xl my-4 mt-8">{lessonDataState && lessonDataState.name}</h1>
+            <div className="flex flex-row items-center justify-between">
+                <h1 className="font-bold text-2xl my-4 mt-8">{lessonDataState && lessonDataState.name}</h1>
+            </div>
 
             {lessonDataState.createdDate && (
                 <div className="flex flex-row items-center">
@@ -235,7 +310,7 @@ function ClassLessonPage() {
                 <h2 className="text-xl font-bold my-2">Nội dung bài học:</h2>
                 <p>
                     {lessonDataState.textData && (
-                        <div>
+                        <div ref={textDataRef}>
                             <RichTextEditor disabled data={lessonDataState.textData} />
                         </div>
                     )}{' '}

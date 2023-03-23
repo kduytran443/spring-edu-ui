@@ -9,12 +9,22 @@ import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
 import { faOptinMonster } from '@fortawesome/free-brands-svg-icons';
 import SpeechRecorder from '../SpeechRecorder';
 import { useState } from 'react';
+import { classService } from '~/services/classService';
+import { useNavigate } from 'react-router-dom';
 
 export default function CustomizedInputBase() {
     const [searchInputValueState, setSearchInputValueState] = useState('');
 
     const onSubmitInput = (value) => {
         setSearchInputValueState(value);
+        search();
+    };
+
+    const navigate = useNavigate();
+    const search = () => {
+        if (searchInputValueState.trim()) {
+            navigate('/search?value=' + encodeURI(searchInputValueState));
+        }
     };
 
     return (
@@ -30,8 +40,22 @@ export default function CustomizedInputBase() {
                 onChange={(e) => {
                     setSearchInputValueState(e.target.value);
                 }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        console.log(' ok ok ok ');
+                    }
+                }}
+                onKeyDownCapture={() => {}}
+                onKeyUpCapture={() => {}}
             />
-            <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+            <IconButton
+                onClick={(e) => {
+                    search();
+                }}
+                type="button"
+                sx={{ p: '10px' }}
+                aria-label="search"
+            >
                 <SearchIcon />
             </IconButton>
             <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />

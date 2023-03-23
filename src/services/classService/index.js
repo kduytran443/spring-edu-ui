@@ -19,7 +19,39 @@ import { API_BASE_URL } from '~/constants';
 
 export const classService = {
     api: 'api/class',
+    async searchClass(data) {
+        const config = getConfig();
+        let queryString = `${API_BASE_URL}/public/${this.api}-review/search?`;
 
+        let hasPrevious = false;
+        if (data.value) {
+            queryString += `value=${data.value}`;
+            hasPrevious = true;
+        }
+        if (data.categoryCode) {
+            if (hasPrevious) {
+                queryString += '&';
+            }
+            queryString += `categoryCode=${data.categoryCode}`;
+            hasPrevious = true;
+        }
+        if (data.maxFee) {
+            if (hasPrevious) {
+                queryString += '&';
+            }
+            queryString += `maxFee=${data.maxFee}`;
+            hasPrevious = true;
+        }
+        if (data.rating) {
+            if (hasPrevious) {
+                queryString += '&';
+            }
+            queryString += `rating=${data.rating}`;
+            hasPrevious = true;
+        }
+        const response = await fetch(queryString, config);
+        return response.json();
+    },
     async getClassIntroById(id) {
         //classLessonId
         const config = getConfig();

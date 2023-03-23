@@ -29,6 +29,7 @@ import {
     CLASS_EXERCISE_EDIT_PAGE_URL,
     CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
     CLASS_RESULT_EXERCISE_PAGE_URL,
+    SEARCH_PAGE_URL,
 } from '~/constants';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
@@ -62,6 +63,7 @@ import PersonalPage from '~/pages/PersonalPage';
 import PersonalEditPage from '~/pages/PersonalPage/PersonalEditPage';
 import QuestionBankDetailsPage from '~/pages/QuestionBankDetailsPage';
 import QuestionBankPage from '~/pages/QuestionBankPage';
+import SearchPage from '~/pages/SearchPage';
 import SignUpPage from '~/pages/SignUpPage';
 
 const publicRoutes = [
@@ -98,6 +100,11 @@ const publicRoutes = [
     {
         path: `${INTRO_PAGE_URL}`,
         component: IntroPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${SEARCH_PAGE_URL}`,
+        component: SearchPage,
         layout: FullLayout,
     },
 ];

@@ -8,3 +8,8 @@ export const renderToTime = (timeData) => {
         time.getMonth() + 1
     }/${time.getFullYear()} - ${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
 };
+export const inputNumber = (value, callback) => {
+    if (!isNaN(value) && !value.includes(' ')) {
+        callback(value);
+    }
+};

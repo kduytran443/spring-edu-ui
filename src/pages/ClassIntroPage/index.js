@@ -9,7 +9,7 @@ import {
     faX,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Avatar, Button, Rating, Tab, TextField } from '@mui/material';
+import { Avatar, Button, IconButton, Rating, Tab, TextField } from '@mui/material';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
@@ -32,6 +32,11 @@ import ShowTextData from '~/components/ShowTextData';
 import { reviewService } from '~/services/reviewService';
 import SimpleSnackbar from '~/components/SimpleSnackbar';
 import { renderToDate } from '~/utils';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import { reportService } from '~/services/reportService';
+import ReportClassDialog from '~/components/ReportClassDialog';
+import { discountService } from '~/services/discountService';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -45,18 +50,7 @@ const columns = [
 ];
 
 function ClassIntroPage() {
-    const [classDataState, setClassDataState] = useState(() => {
-        return {
-            name: 'Tên lớp học',
-            description: `Mô tả ngắn`,
-            price: '99000',
-            creDate: 'dd/mm/yyyy',
-            startDate: 'dd/mm/yyyy',
-            endDate: 'dd/mm/yyyy',
-            schedule: 'Lịch hàng tuần',
-            status: 'Đã bắt đầu',
-        };
-    });
+    const [classDataState, setClassDataState] = useState({});
     const navigate = useNavigate();
 
     const [editorValueState, setEditorValueState] = useState('');
@@ -128,24 +122,11 @@ function ClassIntroPage() {
             .then((data) => {
                 setClassDataState(data);
                 setYoutubeVideo(data.video);
+                setTimeout(() => {
+                    setLoadingState(false);
+                }, 600);
             });
     }, [location]);
-
-    /*
-    private Long userId;
-	private String username;
-	private String fullname;
-	private String avatar;
-	private String email;
-	private Long classId;
-	private String classRole;
-	private float fee;
-	private Timestamp createdDate;
-	private int memberAccepted;
-	private int classAccepted;
-	private int discount;
-	private Long discountId;
-    */
 
     const [successfulEnrollmentState, setSuccessfulEnrollmentState] = useState(0);
 
@@ -184,15 +165,6 @@ function ClassIntroPage() {
         });
     };
 
-    let startTime = null;
-    let endTime = null;
-    if (classDataState.startTime) {
-        startTime = new Date(classDataState.startTime);
-    }
-    if (classDataState.endTime) {
-        endTime = new Date(classDataState.endTime);
-    }
-
     let discount = null;
 
     if (classDataState?.discount) {
@@ -213,6 +185,8 @@ function ClassIntroPage() {
         return match && match[2].length === 11 ? match[2] : null;
     }
 
+    const [loadingState, setLoadingState] = useState(true);
+    const [alertSuccess, setAlertSuccess] = useState(0);
     const [youtubeVideo, setYoutubeVideo] = useState();
 
     const ratingClass = (rating) => {};
@@ -249,24 +223,80 @@ function ClassIntroPage() {
         setAlertState('Đã gửi thành công');
 
         reviewService.postReview(review).then((data) => {
-            loadReviews();
+            if (data.id) {
+                setAlertSuccess(1);
+                loadReviews();
+                setTimeout(() => {
+                    setAlertSuccess(0);
+                }, 1000);
+            } else {
+                setAlertSuccess(-1);
+                setTimeout(() => {
+                    setAlertSuccess(0);
+                }, 1000);
+            }
         });
     };
+
+    const [memberState, setMemberState] = useState({});
+    useEffect(() => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            console.log('memberState 1', data);
+            if (data.userId) {
+                console.log('memberState 2', data);
+                setMemberState(data);
+            }
+        });
+    }, [location]);
+
+    const acceptJoinClass = () => {
+        const classMember = {
+            classId: classId,
+            classRole: 'student',
+            memberAccepted: 1,
+            classAccepted: 1,
+            fee: 0,
+        };
+        classMemberService.putClassMember(classMember).then((data) => {
+            if (data) {
+                setAlertSuccess(1);
+                setTimeout(() => {
+                    navigate('/class/' + classId);
+                }, 2000);
+            }
+        });
+    };
+
+    const [discountList, setDiscountList] = useState([]);
+    useEffect(() => {
+        discountService.getAllByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                setDiscountList(data);
+            }
+        });
+    }, [location]);
 
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
-                <div className="mb-[6px] lg:block hidden">
-                    <Button
-                        onClick={(e) => {
-                            navigate('/category/' + classDataState.categoryCode);
-                        }}
-                        startIcon={<FontAwesomeIcon icon={faReply} />}
-                    >
-                        {classDataState.categoryName}
-                    </Button>
+                <AlertSuccessDialog open={alertSuccess === 1} />
+                {loadingState && <LoadingPageProcess />}
+                {classDataState && (
+                    <div className="mb-[6px] lg:block hidden">
+                        <Button
+                            onClick={(e) => {
+                                navigate('/category/' + classDataState.categoryCode);
+                            }}
+                            startIcon={<FontAwesomeIcon icon={faReply} />}
+                        >
+                            {classDataState.categoryName}
+                        </Button>
+                    </div>
+                )}
+                <div className="w-full flex flex-row items-center">
+                    <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
+                    <ReportClassDialog />
                 </div>
-                <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
                 <div className="flex flex-row items-center">
                     <b>
                         <FontAwesomeIcon className="mr-2" icon={faCalendar} /> Ngày khởi tạo lớp:{' '}
@@ -274,41 +304,39 @@ function ClassIntroPage() {
                     <div>{renderToDate(classDataState.createdDate)}</div>
                 </div>
                 <div className="my-4">
-                    {classDataState.stars && classDataState.stars > 0 && (
-                        <div>
-                            {!classDataState.userRoleCode ? (
-                                <Rating
-                                    readOnly={true}
-                                    defaultValue={classDataState.stars}
-                                    value={classDataState.stars}
-                                    precision={1}
-                                />
-                            ) : (
-                                <Rating
-                                    readOnly={false}
-                                    defaultValue={reviewRatingState.stars}
-                                    value={reviewRatingState.stars}
-                                    precision={1}
-                                    onChange={changeReviewRating}
-                                />
-                            )}
-                            {classDataState.userRoleCode && (
-                                <>
-                                    <div className="w-full">
-                                        <p>Review của bạn về lớp này:</p>
-                                        <TextField
-                                            className="w-full"
-                                            multiline
-                                            rows={2}
-                                            onInput={changeReviewComment}
-                                            value={reviewRatingState.comment}
-                                        />
-                                    </div>
-                                    <Button onClick={postReview}>Thay đổi</Button>
-                                </>
-                            )}
-                        </div>
-                    )}
+                    <div>
+                        {!classDataState.userRoleCode ? (
+                            <Rating
+                                readOnly={true}
+                                defaultValue={classDataState.stars}
+                                value={classDataState.stars}
+                                precision={1}
+                            />
+                        ) : (
+                            <Rating
+                                readOnly={false}
+                                defaultValue={reviewRatingState.stars}
+                                value={reviewRatingState.stars}
+                                precision={1}
+                                onChange={changeReviewRating}
+                            />
+                        )}
+                        {classDataState.userRoleCode && (
+                            <>
+                                <div className="w-full">
+                                    <p>Review của bạn về lớp này:</p>
+                                    <TextField
+                                        className="w-full"
+                                        multiline
+                                        rows={2}
+                                        onInput={changeReviewComment}
+                                        value={reviewRatingState.comment}
+                                    />
+                                </div>
+                                <Button onClick={postReview}>Comment</Button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex flex-row items-center mb-4 md:mb-0">
@@ -329,9 +357,9 @@ function ClassIntroPage() {
                         </div>
                     )}
                     <div className="my-4">
-                        <span>
+                        <div className="text-2xl mb-8 mt-2">
                             <b>Mô tả:</b>
-                        </span>
+                        </div>
                         {classDataState.textData && <ShowTextData data={classDataState.textData} />}
                     </div>
                     <div className="mt-10 w-full">
@@ -347,7 +375,7 @@ function ClassIntroPage() {
                             </TabContext>
                         </Box>
                         {value === 'review' ? (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in max-h-[400px] overflow-y-scroll">
                                 {reviewListState === null ? (
                                     <LoadingProcess />
                                 ) : (
@@ -373,7 +401,7 @@ function ClassIntroPage() {
                                 )}
                             </ul>
                         ) : (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in max-h-[400px] overflow-y-scroll">
                                 {commentListState === null ? (
                                     <LoadingProcess />
                                 ) : (
@@ -416,12 +444,22 @@ function ClassIntroPage() {
                         </Button>
                     </div>
                     <div className="w-full p-0 lg:p-4">
-                        {classDataState.video && (
+                        {classDataState.video ? (
                             <iframe
                                 width="100%"
                                 height="360"
                                 src={'https://www.youtube.com/embed/' + getId(classDataState.video)}
                                 title="Con đường trở thành lập trình viên Front-end! Học gì? Thứ tự học ra sao? Nên tập trung vào cái nào?"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen
+                            ></iframe>
+                        ) : (
+                            <iframe
+                                width="100%"
+                                height="360"
+                                src="https://www.youtube.com/embed/HndV87XpkWg"
+                                title="What&#39;s Education For?"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowfullscreen
@@ -433,7 +471,7 @@ function ClassIntroPage() {
                             <div>
                                 {discount === null ? (
                                     <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                        <div>{classDataState.fee > 0 ? classDataState.fee : 'Miễn phí'} usd</div>
+                                        <div>{classDataState.fee > 0 ? classDataState.fee : 'Miễn phí'} VNĐ</div>
                                     </span>
                                 ) : (
                                     <div className="flex flex-col justify-center items-center">
@@ -464,76 +502,99 @@ function ClassIntroPage() {
                                 </Button>
                             ) : (
                                 <>
-                                    <SimpleDialog
-                                        openButton={
-                                            <Button
-                                                onClick={(e) => {
-                                                    if (!userState.username) {
-                                                        navigate(LOGIN_PAGE_URL);
-                                                    }
-                                                }}
-                                                size="large"
-                                                className="bg-red-400"
-                                                variant="contained"
-                                            >
-                                                Đăng ký học <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
+                                    {((memberState.memberAccepted === 0 && memberState.classAccepted === 0) ||
+                                        (!memberState.memberAccepted && !memberState.classAccepted)) && (
+                                        <SimpleDialog
+                                            openButton={
+                                                <Button
+                                                    onClick={(e) => {
+                                                        if (!userState.username) {
+                                                            navigate(LOGIN_PAGE_URL);
+                                                        }
+                                                    }}
+                                                    size="large"
+                                                    className="bg-red-400"
+                                                    variant="contained"
+                                                >
+                                                    Đăng ký học{' '}
+                                                    <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
+                                                </Button>
+                                            }
+                                            agreeAction={
+                                                classDataState.fee - classDataState.fee * (discount / 100) > 0
+                                                    ? buyClass
+                                                    : enrollClass
+                                            }
+                                            title={'Đăng ký học'}
+                                            visibleButton={
+                                                !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
+                                            }
+                                            closeAftarAgree={false}
+                                        >
+                                            <>
+                                                {successfulEnrollmentState === 2 && (
+                                                    <div className="flex flex-col items-center justify-center mt-4">
+                                                        <GreatIconButton />
+                                                        <p>Đã gửi lời mời, đang đợi chấp thuận</p>
+                                                    </div>
+                                                )}
+                                                {successfulEnrollmentState === 1 && (
+                                                    <div className="flex flex-col items-center justify-center mt-4">
+                                                        <GreatIconButton />
+                                                        <p>Đã đăng ký thành công, đang chuyển hướng</p>
+                                                    </div>
+                                                )}
+                                                {successfulEnrollmentState === 0 && <div>Xác nhận đăng ký lớp này</div>}
+                                                {successfulEnrollmentState === -1 && (
+                                                    <div className="flex flex-col items-center justify-center mt-4">
+                                                        <GreatIconButton
+                                                            icon={<FontAwesomeIcon icon={faBug} />}
+                                                            color="bg-red-500 shadow-red-300"
+                                                        />
+                                                        <p>Không đăng ký thành công, hãy thử lại!</p>
+                                                    </div>
+                                                )}
+                                            </>
+                                        </SimpleDialog>
+                                    )}
+                                    {memberState.memberAccepted === 1 && memberState.classAccepted === 0 && (
+                                        <div>
+                                            <Button disabled variant="contained">
+                                                Đang chờ phê duyệt
                                             </Button>
-                                        }
-                                        agreeAction={
-                                            classDataState.fee - classDataState.fee * (discount / 100) > 0
-                                                ? buyClass
-                                                : enrollClass
-                                        }
-                                        title={'Đăng ký học'}
-                                        visibleButton={
-                                            !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
-                                        }
-                                        closeAftarAgree={false}
-                                    >
-                                        <>
-                                            {successfulEnrollmentState === 2 && (
-                                                <div className="flex flex-col items-center justify-center mt-4">
-                                                    <GreatIconButton />
-                                                    <p>Đã gửi lời mời, đang đợi chấp thuận</p>
-                                                </div>
-                                            )}
-                                            {successfulEnrollmentState === 1 && (
-                                                <div className="flex flex-col items-center justify-center mt-4">
-                                                    <GreatIconButton />
-                                                    <p>Đã đăng ký thành công, đang chuyển hướng</p>
-                                                </div>
-                                            )}
-                                            {successfulEnrollmentState === 0 && <div>Xác nhận đăng ký lớp này</div>}
-                                            {successfulEnrollmentState === -1 && (
-                                                <div className="flex flex-col items-center justify-center mt-4">
-                                                    <GreatIconButton
-                                                        icon={<FontAwesomeIcon icon={faBug} />}
-                                                        color="bg-red-500 shadow-red-300"
-                                                    />
-                                                    <p>Không đăng ký thành công, hãy thử lại!</p>
-                                                </div>
-                                            )}
-                                        </>
-                                    </SimpleDialog>
+                                        </div>
+                                    )}
+                                    {memberState.memberAccepted === 0 && memberState.classAccepted === 1 && (
+                                        <div>
+                                            <Button onClick={acceptJoinClass} variant="contained">
+                                                Chấp nhận
+                                            </Button>
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </div>
-                        {classDataState.classSchedules && startTime && endTime && (
+                        {discountList.length > 0 && (
+                            <div className="flex mb-2 flex-row items-center">
+                                <b>Giảm giá</b>
+                                <div className="ml-4">
+                                    {discountList.reduce((previous, current) => {
+                                        return previous + current.discountPercent;
+                                    }, 0)}
+                                    %
+                                </div>
+                            </div>
+                        )}
+                        {classDataState.classSchedules && (
                             <ul>
                                 <li>
                                     <span>
-                                        Ngày bắt đầu:{' '}
-                                        <b>{`${startTime.getDate()}/${
-                                            startTime.getMonth() + 1
-                                        }/${startTime.getFullYear()}`}</b>
+                                        <b>Ngày bắt đầu:</b> {renderToDate(classDataState.startTime)}
                                     </span>
                                 </li>
                                 <li>
                                     <span>
-                                        Ngày kết thúc:{' '}
-                                        <b>{`${endTime.getDate()}/${
-                                            endTime.getMonth() + 1
-                                        }/${endTime.getFullYear()}`}</b>
+                                        <b>Ngày kết thúc:</b> {renderToDate(classDataState.endTime)}
                                     </span>
                                 </li>
                             </ul>

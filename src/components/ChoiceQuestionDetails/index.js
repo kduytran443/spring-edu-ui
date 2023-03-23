@@ -125,8 +125,8 @@ export default function ChoiceQuestionDetails({
     };
 
     return (
-        <div>
-            <div className="mt-4 w-full md:w-[500px]">
+        <div className="w-full">
+            <div className="mt-4 w-full">
                 <div className="w-full">
                     <div className="font-bold">
                         Tên câu hỏi: {newQuestionName} ({numberOfRightAnswer} đáp án đúng)
@@ -140,8 +140,8 @@ export default function ChoiceQuestionDetails({
                 )}
                 {choiceAnswerController.map((choiceAnswer, index) => {
                     return (
-                        <div key={index} className="w-full select-none bg-slate-100 p-4 rounded my-8 md:my-6">
-                            <div className="flex flex-col-reverse md:flex-row items-center">
+                        <div key={index} className="w-full select-none w-full bg-slate-100 p-4 rounded my-8 md:my-6">
+                            <div className="flex flex-col-reverse w-full md:flex-row items-center">
                                 <div className="flex flex-col w-full">
                                     {choiceAnswer.type === 'text' && (
                                         <TextField

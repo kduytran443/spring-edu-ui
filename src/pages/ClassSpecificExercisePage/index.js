@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
 import { drawQuizService } from '~/services/drawQuizService';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
@@ -23,11 +24,15 @@ function ClassSpecificExercisePage() {
             if (data.id) {
                 console.log('data', data);
                 setExerciseData(data);
+                setTimeout(() => {
+                    setLoadingState(false);
+                }, 1000);
             }
         });
     };
 
     const [userState, dispatchUserState] = useUser();
+    const [loadingState, setLoadingState] = useState(true);
 
     const [submittedExerciseList, setSubmittedExerciseList] = useState([]);
     const [submittedExercise, setSubmittedExercise] = useState();
@@ -40,7 +45,9 @@ function ClassSpecificExercisePage() {
                     setSubmittedExercise(lastestSubmittedExercise);
                 } else {
                     setFinished(true);
-                    navigate(`/class/${classId}/exercise/${exerciseId}/result/${lastestSubmittedExercise.id}`);
+                    setTimeout(() => {
+                        navigate(`/class/${classId}/exercise/${exerciseId}/result/${lastestSubmittedExercise.id}`);
+                    }, 800);
                 }
                 setSubmittedExerciseList(data);
             }
@@ -105,6 +112,8 @@ function ClassSpecificExercisePage() {
                 </Button>
             </div>
             <AlertSuccessDialog open={alertSuccess} />
+
+            {loadingState && <LoadingPageProcess />}
             <div>
                 <h1 className="font-bold text-2xl my-6">
                     {exerciseData.effective ? 'Bài kiểm tra' : 'Bài tập'}: {exerciseData.name}

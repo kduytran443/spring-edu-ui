@@ -38,6 +38,8 @@ function CategoryPage() {
             });
     }, []);
 
+    const [loadMore, setLoadMore] = useState(1);
+
     return (
         <div className="flex flex-col p-4">
             <div className="flex flex-col">
@@ -94,20 +96,6 @@ function CategoryPage() {
                     </span>
                 </p>
             </div>
-            <div className="flex flex-row justify-between items-center p-4 bg-slate-100 rounded-lg">
-                <div className="flex flex-row items-center">
-                    <span className="hidden md:block">Sắp xếp theo</span>
-                    <div className="flex flex-row">
-                        <div className="mr-4">
-                            <Button variant="text">Mới nhất</Button>
-                        </div>
-                        <div className="">
-                            <Button variant="text">Hot nhất</Button>
-                        </div>
-                    </div>
-                </div>
-                <div>{quantityState} lớp học</div>
-            </div>
             {classListState === null ? (
                 <LoadingProcess />
             ) : (
@@ -115,6 +103,7 @@ function CategoryPage() {
                     <ClassListIntro
                         listItem={classListState}
                         hiddenHeader
+                        limit={loadMore * 6}
                         scroll={false}
                         title="Lập trình"
                         icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
@@ -122,9 +111,15 @@ function CategoryPage() {
                 </div>
             )}
             {classListState !== null && classListState.length === 0 && <NoClassFound />}
-            {classListState !== null && classListState.length > 0 && (
+            {classListState !== null && classListState.length > 0 && classListState.length > loadMore * 6 && (
                 <div className="my-8">
-                    <Pagination count={10} color="primary" />
+                    <Button
+                        onClick={(e) => {
+                            setLoadMore((pre) => pre + 1);
+                        }}
+                    >
+                        Xem thêm
+                    </Button>
                 </div>
             )}
         </div>

@@ -20,6 +20,8 @@ function ClassScheduleEditPage() {
         classScheduleService.getClassScheduleByClassScheduleId(scheduleId).then((data) => {
             if (data) {
                 setClassScheduleState(data);
+                console.log('data.weeklyClassScheduleId', data.weeklyClassScheduleId);
+                setSelectedWeeklyClassSchedule(data.weeklyClassScheduleId);
             }
         });
     };
@@ -28,7 +30,6 @@ function ClassScheduleEditPage() {
         weeklyClassScheduleService.getWeeklyClassSchedules().then((data) => {
             if (data.length > 0) {
                 setWeeklyClassScheduleState(data);
-                setSelectedWeeklyClassSchedule(data.dateCode);
             }
         });
     };
@@ -59,14 +60,51 @@ function ClassScheduleEditPage() {
 
     useEffect(() => {}, [classScheduleState]);
 
+    const [minutesError, setMinutesError] = useState('');
     const editClassSchedule = () => {
         let obj = {};
-        obj = { ...classScheduleState, weeklyClassScheduleId: selectedWeeklyClassSchedule, classId: classId };
 
-        classScheduleService.putClassSchedule(obj).then((data) => {
-            setClassScheduleState({});
-            navigate('/class/' + classId + '/setting');
-        });
+        let valid = true;
+
+        if (classScheduleState.startHours > classScheduleState.endHours) {
+            valid = false;
+        } else if (classScheduleState.startHours === classScheduleState.endHours) {
+            if (classScheduleState.startMinutes >= classScheduleState.endMinutes) {
+                valid = false;
+            }
+        }
+
+        if (
+            classScheduleState.startHours < 0 ||
+            classScheduleState.startHours > 23 ||
+            classScheduleState.endHours < 0 ||
+            classScheduleState.endHours > 23
+        ) {
+            valid = false;
+        }
+
+        if (
+            classScheduleState.endMinutes < 0 ||
+            classScheduleState.endMinutes > 59 ||
+            classScheduleState.startMinutes < 0 ||
+            classScheduleState.startMinutes > 59
+        ) {
+            valid = false;
+        }
+
+        if (!selectedWeeklyClassSchedule) {
+            valid = false;
+        }
+
+        obj = { ...classScheduleState, weeklyClassScheduleId: selectedWeeklyClassSchedule, classId: classId };
+        if (valid) {
+            classScheduleService.putClassSchedule(obj).then((data) => {
+                setClassScheduleState({});
+                navigate('/class/' + classId + '/setting');
+            });
+        } else {
+            setMinutesError('Thời gian không hợp lệ');
+        }
     };
 
     const navigate = useNavigate();
@@ -123,27 +161,30 @@ function ClassScheduleEditPage() {
                     </div>
                 </div>
                 <div>
-                    <Box sx={{ minWidth: 220 }}>
-                        <FormControl fullWidth>
-                            <InputLabel id="demo-simple-select-label">Thứ trong tuần</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={selectedWeeklyClassSchedule}
-                                defaultValue={selectedWeeklyClassSchedule}
-                                label="Chủ đề"
-                                onChange={handleChangeWeeklyClassSchedule}
-                            >
-                                {weeklyClassScheduleState.map((weeklyClassSchedule) => (
-                                    <MenuItem key={weeklyClassSchedule.id} value={weeklyClassSchedule.id}>
-                                        {weeklyClassSchedule.name}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                    </Box>
+                    {selectedWeeklyClassSchedule && (
+                        <Box sx={{ minWidth: 220 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Thứ trong tuần</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={selectedWeeklyClassSchedule}
+                                    defaultValue={selectedWeeklyClassSchedule}
+                                    label="Chủ đề"
+                                    onChange={handleChangeWeeklyClassSchedule}
+                                >
+                                    {weeklyClassScheduleState.map((weeklyClassSchedule) => (
+                                        <MenuItem key={weeklyClassSchedule.id} value={weeklyClassSchedule.id}>
+                                            {weeklyClassSchedule.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </Box>
+                    )}
                 </div>
             </div>
+            {minutesError && <div className="text-red-500">*{minutesError}</div>}
             <Button onClick={editClassSchedule} variant="contained" size="large">
                 Sửa
             </Button>

@@ -58,6 +58,11 @@ export const classMemberService = {
         return response.json();
     },
 
+    async sendToWaitingList(classMember) {
+        const config = putConfig(classMember);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/waiting-list`, config);
+        return response.json();
+    },
     async putClassMember(classMember) {
         const config = putConfig(classMember);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);

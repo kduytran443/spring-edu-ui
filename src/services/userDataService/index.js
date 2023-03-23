@@ -14,6 +14,11 @@ export const userDataService = {
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${username}`, config);
         return response.json();
     },
+    async updateUserAvatar(user) {
+        const config = putConfig(user);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/avatar`, config);
+        return response.json();
+    },
     async putUser(user) {
         const config = putConfig(user);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
@@ -22,6 +27,12 @@ export const userDataService = {
     async deleteUser(username) {
         const config = deleteConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}/${username}`, config);
+        return response.json();
+    },
+
+    async signUp(user) {
+        const config = postConfig(user);
+        const response = await fetch(`${API_BASE_URL}/api/sign-up`, config);
         return response.json();
     },
 };

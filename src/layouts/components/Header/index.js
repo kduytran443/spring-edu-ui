@@ -31,7 +31,13 @@ function Header() {
                     <MobileHeaderMenu />
                 </div>
                 <div className="md:hidden flex flex-row items-center justify-center">
-                    <IconButton sx={{ p: '10px' }} aria-label="menu">
+                    <IconButton
+                        onClick={(e) => {
+                            navigate('/search');
+                        }}
+                        sx={{ p: '10px' }}
+                        aria-label="menu"
+                    >
                         <SearchIcon />
                     </IconButton>
                 </div>

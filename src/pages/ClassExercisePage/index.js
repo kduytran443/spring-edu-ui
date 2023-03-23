@@ -21,6 +21,8 @@ import QuestionBankShowList from '~/components/QuestionBankShowList';
 import { exerciseService } from '~/services/exerciseService';
 import { renderToTime } from '~/utils';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import { blue, grey } from '@mui/material/colors';
 
 function ClassExercisePage() {
     const { classId } = useParams();
@@ -63,6 +65,8 @@ function ClassExercisePage() {
         loadData();
     }, [location]);
 
+    const date = new Date();
+
     return (
         <div>
             <div>
@@ -85,15 +89,26 @@ function ClassExercisePage() {
             </div>
             <div>
                 {classExerciseList.map((classExercise) => {
+                    const colorAvatar = {};
+                    const isAvailable = date.getTime() < classExercise.endTime;
+
+                    if (isAvailable) {
+                        colorAvatar.bgcolor = blue[500];
+                    } else {
+                        colorAvatar.bgcolor = grey[500];
+                    }
+
                     return (
                         <ListItem
-                            className="cursor-pointer hover:bg-blue-100"
+                            className={`cursor-pointer ${isAvailable ? 'hover:bg-blue-100' : 'hover:bg-gray-100'}`}
                             onClick={(e) => {
-                                navigate('/class/' + classId + '/exercise/' + classExercise.id);
+                                if (isAvailable) {
+                                    navigate('/class/' + classId + '/exercise/' + classExercise.id);
+                                }
                             }}
                         >
                             <ListItemAvatar>
-                                <Avatar>
+                                <Avatar sx={colorAvatar}>
                                     <FactCheckIcon />
                                 </Avatar>
                             </ListItemAvatar>

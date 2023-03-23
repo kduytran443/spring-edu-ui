@@ -12,6 +12,7 @@ import SimpleAccordion from '~/components/SimpleAccordion';
 import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 import InvitedClassMember from '~/components/InvitedClassMember';
 import RequestClassMember from '~/components/RequestClassMember';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -79,6 +80,31 @@ function ClassEveryonePage() {
             });
     }, [classId]);
     */
+
+    const [alertSuccess, setAlertSuccess] = useState(false);
+    const sendToWaitingList = (userId) => {
+        const classMember = {
+            classId: classId,
+            classRole: 'student',
+            memberAccepted: 1,
+            classAccepted: 0,
+            fee: 0,
+            userId: userId,
+        };
+
+        console.log(classMember);
+
+        classMemberService.sendToWaitingList(classMember).then((data) => {
+            if (data) {
+                setAlertSuccess(true);
+                setTimeout(() => {
+                    loadUserData();
+                    loadData();
+                    setAlertSuccess(false);
+                }, 2000);
+            }
+        });
+    };
 
     return (
         <div>
@@ -184,6 +210,7 @@ function ClassEveryonePage() {
                 <Divider />
             </div>
 
+            <AlertSuccessDialog open={alertSuccess} />
             <div className="flex flex-row items-center justify-between">
                 <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Học viên</h1>
                 {userRole && userRole === 'teacher' && (
@@ -196,7 +223,7 @@ function ClassEveryonePage() {
                 {peopleListState.map((people) => {
                     if (people.classRole === 'student') {
                         return (
-                            <li key={people.id} className="my-2">
+                            <li key={people.userId} className="my-2">
                                 <UserAccordion
                                     userInfo={<UserItemCard avatar={people.avatar} name={people.fullname} />}
                                 >
@@ -212,6 +239,18 @@ function ClassEveryonePage() {
                                         </b>{' '}
                                         {people.email}
                                     </p>
+                                    {userRole && userRole === 'teacher' && (
+                                        <div>
+                                            <Button
+                                                onClick={(e) => {
+                                                    sendToWaitingList(people.userId);
+                                                }}
+                                                disabled={people.fee > 0}
+                                            >
+                                                Đưa vào danh sách chờ
+                                            </Button>
+                                        </div>
+                                    )}
                                 </UserAccordion>
                             </li>
                         );

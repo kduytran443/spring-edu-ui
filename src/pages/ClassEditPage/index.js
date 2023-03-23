@@ -8,17 +8,20 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import AlertFailDialog from '~/components/AlertFailDialog';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { categoryService } from '~/services/categoryService';
 import { classService } from '~/services/classService';
+import { inputNumber } from '~/utils';
 
 function ClassEditPage() {
     const [nameState, setNameState] = useState();
     const [categoryList, setCategoryList] = useState([]);
     const [categoryState, setCategoryState] = useState();
     const [visibleState, setVisibleState] = useState();
-    const [textData, setTextData] = useState();
+    const [textData, setTextData] = useState(null);
     const [avatar, setAvatar] = useState();
     const [video, setVideo] = useState();
     const [fee, setFee] = useState(0);
@@ -35,26 +38,43 @@ function ClassEditPage() {
 
     const navigate = useNavigate();
 
-    const submit = () => {
-        const obj = {
-            name: nameState,
-            status: 1,
-            id: classId,
-            visiable: 1,
-            category: {
-                id: categoryState,
-            },
-            videoData: video,
-            fee: fee,
-            avatar: avatar,
-            content: textData,
-        };
+    const [success, setSuccess] = useState(0);
 
-        classService.putClass(obj).then((data) => {
-            if (data.id) {
-                navigate('/class/' + data.id + '/setting');
-            }
-        });
+    const submit = () => {
+        if (nameState && classId && categoryState && fee >= 0) {
+            const obj = {
+                name: nameState,
+                status: 1,
+                id: classId,
+                visiable: 1,
+                category: {
+                    id: categoryState,
+                },
+                videoData: video,
+                fee: fee,
+                avatar: avatar,
+                content: textData,
+            };
+
+            classService.putClass(obj).then((data) => {
+                if (data.id) {
+                    setSuccess(1);
+                    setTimeout(() => {
+                        navigate('/class/' + data.id + '/setting');
+                    }, 1000);
+                } else {
+                    setSuccess(-1);
+                    setTimeout(() => {
+                        setSuccess(0);
+                    }, 1000);
+                }
+            });
+        } else {
+            setSuccess(-1);
+            setTimeout(() => {
+                setSuccess(0);
+            }, 1000);
+        }
     };
     const uploadImage = (e) => {
         const files = e.target.files;
@@ -109,6 +129,8 @@ const [nameState, setNameState] = useState();
                 </Button>
             </div>
             <h1 className="font-bold text-2xl my-6">Sửa lớp</h1>
+            <AlertSuccessDialog open={success === 1} />
+            <AlertFailDialog open={success === -1} />
             <div>
                 <div className="w-full">
                     <h3 className="text-xl font-bold">Tên lớp</h3>
@@ -156,7 +178,7 @@ const [nameState, setNameState] = useState();
                             className="w-full"
                             value={fee}
                             onInput={(e) => {
-                                setFee(e.target.value);
+                                inputNumber(e.target.value, setFee);
                             }}
                         />
                     </div>
@@ -164,7 +186,7 @@ const [nameState, setNameState] = useState();
             </div>
             <div className="w-full my-6">
                 <h3 className="text-xl font-bold">Nội dung giới thiệu</h3>
-                {textData && <RichTextEditor data={textData} setData={setTextData} />}
+                {textData !== null && <RichTextEditor data={textData} setData={setTextData} />}
             </div>
             <div className="my-4">
                 <h3 className="text-xl font-bold">Video giới thiệu (Youtube url)</h3>

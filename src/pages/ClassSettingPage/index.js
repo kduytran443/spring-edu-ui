@@ -17,13 +17,19 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useEffect, useRef, useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import DiscountTable from '~/components/DiscountTable';
+import AddDiscountDialog from '~/components/DiscountTable/AddDiscountDialog';
 import NormalAccordion from '~/components/NormalAccordion';
 import UploadWidget from '~/components/UploadWidget';
 import { API_BASE_URL } from '~/constants';
+import { classMemberService } from '~/services/classMemberService';
 import { classScheduleService } from '~/services/classScheduleService';
 import { classService } from '~/services/classService';
 import { getConfig } from '~/services/config';
+import { discountService } from '~/services/discountService';
 import { weeklyClassScheduleService } from '~/services/weeklyClassScheduleService';
+import ClassDeleteDialog from './ClassDeleteDialog';
 
 function ClassSettingPage() {
     const location = useLocation();
@@ -32,6 +38,7 @@ function ClassSettingPage() {
     const navigate = useNavigate();
     const [uploadFileState, setUploadFileState] = useState(false);
 
+    const [alertSuccess, setAlertSuccess] = useState(false);
     const [imageState, setImageState] = useState('https://www.gstatic.com/classroom/themes/img_graduation.jpg');
 
     const columns = [
@@ -122,19 +129,62 @@ function ClassSettingPage() {
     const [classScheduleState, setClassScheduleState] = useState({});
 
     const onInputSchedule = (key, value) => {
-        setClassScheduleState((pre) => {
-            return { ...pre, [key]: value };
-        });
+        if (!isNaN(value) && !value.includes(' ')) {
+            setClassScheduleState((pre) => {
+                return { ...pre, [key]: value };
+            });
+        }
     };
 
+    const [minutesError, setMinutesError] = useState('');
     const addNewClassSchedule = () => {
         let obj = {};
-        obj = { ...classScheduleState, weeklyClassScheduleId: selectedWeeklyClassSchedule, classId: classId };
-        console.log('THÀNH CÔNG NÈ', obj);
-        classScheduleService.postClassSchedule(obj).then((data) => {
-            loadSchedule();
-            setClassScheduleState({});
-        });
+        let valid = true;
+
+        if (classScheduleState.startHours > classScheduleState.endHours) {
+            valid = false;
+        } else if (classScheduleState.startHours === classScheduleState.endHours) {
+            if (classScheduleState.startMinutes >= classScheduleState.endMinutes) {
+                valid = false;
+            }
+        }
+
+        if (
+            classScheduleState.startHours < 0 ||
+            classScheduleState.startHours > 23 ||
+            classScheduleState.endHours < 0 ||
+            classScheduleState.endHours > 23
+        ) {
+            valid = false;
+        }
+
+        if (
+            classScheduleState.endMinutes < 0 ||
+            classScheduleState.endMinutes > 59 ||
+            classScheduleState.startMinutes < 0 ||
+            classScheduleState.startMinutes > 59
+        ) {
+            valid = false;
+        }
+
+        if (!selectedWeeklyClassSchedule) {
+            valid = false;
+        }
+
+        if (valid) {
+            obj = { ...classScheduleState, weeklyClassScheduleId: selectedWeeklyClassSchedule, classId: classId };
+            classScheduleService.postClassSchedule(obj).then((data) => {
+                if (data) {
+                    loadSchedule();
+                    setAlertSuccess(true);
+                    setTimeout(() => {
+                        setAlertSuccess(false);
+                    }, 1000);
+                }
+            });
+        } else {
+            setMinutesError('Thời gian không hợp lệ');
+        }
     };
 
     const [startTimeState, setStartTimeState] = useState(new Date());
@@ -196,9 +246,45 @@ function ClassSettingPage() {
         });
     };
 
+    const [userRole, setUserRole] = useState();
+    const loadUserData = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            console.log(data);
+            if (isValidRole(data.classRole)) {
+                setUserRole(data.classRole);
+            } else {
+                navigate('/class/' + classId);
+            }
+        });
+    };
+
+    const isValidRole = (role) => {
+        if (role === 'teacher') {
+            return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, [location]);
+
+    const [discountListState, setDiscountListState] = useState([]);
+    const loadDiscounts = () => {
+        discountService.getAllByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                setDiscountListState(data);
+            }
+        });
+    };
+    useEffect(() => {
+        loadDiscounts();
+    }, [location]);
+
     return (
         <div className="p-2 md:p-0">
             <h1 className="font-bold text-xl my-2">Cài đặt</h1>
+            <AlertSuccessDialog open={alertSuccess} />
             <FormGroup>
                 <FormControlLabel
                     control={
@@ -232,7 +318,16 @@ function ClassSettingPage() {
                     <UploadWidget multiple={false} />
                 </div>
             )}
-            <div className="my-12">
+            <div className="my-12 p-4 bg-slate-100 rounded">
+                <div className="flex flex-row items-center mb-2">
+                    <h2 className="text-xl font-bold">Giảm giá</h2>
+                    <div className="ml-4">
+                        <AddDiscountDialog classId={classId} reload={loadDiscounts} />
+                    </div>
+                </div>
+                <DiscountTable data={discountListState} reload={loadDiscounts} />
+            </div>
+            <div className="my-12 p-4 bg-slate-100 rounded">
                 <h2 className="text-xl font-bold mb-2">Thời gian mở lớp</h2>
                 <div className="flex lg:flex-row items-center flex-col">
                     {startTimeState && (
@@ -265,7 +360,7 @@ function ClassSettingPage() {
                 </div>
                 {dateError && <div className="text-red-500">*Ngày nhập không hợp lệ</div>}
             </div>
-            <div className="my-4 mt-8">
+            <div className="my-4 mt-8 bg-slate-100 rounded p-4">
                 <h2 className="text-xl font-bold mb-2">Lịch học</h2>
                 <div>
                     <NormalAccordion name="Tạo lịch học">
@@ -333,6 +428,7 @@ function ClassSettingPage() {
                                     </Box>
                                 </div>
                             </div>
+                            {minutesError && <div className="text-red-500">*{minutesError}</div>}
                             <Button onClick={addNewClassSchedule} variant="contained" size="large">
                                 Thêm
                             </Button>
@@ -347,7 +443,7 @@ function ClassSettingPage() {
                     </div>
                 )}
             </div>
-            <div className="mt-12 mb-4">
+            <div className="mt-16 mb-4 flex flex-row items-center">
                 <Button
                     onClick={(e) => {
                         navigate('/edit-class/' + classId);
@@ -357,14 +453,7 @@ function ClassSettingPage() {
                 >
                     Thay đổi thông tin cơ bản
                 </Button>
-                <Button
-                    color="error"
-                    onClick={deleteClass}
-                    variant="outlined"
-                    startIcon={<FontAwesomeIcon icon={faTrash} />}
-                >
-                    Xóa lớp học
-                </Button>
+                <ClassDeleteDialog />
             </div>
         </div>
     );

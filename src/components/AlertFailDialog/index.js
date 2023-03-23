@@ -1,4 +1,4 @@
-import { faCheckCircle, faEdit, faPen } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faEdit, faPen, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
@@ -13,9 +13,8 @@ import {
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { topicService } from '~/services/topicService';
 
-function AlertSuccessDialog({ open, message = 'Thực hiện thành công thao tác' }) {
+function AlertFailDialog({ open }) {
     return (
         <div className="w-full">
             <Dialog open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
@@ -23,14 +22,14 @@ function AlertSuccessDialog({ open, message = 'Thực hiện thành công thao t
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         <div className="lg:w-[400px] items-center justify-center flex flex-col">
-                            <div className="bg-green-300 shadow-lg shadow-green-200 rounded-lg p-2">
+                            <div className="bg-red-300 shadow-lg shadow-red-200 rounded-lg p-2">
                                 <div className="animate-bounce">
                                     <IconButton color="default">
-                                        <FontAwesomeIcon icon={faCheckCircle} />
+                                        <FontAwesomeIcon icon={faX} />
                                     </IconButton>
                                 </div>
                             </div>
-                            <div className="my-2 mt-6">{message}</div>
+                            <div className="my-2 mt-6">Thao tác thất bại</div>
                         </div>
                     </DialogContentText>
                 </DialogContent>
@@ -39,4 +38,4 @@ function AlertSuccessDialog({ open, message = 'Thực hiện thành công thao t
     );
 }
 
-export default AlertSuccessDialog;
+export default AlertFailDialog;

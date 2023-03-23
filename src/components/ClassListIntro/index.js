@@ -8,7 +8,15 @@ import CategoryCard from '../CategoryCard';
 import ClassCard from '../ClassCard';
 import ClassReviewCard from '../ClassReviewCard';
 
-function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = true, hiddenHeader = false }) {
+function ClassListIntro({
+    listItem = [],
+    limit = 6,
+    title = '',
+    icon = '',
+    link = '',
+    scroll = true,
+    hiddenHeader = false,
+}) {
     //item: image, title, description, avatar, userLink, courseLink, review, courseQuantity, price, time
 
     const navigate = useNavigate();
@@ -48,29 +56,39 @@ function ClassListIntro({ listItem, title = '', icon = '', link = '', scroll = t
                 </div>
             )}
             <ul className={`flex flex-row flex-wrap w-full`}>
-                {listItem.map((item, index) => {
-                    console.log(item.registed);
+                {listItem.length >= 0 &&
+                    listItem.map((item, index) => {
+                        console.log(item.registed);
 
-                    let nav = '/intro';
+                        let nav = '/intro';
 
-                    return (
-                        <li key={index} className={`lg:max-w-1/3 lg:w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 w-[100%]`}>
-                            <div className="w-full">
-                                <ClassReviewCard
-                                    navigateTo={`/class/${item.id}` + nav}
-                                    name={item.name}
-                                    img={item.avatar}
-                                    description={item.shortDescription}
-                                    avatar={item.userAvatar}
-                                    fee={item.fee}
-                                    userFullname={item.userFullname}
-                                    people={item.memberCount}
-                                    review={item.stars}
-                                />
-                            </div>
-                        </li>
-                    );
-                })}
+                        return (
+                            <>
+                                {index + 1 <= limit ? (
+                                    <li
+                                        key={index}
+                                        className={`lg:max-w-1/3 lg:w-1/3 md:max-w-1/2 max-w-[100%] md:w-1/2 w-[100%]`}
+                                    >
+                                        <div className="w-full">
+                                            <ClassReviewCard
+                                                navigateTo={`/class/${item.id}` + nav}
+                                                name={item.name}
+                                                img={item.avatar}
+                                                description={item.shortDescription}
+                                                avatar={item.userAvatar}
+                                                fee={item.fee}
+                                                userFullname={item.userFullname}
+                                                people={item.memberCount}
+                                                review={item.stars}
+                                            />
+                                        </div>
+                                    </li>
+                                ) : (
+                                    <></>
+                                )}
+                            </>
+                        );
+                    })}
             </ul>
             {!hiddenHeader && (
                 <div>

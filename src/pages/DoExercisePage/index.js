@@ -7,6 +7,7 @@ import Countdown from 'react-countdown';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import ChoiceQuestionDetails from '~/components/ChoiceQuestionDetails';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
 import { drawQuizService } from '~/services/drawQuizService';
 import { exerciseService } from '~/services/exerciseService';
@@ -17,6 +18,7 @@ function DoExercisePage() {
     const navigate = useNavigate();
     const { classId, exerciseId, submittedExerciseId } = useParams();
     const location = useLocation();
+    const [loadingState, setLoadingState] = useState(true);
 
     const [exerciseData, setExerciseData] = useState({});
     const loadData = () => {
@@ -141,15 +143,13 @@ function DoExercisePage() {
                 <div>{timeLeft && <Countdown onComplete={endTime} date={Date.now() + timeLeft} />}</div>
             </div>
             <AlertSuccessDialog open={alertSuccess} />
-            <div className="flex flex-row items-start justify-between flex-wrap-reverse md:flex-wrap">
+            <div className="flex flex-row items-start w-full justify-between flex-wrap-reverse md:flex-wrap">
                 {choiceQuestion && (
-                    <div>
-                        <ChoiceQuestionDetails
-                            drawQuizId={drawQuizId}
-                            selectAnswer={selectAnswer}
-                            choiceQuestionId={choiceQuestion}
-                        />
-                    </div>
+                    <ChoiceQuestionDetails
+                        drawQuizId={drawQuizId}
+                        selectAnswer={selectAnswer}
+                        choiceQuestionId={choiceQuestion}
+                    />
                 )}
                 <div className="flex flex-col items-center">
                     <div>

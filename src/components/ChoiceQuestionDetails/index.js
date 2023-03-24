@@ -56,6 +56,7 @@ export default function ChoiceQuestionDetails({
             if (data.id) {
                 setNewQuestionName(data.name);
                 setNewQuestionContent(data.content);
+                console.log('data.content', data.content);
             }
         });
     };
@@ -134,8 +135,10 @@ export default function ChoiceQuestionDetails({
                 </div>
                 {newQuestionContent && (
                     <div className="w-full mt-4">
-                        <div className="font-bold">Nội dung</div>
-                        <ShowTextData data={newQuestionContent} />
+                        <div className="w-full mt-4">
+                            <div className="font-bold">Nội dung</div>
+                            <ShowTextData data={newQuestionContent} />
+                        </div>
                     </div>
                 )}
                 {choiceAnswerController.map((choiceAnswer, index) => {

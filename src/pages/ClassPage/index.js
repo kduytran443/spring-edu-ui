@@ -140,7 +140,7 @@ function ClassPage() {
                         <div className="aspect-ratio">
                             <TopicUpdateDialog
                                 buttonOpen={
-                                    <div className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500">
+                                    <div className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500">
                                         <FontAwesomeIcon icon={faPlus} /> Thêm chủ đề
                                     </div>
                                 }
@@ -152,7 +152,7 @@ function ClassPage() {
                                 onClick={(e) => {
                                     navigate('lesson-create');
                                 }}
-                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
+                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
                             >
                                 <MenuBookIcon color="primary" /> Thêm bài học
                             </div>
@@ -160,9 +160,9 @@ function ClassPage() {
                         <div className="aspect-ratio">
                             <div
                                 onClick={(e) => {
-                                    navigate('lesson-create');
+                                    navigate('exercise-create');
                                 }}
-                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-2 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
+                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow cursor-pointer text-blue-500"
                             >
                                 <FactCheckIcon color="primary" /> Thêm bài tập
                             </div>

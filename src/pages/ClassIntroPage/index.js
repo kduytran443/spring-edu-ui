@@ -37,6 +37,7 @@ import { reportService } from '~/services/reportService';
 import ReportClassDialog from '~/components/ReportClassDialog';
 import { discountService } from '~/services/discountService';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import AlertFailDialog from '~/components/AlertFailDialog';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -195,6 +196,7 @@ function ClassIntroPage() {
 
     useEffect(() => {
         reviewService.getReviewByUserAndClass(classId).then((data) => {
+            console.log('chú ý', data);
             if (data.stars > 0) {
                 setReviewRatingState(data);
             }
@@ -223,7 +225,7 @@ function ClassIntroPage() {
         setAlertState('Đã gửi thành công');
 
         reviewService.postReview(review).then((data) => {
-            if (data.id) {
+            if (data) {
                 setAlertSuccess(1);
                 loadReviews();
                 setTimeout(() => {
@@ -276,10 +278,13 @@ function ClassIntroPage() {
         });
     }, [location]);
 
+    const [commentPagination, setCommentPagination] = useState(1);
+
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
                 <AlertSuccessDialog open={alertSuccess === 1} />
+                <AlertFailDialog open={alertSuccess === -1} />
                 {loadingState && <LoadingPageProcess />}
                 {classDataState && (
                     <div className="mb-[6px] lg:block hidden">
@@ -313,18 +318,24 @@ function ClassIntroPage() {
                                 precision={1}
                             />
                         ) : (
-                            <Rating
-                                readOnly={false}
-                                defaultValue={reviewRatingState.stars}
-                                value={reviewRatingState.stars}
-                                precision={1}
-                                onChange={changeReviewRating}
-                            />
+                            <>
+                                {reviewRatingState && (
+                                    <>
+                                        <p>Review của bạn về lớp này:</p>
+                                        <Rating
+                                            readOnly={false}
+                                            defaultValue={reviewRatingState.stars}
+                                            value={reviewRatingState.stars}
+                                            precision={1}
+                                            onChange={changeReviewRating}
+                                        />
+                                    </>
+                                )}
+                            </>
                         )}
                         {classDataState.userRoleCode && (
                             <>
                                 <div className="w-full">
-                                    <p>Review của bạn về lớp này:</p>
                                     <TextField
                                         className="w-full"
                                         multiline
@@ -333,7 +344,7 @@ function ClassIntroPage() {
                                         value={reviewRatingState.comment}
                                     />
                                 </div>
-                                <Button onClick={postReview}>Comment</Button>
+                                <Button onClick={postReview}>Đánh giá</Button>
                             </>
                         )}
                     </div>
@@ -375,25 +386,40 @@ function ClassIntroPage() {
                             </TabContext>
                         </Box>
                         {value === 'review' ? (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in max-h-[400px] overflow-y-scroll">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
                                 {reviewListState === null ? (
                                     <LoadingProcess />
                                 ) : (
                                     <>
                                         {reviewListState.length > 0 ? (
-                                            reviewListState.map((review, index) => {
-                                                return (
-                                                    <li key={index}>
-                                                        <ReviewCard
-                                                            avatar={review.userAvatar}
-                                                            comment={review.comment}
-                                                            stars={review.stars}
-                                                            username={review.userName}
-                                                        />
-                                                        {index < reviewListState.length - 1 && <Line />}
-                                                    </li>
-                                                );
-                                            })
+                                            <>
+                                                {reviewListState
+                                                    .filter((review, index) => {
+                                                        return index + 1 <= commentPagination * 5;
+                                                    })
+                                                    .map((review, index) => {
+                                                        return (
+                                                            <li key={index}>
+                                                                <ReviewCard
+                                                                    avatar={review.userAvatar}
+                                                                    comment={review.comment}
+                                                                    stars={review.stars}
+                                                                    username={review.userName}
+                                                                />
+                                                                {index < reviewListState.length - 1 && <Line />}
+                                                            </li>
+                                                        );
+                                                    })}
+                                                {reviewListState.length > commentPagination * 5 && (
+                                                    <Button
+                                                        onClick={(e) => {
+                                                            setCommentPagination((pre) => pre + 1);
+                                                        }}
+                                                    >
+                                                        Xem thêm
+                                                    </Button>
+                                                )}
+                                            </>
                                         ) : (
                                             <div className="p-6">Chưa có đánh giá nào</div>
                                         )}
@@ -401,7 +427,7 @@ function ClassIntroPage() {
                                 )}
                             </ul>
                         ) : (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in max-h-[400px] overflow-y-scroll">
+                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
                                 {commentListState === null ? (
                                     <LoadingProcess />
                                 ) : (

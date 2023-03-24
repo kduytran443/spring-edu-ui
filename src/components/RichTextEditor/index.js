@@ -5,20 +5,9 @@ import { useRef } from 'react';
 import parse from 'html-react-parser';
 import { useState } from 'react';
 
-function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
+function RichTextEditor({ data, readOnly, setData = (e) => {}, disabled = false }) {
     const editorRef = useRef();
     const [dataState, setDataState] = useState(data);
-
-    useEffect(() => {
-        setDataState(data);
-    }, [data]);
-
-    const getTextData = () => {
-        const content = editorRef.current.getElementsByClassName('ck-restricted-editing_mode_standard')[0];
-        if (content) {
-            setData(content.innerHTML);
-        }
-    };
 
     const checkOnLoad = () => {
         if (disabled) {
@@ -27,6 +16,70 @@ function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
         }
     };
 
+    const editorConfiguaration = {
+        toolbar: {
+            items: [
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'link',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'outdent',
+                'indent',
+                '|',
+                'imageUpload',
+                'blockQuote',
+                'insertTable',
+                'mediaEmbed',
+                'undo',
+                'redo',
+                'alignment',
+                'code',
+                'codeBlock',
+                'findAndReplace',
+                'fontColor',
+                'fontFamily',
+                'fontSize',
+                'fontBackgroundColor',
+                'highlight',
+                'horizontalLine',
+                'htmlEmbed',
+                'imageInsert',
+            ],
+        },
+        language: 'en',
+        image: {
+            toolbar: [
+                'imageTextAlternative',
+                'toggleImageCaption',
+                'imageStyle:inline',
+                'imageStyle:block',
+                'imageStyle:side',
+            ],
+        },
+        table: {
+            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+        },
+        isReadOnly: true,
+    };
+
+    const [removeConfig, setRemoveConfig] = useState({
+        removePlugins: ['Markdown'],
+    });
+
+    if (disabled && !removeConfig.removePlugins.includes('toolbar')) {
+        const arr = [...removeConfig.removePlugins];
+        arr.push('toolbar');
+        setRemoveConfig((pre) => {
+            return {
+                removePlugins: arr,
+            };
+        });
+    }
+
     return (
         <div ref={editorRef}>
             <CKEditor
@@ -34,17 +87,21 @@ function RichTextEditor({ data, setData = (e) => {}, disabled = false }) {
                 disabled={disabled}
                 data={dataState}
                 onReady={(editor) => {
-                    checkOnLoad();
+                    const data = editor.getData();
+                    setData(data);
                 }}
+                config={removeConfig}
                 onChange={(event, editor) => {
                     const data = editor.getData();
-                    getTextData();
+                    setData(data);
                 }}
                 onBlur={(event, editor) => {
-                    getTextData();
+                    const data = editor.getData();
+                    setData(data);
                 }}
                 onFocus={(event, editor) => {
-                    getTextData();
+                    const data = editor.getData();
+                    setData(data);
                 }}
             />
         </div>

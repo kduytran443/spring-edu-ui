@@ -179,7 +179,7 @@ function ClassLessonUpdatePage() {
                 )}
                 <div className="w-full my-6">
                     <h2>Nội dung bài học</h2>
-                    {textDataState && <RichTextEditor data={textDataState} setData={setTextData} />}
+                    <RichTextEditor data={textDataState} setData={setTextData} />
                 </div>
                 <div className="w-full">
                     <UploadWidget multiple fileList={fileListState} uploadFunction={uploadFileList} />

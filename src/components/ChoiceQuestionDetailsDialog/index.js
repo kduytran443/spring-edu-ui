@@ -22,6 +22,7 @@ import { useLocation } from 'react-router-dom';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
 import { choiceQuestionSerivce } from '~/services/choiceQuestionSerivce';
 import { questionBankService } from '~/services/questionBankService';
+import RichTextEditor from '../RichTextEditor';
 import ShowTextData from '../ShowTextData';
 
 export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload = () => {} }) {
@@ -49,8 +50,8 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
         choiceQuestionSerivce.getChoiceQuestionsById(choiceQuestionId).then((data) => {
             if (data.id) {
                 setNewQuestionName(data.name);
-                console.log(data.content);
                 setNewQuestionContent(data.content);
+                console.log('data.content', data.content);
             }
         });
     };
@@ -106,7 +107,7 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
                             </div>
                             <div className="w-full mt-4">
                                 <div className="font-bold">Nội dung</div>
-                                {newQuestionContent && <ShowTextData data={newQuestionContent} />}
+                                {<RichTextEditor disabled data={newQuestionContent} />}
                             </div>
                             {choiceAnswerController.map((choiceAnswer, index) => {
                                 console.log('choiceAnswer', choiceAnswer);

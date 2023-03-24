@@ -12,6 +12,19 @@ function ShowTextData({ data }) {
                 const error = listError[i];
                 error.style.display = 'none';
             }
+
+            const listEmptyError = divElement.querySelectorAll('.ck.ck-reset_all.ck-widget__resizer');
+            console.log('listEmptyError', listEmptyError);
+            for (let i = 0; i < listEmptyError.length; i++) {
+                const error = listEmptyError[i];
+                error.style.display = 'none';
+            }
+
+            const listEmptyFake = divElement.querySelectorAll('.ck-fake-selection-container');
+            for (let i = 0; i < listEmptyFake.length; i++) {
+                const error = listEmptyFake[i];
+                error.style.display = 'none';
+            }
         }
     }, []);
 

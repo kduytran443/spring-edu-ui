@@ -300,6 +300,8 @@ function QuestionBankDetailsPage() {
                                             <TextField
                                                 className="w-full"
                                                 id="standard-basic"
+                                                multiline
+                                                rows={2}
                                                 label={'Đáp án ' + (index + 1)}
                                                 variant="standard"
                                                 value={choiceAnswer.content}

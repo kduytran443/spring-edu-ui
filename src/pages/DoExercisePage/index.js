@@ -8,7 +8,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import ChoiceQuestionDetails from '~/components/ChoiceQuestionDetails';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import RichTextEditor from '~/components/RichTextEditor';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
+import { constructedResponseTestService } from '~/services/constructedResponseTestService';
 import { drawQuizService } from '~/services/drawQuizService';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
@@ -58,9 +60,7 @@ function DoExercisePage() {
 
     const [drawQuizzes, setDrawQuizzes] = useState([]);
     const loadQuiz = () => {
-        console.log('3', submittedExercise);
         if (submittedExercise) {
-            console.log('4', submittedExercise);
             drawQuizService.getAllBySubmittedExerciseId(submittedExercise.id).then((data) => {
                 console.log('5', data);
                 if (data.length) {
@@ -69,11 +69,32 @@ function DoExercisePage() {
             });
         }
     };
+
+    const [constructedResponse, setConstructedResponse] = useState({});
+    const loadConstructedResponseTest = () => {
+        if (submittedExercise) {
+            constructedResponseTestService.getByClassExcerciseId(exerciseId).then((data) => {
+                if (data.id) {
+                    setConstructedResponse(data);
+                }
+            });
+        }
+    };
+
+    const setTextData = (data) => {
+        setSubmittedExercise((pre) => {
+            return {
+                ...pre,
+                content: data,
+            };
+        });
+    };
+
     useEffect(() => {
-        console.log('1', exerciseData);
         if (exerciseData.isQuizTest) {
-            console.log('2');
             loadQuiz();
+        } else if (exerciseData.isConstructedResponseTest) {
+            loadConstructedResponseTest();
         }
     }, [submittedExercise]);
 
@@ -111,17 +132,17 @@ function DoExercisePage() {
 
     const [alertSuccess, setAlertSuccess] = useState(false);
     const submit = () => {
-        submittedExerciseService.submit({ id: submittedExerciseId }).then((data) => {
-            if (data) {
-                if (exerciseData.isQuizTest) {
+        submittedExerciseService
+            .submit({ id: submittedExerciseId, content: submittedExercise.content })
+            .then((data) => {
+                if (data) {
                     setAlertSuccess(true);
                     setTimeout(() => {
                         setAlertSuccess(false);
                         navigate(`/class/${classId}/exercise/${exerciseId}/result/${submittedExerciseId}`);
                     }, 2000);
                 }
-            }
-        });
+            });
     };
 
     return (
@@ -151,8 +172,8 @@ function DoExercisePage() {
                         choiceQuestionId={choiceQuestion}
                     />
                 )}
-                <div className="flex flex-col items-center">
-                    <div>
+                <div className="flex flex-col items-center w-full">
+                    <div className="w-full">
                         {drawQuizzes.map((drawQuiz, index) => {
                             return (
                                 <Button
@@ -171,6 +192,21 @@ function DoExercisePage() {
                             );
                         })}
                     </div>
+                    {exerciseData.isConstructedResponseTest && (
+                        <>
+                            <div className="w-full">
+                                {constructedResponse.content && (
+                                    <RichTextEditor disabled data={constructedResponse.content} />
+                                )}
+                            </div>
+                            <div className="w-full">
+                                <h3 className="font-bold text-xl mt-10 mb-2">Bài làm của bạn</h3>
+                                {submittedExercise && (
+                                    <RichTextEditor setData={setTextData} data={submittedExercise.content} />
+                                )}
+                            </div>
+                        </>
+                    )}
                     <div className="mt-8">
                         <Button onClick={submit}>Kết thúc làm bài</Button>
                     </div>

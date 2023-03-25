@@ -1,17 +1,25 @@
 import { faWpforms } from '@fortawesome/free-brands-svg-icons';
 import { faClock, faHistory, faMarker, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@mui/material';
+import { Avatar, Button, TextField } from '@mui/material';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import { classMemberService } from '~/services/classMemberService';
 import { drawQuizService } from '~/services/drawQuizService';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { useUser } from '~/stores/UserStore';
 import { renderToTime } from '~/utils';
+import PersonIcon from '@mui/icons-material/Person';
+import UserAccordion from '~/components/UserAccordion';
+import UserItemCard from '~/components/UserItemCard';
+import RichTextEditor from '~/components/RichTextEditor';
+import { constructedResponseTestService } from '~/services/constructedResponseTestService';
+import GradeDialog from '~/components/GradeDialog';
+import { quizService } from '~/services/quizService';
 
 function ClassSpecificExercisePage() {
     const navigate = useNavigate();
@@ -31,12 +39,33 @@ function ClassSpecificExercisePage() {
         });
     };
 
+    const [classMembers, setClassMembers] = useState([]);
+    const [classRole, setClassRole] = useState();
+
+    const loadClassMembers = () => {
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                const arr = data.filter((item) => item.classRole === 'student');
+                setClassMembers(arr);
+            }
+        });
+    };
+
+    const loadRole = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            if (data) {
+                setClassRole(data.classRole);
+            }
+        });
+    };
+
     const [userState, dispatchUserState] = useUser();
     const [loadingState, setLoadingState] = useState(true);
 
     const [submittedExerciseList, setSubmittedExerciseList] = useState([]);
     const [submittedExercise, setSubmittedExercise] = useState();
     const [finished, setFinished] = useState(false);
+
     const loadSubmittedExercise = () => {
         submittedExerciseService.getSubmittedExercisesByUserAndClassExercise(exerciseId).then((data) => {
             if (data.length > 0) {
@@ -53,10 +82,50 @@ function ClassSpecificExercisePage() {
             }
         });
     };
+
+    const [submittedExercises, setSubmittedExercises] = useState([]);
+    const loadSubmittedExercises = () => {
+        submittedExerciseService.getSubmittedExercisesByClassExerciseId(exerciseId).then((data) => {
+            if (data.length >= 0) {
+                setSubmittedExercises(data);
+            }
+        });
+    };
+    const [constructedResponseTest, setConstructedResponseTest] = useState({});
+    const loadConstructedResponseTest = () => {
+        constructedResponseTestService.getByClassExcerciseId(exerciseId).then((data) => {
+            if (data.id) {
+                setConstructedResponseTest(data);
+            }
+        });
+    };
+    const [quizTest, setQuizTest] = useState({});
+    const loadQuizTest = () => {
+        quizService.getQuizByClassExcerciseId(exerciseId).then((data) => {
+            if (data.id) {
+                setQuizTest(data);
+            }
+        });
+    };
+
     useEffect(() => {
         loadData();
-        loadSubmittedExercise();
+        loadRole();
     }, [location]);
+
+    useEffect(() => {
+        if (classRole === 'teacher' || classRole === 'supporter') {
+            loadClassMembers();
+            loadSubmittedExercises();
+            if (exerciseData.isQuizTest) {
+                loadQuizTest();
+            } else {
+                loadConstructedResponseTest();
+            }
+        } else if (classRole === 'student') {
+            loadSubmittedExercise();
+        }
+    }, [classRole]);
 
     const [alertSuccess, setAlertSuccess] = useState(false);
     const continueSubmit = () => {
@@ -84,6 +153,12 @@ function ClassSpecificExercisePage() {
                             }, 2000);
                         }
                     });
+                } else {
+                    setAlertSuccess(true);
+                    setTimeout(() => {
+                        setAlertSuccess(false);
+                        navigate(`/class/${classId}/exercise/${exerciseId}/do/${data.id}`);
+                    }, 2000);
                 }
                 setSubmittedExercise(data);
             }
@@ -98,6 +173,7 @@ function ClassSpecificExercisePage() {
 
         return result;
     };
+    const gradeTest = () => {};
 
     return (
         <div>
@@ -118,80 +194,144 @@ function ClassSpecificExercisePage() {
                 <h1 className="font-bold text-2xl my-6">
                     {exerciseData.effective ? 'Bài kiểm tra' : 'Bài tập'}: {exerciseData.name}
                 </h1>
-                <div className="min-h-[420px] flex flex-col items-center justify-center">
-                    <div className="mb-4">
-                        <b>Điểm</b>: {exerciseData.mark}
-                    </div>
-                    <div className="mb-4">
-                        {submittedExercise ? (
-                            <Button onClick={continueSubmit} variant="contained">
-                                Tiếp tục thực hiện
-                            </Button>
-                        ) : (
-                            <>
-                                {!finished ? (
-                                    <Button onClick={submitNewSubmittedExercise} variant="contained">
-                                        Bắt đầu thực hiện
-                                    </Button>
-                                ) : (
-                                    <Button variant="contained" disabled>
-                                        Đã hoàn thành
-                                    </Button>
-                                )}
-                            </>
+                {!(classRole === 'supporter' || classRole === 'teacher') ? (
+                    <div className="min-h-[420px] flex flex-col items-center justify-center">
+                        <div className="mb-4">
+                            <b>Điểm</b>: {exerciseData.mark}
+                        </div>
+                        <div className="mb-4">
+                            {submittedExercise ? (
+                                <Button onClick={continueSubmit} variant="contained">
+                                    Tiếp tục thực hiện
+                                </Button>
+                            ) : (
+                                <>
+                                    {!finished ? (
+                                        <Button onClick={submitNewSubmittedExercise} variant="contained">
+                                            Bắt đầu thực hiện
+                                        </Button>
+                                    ) : (
+                                        <Button variant="contained" disabled>
+                                            Đã hoàn thành
+                                        </Button>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                        {exerciseData.timeLimit && (
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                </b>
+                                : {exerciseData.timeLimit} phút
+                            </div>
                         )}
-                    </div>
-                    {exerciseData.timeLimit && (
                         <div className="mb-4">
                             <b>
-                                <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
-                            </b>
-                            : {exerciseData.timeLimit} phút
+                                <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
+                            </b>{' '}
+                            {renderToTime(exerciseData.startTime)}
                         </div>
-                    )}
-                    <div className="mb-4">
-                        <b>
-                            <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
-                        </b>{' '}
-                        {renderToTime(exerciseData.startTime)}
-                    </div>
-                    <div className="mb-4">
-                        <b>
-                            <FontAwesomeIcon icon={faClock} /> Thời gian kết thúc:
-                        </b>{' '}
-                        {renderToTime(exerciseData.endTime)}
-                    </div>
-                    <div className="mb-4">
-                        <b>
-                            <FontAwesomeIcon icon={faWpforms} /> Hình thức kiểm tra:
-                        </b>{' '}
-                        {exerciseData.isQuizTest && `Trắc nghiệm (${exerciseData.quizNumberOfQuestion} câu)`}{' '}
-                        {exerciseData.isConstructedResponseTest && 'Tự luận'}
-                    </div>
-                    <div className="mb-4">
-                        <b>
-                            <FontAwesomeIcon icon={faMarker} /> Tính điểm
-                        </b>
-                        : {exerciseData.effective === 1 ? 'Có' : 'Không'}
-                    </div>
-                    {submittedExerciseList.length > 0 && (
-                        <div>
-                            <h2>
-                                <FontAwesomeIcon icon={faHistory} /> Lịch sử làm bài
-                            </h2>
+                        <div className="mb-4">
+                            <b>
+                                <FontAwesomeIcon icon={faClock} /> Thời gian kết thúc:
+                            </b>{' '}
+                            {renderToTime(exerciseData.endTime)}
+                        </div>
+                        <div className="mb-4">
+                            <b>
+                                <FontAwesomeIcon icon={faWpforms} /> Hình thức kiểm tra:
+                            </b>{' '}
+                            {exerciseData.isQuizTest && `Trắc nghiệm (${exerciseData.quizNumberOfQuestion} câu)`}{' '}
+                            {exerciseData.isConstructedResponseTest && 'Tự luận'}
+                        </div>
+                        <div className="mb-4">
+                            <b>
+                                <FontAwesomeIcon icon={faMarker} /> Tính điểm
+                            </b>
+                            : {exerciseData.effective === 1 ? 'Có' : 'Không'}
+                        </div>
+                        {submittedExerciseList.length > 0 && (
                             <div>
-                                {submittedExerciseList.map((item, index) => {
+                                <h2>
+                                    <FontAwesomeIcon icon={faHistory} /> Lịch sử làm bài
+                                </h2>
+                                <div>
+                                    {submittedExerciseList.map((item, index) => {
+                                        return (
+                                            <div>
+                                                Lần thứ: {index + 1}: Điểm {calMark(item.quizMark, item.mark)}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <div className="text-lg">
+                            Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
+                        </div>
+                        {exerciseData.isConstructedResponseTest && (
+                            <ul className="w-full">
+                                {submittedExercises.map((submittedItem) => {
                                     return (
-                                        <div>
-                                            Lần thứ: {index + 1}: Điểm{' '}
-                                            {calMark(item.quizMark, item.constructedResponseMark)}
-                                        </div>
+                                        <li key={submittedItem.userId} className="my-2">
+                                            <UserAccordion
+                                                userInfo={
+                                                    <UserItemCard
+                                                        avatar={submittedItem.userAvatar}
+                                                        name={submittedItem.username}
+                                                        mark={submittedItem.mark}
+                                                        maxMark={exerciseData.mark}
+                                                    />
+                                                }
+                                            >
+                                                <div>
+                                                    <h3 className="text-xl font-bold">Bài làm:</h3>
+                                                    <RichTextEditor disabled data={submittedItem.content} />
+                                                </div>
+                                                {(classRole === 'teacher' || classRole === 'supporter') && (
+                                                    <GradeDialog
+                                                        submittedExerciseId={submittedItem.id}
+                                                        maxMark={exerciseData.mark}
+                                                        reload={loadSubmittedExercises}
+                                                    />
+                                                )}
+                                            </UserAccordion>
+                                        </li>
                                     );
                                 })}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                            </ul>
+                        )}
+                        {exerciseData.isQuizTest && (
+                            <ul className="w-full">
+                                {submittedExercises.map((submittedItem) => {
+                                    return (
+                                        <li key={submittedItem.userId} className="my-2">
+                                            <UserAccordion
+                                                userInfo={
+                                                    <UserItemCard
+                                                        avatar={submittedItem.userAvatar}
+                                                        name={submittedItem.username}
+                                                        mark={submittedItem.mark}
+                                                        maxMark={exerciseData.mark}
+                                                    />
+                                                }
+                                            >
+                                                <div>
+                                                    <FontAwesomeIcon icon={faClock} /> Thời gian nộp:{' '}
+                                                    {renderToTime(submittedItem.submitTime)}
+                                                </div>
+                                            </UserAccordion>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );

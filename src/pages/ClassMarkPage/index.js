@@ -20,21 +20,22 @@ const columns = [
         headerName: 'Thời gian nộp bài',
         width: 180,
         renderCell: (param) => {
-            return <>{renderToTime(param.value)}</>;
+            return <>{param.value ? renderToTime(param.value) : 'Chưa nộp'}</>;
         },
     },
     {
         field: 'mark',
         headerName: 'Điểm',
-        width: 120,
+        width: 160,
         renderCell: (param) => {
+            console.log('param.value', param.value);
             return (
                 <>
                     {param.value.mark === null ? (
-                        'Chưa chấm điểm'
+                        ''
                     ) : (
                         <div>
-                            {param.value.mark}/{param.value.max}
+                            {Math.round(param.value.mark, 1)}/{param.value.max}
                         </div>
                     )}
                 </>
@@ -44,7 +45,7 @@ const columns = [
     {
         field: 'effective',
         headerName: 'Tính điểm',
-        width: 160,
+        width: 120,
         renderCell: (param) => {
             return <>{param.value === 1 ? 'Có' : 'Không'}</>;
         },
@@ -58,18 +59,21 @@ function ClassMarkPage() {
     const [submittedExercises, setSubmittedExercises] = useState([]);
 
     const loadData = () => {
-        submittedExerciseService.getSubmittedExercisesByUserAndClassExercise(classId).then((data) => {
+        submittedExerciseService.getSubmittedExercisesByUserAndClass(classId).then((data) => {
+            console.log('CHẤM ĐIỂM', data);
             if (data.length >= 0) {
                 const arr = data.map((item) => {
                     const obj = {
                         ...item.classExcercise,
                         ...item,
                     };
-                    if (obj.isQuizTest) {
-                        obj.mark = { mark: obj.quizMark, max: item.classExcercise.mark };
-                    } else {
-                        obj.mark = { mark: obj.constructedResponseMark, max: item.classExcercise.mark };
-                    }
+
+                    obj.mark = {
+                        mark: item.mark,
+                        max: item.classExcercise.mark,
+                    };
+
+                    console.log('obj', obj);
 
                     return obj;
                 });

@@ -7,8 +7,11 @@ import {
     Checkbox,
     FormControl,
     FormControlLabel,
+    FormLabel,
     InputLabel,
     MenuItem,
+    Radio,
+    RadioGroup,
     Select,
     TextField,
 } from '@mui/material';
@@ -18,6 +21,7 @@ import { useRef } from 'react';
 import { useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import AlertFailDialog from '~/components/AlertFailDialog';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
@@ -80,11 +84,12 @@ function ClassCreateExercisePage() {
     const [isConstructedResponseTest, setIsConstructedResponseTest] = useState(false);
     const [constructedResponseTestMark, setConstructedResponseTestMark] = useState(0);
 
-    const [isQuizTest, setIsQuizTest] = useState(false);
+    const [isQuizTest, setIsQuizTest] = useState(true);
     const [quizMark, setQuizMark] = useState(0);
     const [questionBankList, setQuestionBankList] = useState([]);
     const [questionBankId, setQuestionBankId] = useState();
     const [numberOfQuestion, setNumberOfQuestion] = useState();
+    const [requiredMark, setRequiredMark] = useState();
 
     const [enableMinutes, setEnableMinutes] = useState(false);
     const [timeLimit, setTimeLimit] = useState();
@@ -127,6 +132,7 @@ function ClassCreateExercisePage() {
         setDateError('');
         setTimeLimitError('');
         setExcerciseType('');
+        setRequiredMarkError('');
     };
 
     const [nameError, setNameError] = useState('');
@@ -137,7 +143,10 @@ function ClassCreateExercisePage() {
     const [numberOfQuestionError, setNumberOfQuestionError] = useState('');
     const [dateError, setDateError] = useState('');
     const [timeLimitError, setTimeLimitError] = useState('');
+    const [requiredMarkError, setRequiredMarkError] = useState('');
     const [excerciseType, setExcerciseType] = useState('');
+
+    const [mark, setMark] = useState('');
 
     const check = () => {
         let valid = true;
@@ -149,29 +158,21 @@ function ClassCreateExercisePage() {
             setNameError('');
         }
 
+        if (!mark || mark < 0 || mark > 10000) {
+            setQuizMarkError('Điểm không hợp lệ');
+            valid = false;
+        } else {
+            setQuizMarkError('');
+        }
+
         if (isConstructedResponseTest) {
-            if (!constructedResponseTestMark || constructedResponseTestMark < 0 || constructedResponseTestMark > 100) {
-                setConstructedResponseTestMarkError('Điểm không hợp lệ');
-                valid = false;
-            } else {
-                setConstructedResponseTestMarkError('');
-            }
             if (!textData) {
                 setTextDataError('Đề bài tự luận không được bỏ trống');
                 valid = false;
             } else {
                 setTextDataError('');
             }
-        }
-
-        if (isQuizTest) {
-            if (!quizMark || quizMark < 0 || quizMark > 10000) {
-                setQuizMarkError('Điểm không hợp lệ');
-                valid = false;
-            } else {
-                setQuizMarkError('');
-            }
-
+        } else if (isQuizTest) {
             if (!questionBankId) {
                 setQuestionBankError('Vui lòng chọn ngân hàng câu hỏi');
                 valid = false;
@@ -220,7 +221,7 @@ function ClassCreateExercisePage() {
         return valid;
     };
 
-    const [alertSuccess, setAlertSuccess] = useState(false);
+    const [alertSuccess, setAlertSuccess] = useState(0);
 
     const submit = () => {
         if (check()) {
@@ -229,6 +230,8 @@ function ClassCreateExercisePage() {
                 endTime: endTimeState,
                 name: nameState,
                 classId: classId,
+                mark: mark,
+                requiredMark: requiredMark || 0,
             };
 
             if (isEffective) {
@@ -250,28 +253,29 @@ function ClassCreateExercisePage() {
                     if (isQuizTest) {
                         const quizObj = {
                             classExcerciseId: data.id,
-                            mark: quizMark,
                             numberOfQuestion: numberOfQuestion,
                         };
                         quizService.postQuiz(quizObj).then((data) => {});
-                    }
-
-                    if (isConstructedResponseTest) {
+                    } else if (isConstructedResponseTest) {
                         const constructedResponse = {
                             content: textData,
-                            mark: constructedResponseTestMark,
                             classExcerciseId: data.id,
                         };
                         constructedResponseTestService.post(constructedResponse).then((data) => {});
                     }
 
-                    setAlertSuccess(true);
+                    setAlertSuccess(1);
                     setTimeout(() => {
-                        setAlertSuccess(false);
-                        navigate('/class/' + classId + '/exercise');
+                        setAlertSuccess(0);
+                        navigate('/class/' + classId + '/exercise/' + data.id);
                     }, 3000);
                 }
             });
+        } else {
+            setAlertSuccess(-1);
+            setTimeout(() => {
+                setAlertSuccess(0);
+            }, 3000);
         }
     };
 
@@ -286,17 +290,18 @@ function ClassCreateExercisePage() {
                 Quay lại
             </Button>
             <h1 className="font-bold text-2xl my-6">{isEffective ? 'Bài kiểm tra' : 'Bài tập'}</h1>
-            <AlertSuccessDialog open={alertSuccess} />
+            <AlertSuccessDialog open={alertSuccess === 1} />
+            <AlertFailDialog open={alertSuccess === -1} />
             <div>
                 <div className="w-full">
-                    <div className="my-6">
+                    <div className="my-6 select-none">
                         <FormControlLabel
                             value={isEffective}
                             onChange={(e) => {
                                 onChangeCheckbox(e, setIsEffective);
                             }}
-                            control={<Checkbox defaultChecked />}
-                            label="Tính điểm"
+                            control={<Checkbox defaultChecked={isEffective} />}
+                            label="Tích lũy"
                         />
                     </div>
                     <h3 className="text-xl font-bold">Tên bài</h3>
@@ -312,79 +317,37 @@ function ClassCreateExercisePage() {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-row items-center mt-10">
-                <div className="flex flex-row items-end">
-                    <div className="mr-4">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    value={isConstructedResponseTest}
-                                    onChange={(e) => {
-                                        onChangeCheckbox(e, setIsConstructedResponseTest);
-                                    }}
-                                    defaultChecked={isConstructedResponseTest}
-                                />
+            <div className="flex flex-row items-center mt-10 select-none">
+                <FormControl>
+                    <FormLabel id="demo-radio-buttons-group-label">Hình thức kiểm tra</FormLabel>
+                    <RadioGroup
+                        aria-labelledby="demo-radio-buttons-group-label"
+                        defaultValue="quiz"
+                        name="radio-buttons-group"
+                        onChange={(e) => {
+                            if (e.target.value === 'quiz') {
+                                setIsQuizTest(true);
+                                setIsConstructedResponseTest(false);
+                            } else if (e.target.value === 'constructedResponse') {
+                                setIsQuizTest(false);
+                                setIsConstructedResponseTest(true);
                             }
-                            label="Tự luận"
-                        />
-                    </div>
-                    {isConstructedResponseTest && (
-                        <div>
-                            <TextField
-                                id="standard-basic"
-                                value={constructedResponseTestMark}
-                                onInput={(e) => {
-                                    setConstructedResponseTestMark(e.target.value);
-                                }}
-                                label="Điểm tự luận"
-                                variant="standard"
-                            />
-                        </div>
-                    )}
-                </div>
-                {constructedResponseTestMarkError && (
-                    <div className="text-red-500">*{constructedResponseTestMarkError}</div>
-                )}
+                        }}
+                    >
+                        <FormControlLabel value="quiz" control={<Radio />} label="Trắc nghiệm" />
+                        <FormControlLabel value="constructedResponse" control={<Radio />} label="Tự luận" />
+                    </RadioGroup>
+                </FormControl>
             </div>
-            {isConstructedResponseTest && (
-                <div className="w-full my-6">
-                    <h3 className="text-xl font-bold">Nội dung bài tự luận</h3>
-                    <RichTextEditor setData={setTextData} />
-                    {textDataError && <div className="text-red-500">*{textDataError}</div>}
-                </div>
-            )}
 
             <div className="mt-16">
-                <div className="flex flex-row items-end">
-                    <div className="mr-4">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    value={isQuizTest}
-                                    onChange={(e) => {
-                                        onChangeCheckbox(e, setIsQuizTest);
-                                    }}
-                                    defaultChecked={isQuizTest}
-                                />
-                            }
-                            label="Trắc nghiệm"
-                        />
+                {isConstructedResponseTest && (
+                    <div className="w-full my-6">
+                        <h3 className="text-xl font-bold">Nội dung bài tự luận</h3>
+                        <RichTextEditor setData={setTextData} />
+                        {textDataError && <div className="text-red-500">*{textDataError}</div>}
                     </div>
-                    {isQuizTest && (
-                        <div>
-                            <TextField
-                                value={quizMark}
-                                onInput={(e) => {
-                                    setQuizMark(e.target.value);
-                                }}
-                                id="standard-basic"
-                                label="Điểm trắc nghiệm"
-                                variant="standard"
-                            />
-                        </div>
-                    )}
-                </div>
-                {quizMarkError && <div className="text-red-500">*{quizMarkError}</div>}
+                )}
                 {isQuizTest && (
                     <>
                         <div className="my-4">
@@ -428,6 +391,7 @@ function ClassCreateExercisePage() {
                                     }}
                                     className="w-[120px]"
                                     variant="standard"
+                                    type="number"
                                 />
                                 <div>/ {selectedQuestionBank.questionQuantity}</div>
                             </div>
@@ -435,7 +399,35 @@ function ClassCreateExercisePage() {
                         </div>
                     </>
                 )}
-                <div className="z-[41] w-full mt-16 flex flex-row flex-wrap items-center md:w-auto">
+                <div className="flex flex-row items-center mt-8">
+                    <div className="">
+                        <TextField
+                            value={mark}
+                            onInput={(e) => {
+                                setMark(e.target.value);
+                            }}
+                            id="standard-basic"
+                            label="Điểm"
+                            variant="standard"
+                            type={'number'}
+                        />
+                        {quizMarkError && <div className="text-red-500">*{quizMarkError}</div>}
+                    </div>
+                    <div className="ml-4">
+                        <TextField
+                            value={requiredMark}
+                            onInput={(e) => {
+                                console.log('mark', mark, e.target.value);
+                                setRequiredMark(e.target.value);
+                            }}
+                            id="standard-basic"
+                            label="Điểm cần đạt (Tùy chọn)"
+                            variant="standard"
+                            type={'number'}
+                        />
+                    </div>
+                </div>
+                <div className="z-[41] w-full mt-8 flex flex-row flex-wrap items-center md:w-auto">
                     <div className="z-[40] w-full md:w-auto">
                         <div className="font-bold">Bắt đầu:</div>
                         <DateTimePicker

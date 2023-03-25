@@ -121,6 +121,7 @@ function ClassExercisePage() {
                         </ListItem>
                     );
                 })}
+                {classExerciseList.length === 0 && <div className="text-xl my-4">Không có bài tập nào</div>}
             </div>
         </div>
     );

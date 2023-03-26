@@ -9,12 +9,15 @@ import 'react-photo-view/dist/react-photo-view.css';
 import Provider from './stores/Provider';
 import { createBrowserHistory } from 'history';
 import 'react-confirm-alert/src/react-confirm-alert.css';
+import NotificationSocketProvider from './components/NotificationSocketProvider';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <Provider>
-        <App />
+        <NotificationSocketProvider>
+            <App />
+        </NotificationSocketProvider>
     </Provider>,
 );
 

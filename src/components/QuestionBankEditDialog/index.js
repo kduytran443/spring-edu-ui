@@ -82,7 +82,7 @@ export default function QuestionBankEditDialog({ questionBankId, reload = () => 
                     </div>
                     <div className="select-none cursor-pointer" onClick={handleAgree} autoFocus>
                         <Button disabled={!newQuestionBank.trim().length} color="primary" variant="contained">
-                            Tạo
+                            Sửa
                         </Button>
                     </div>
                 </DialogActions>

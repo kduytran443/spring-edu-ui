@@ -1,5 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { questionBankService } from '~/services/questionBankService';
 
 export default function QuestionBankCreateDialog({ button, reload = () => {} }) {
@@ -31,6 +31,10 @@ export default function QuestionBankCreateDialog({ button, reload = () => {} }) 
 
     const [newQuestionBank, setNewQuestionBank] = useState('');
     const [error, setError] = useState(false);
+
+    useEffect(() => {
+        setNewQuestionBank('');
+    }, [open]);
 
     return (
         <div>

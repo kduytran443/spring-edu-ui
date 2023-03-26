@@ -38,13 +38,11 @@ function LoginPage() {
         fetch(`${API_BASE_URL}/api/login`, options)
             .then((res) => res.json())
             .then((data) => {
-                if (data.status === 403) {
-                    setError('Sai tên đăng nhập hoặc mật khẩu');
-                } else {
-                    console.log('thành công', data);
+                if (data.id) {
                     dispatchUserState(setUserInfo(data));
-
                     navigate('/home');
+                } else {
+                    setError('Sai tên đăng nhập hoặc mật khẩu');
                 }
             })
             .catch((error) => {
@@ -120,21 +118,10 @@ function LoginPage() {
                     helperText={passwordErrorState}
                 />
             </div>
-            <div className="select-none">
-                <FormGroup>
-                    <FormControlLabel
-                        control={<Checkbox onChange={(e) => setSaveUsernameState(e.target.checked)} />}
-                        label="Nhớ tên tài khoản"
-                    />
-                </FormGroup>
-            </div>
             {error && <div className="text-red-500">*{error}</div>}
             <div className="mt-4 mb-0 w-full">
                 <Button variant="contained" className="w-full" onClick={submitForm}>
                     <div className="w-full font-extrabold p-2">Đăng nhập</div>
-                </Button>
-                <Button variant="text" className="w-full">
-                    <div className="w-full p-2">Quên mật khẩu?</div>
                 </Button>
             </div>
             <Line />

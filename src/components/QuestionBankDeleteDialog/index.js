@@ -35,6 +35,7 @@ export default function QuestionBankDeleteDialog({ questionBankId, reload = () =
     };
 
     const [newQuestionBank, setNewQuestionBank] = useState('');
+    const [confirm, setConfirm] = useState('');
 
     return (
         <div>
@@ -52,7 +53,18 @@ export default function QuestionBankDeleteDialog({ questionBankId, reload = () =
                 <DialogTitle id="alert-dialog-title">Xóa ngân hàng câu hỏi</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <div className="mt-4">Sau khi xóa không thể phục hồi, hãy chú ý</div>
+                        <div className="max-w-[300px]">
+                            <div className="mt-4">
+                                Nhập vào <b>"XÓA"</b> để xác nhận, hãy chú ý sau khi xóa không thể phục hồi
+                            </div>
+                            <TextField
+                                className="w-full"
+                                value={confirm}
+                                onInput={(e) => {
+                                    setConfirm(e.target.value);
+                                }}
+                            />
+                        </div>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
@@ -60,7 +72,7 @@ export default function QuestionBankDeleteDialog({ questionBankId, reload = () =
                         <Button color="inherit">Hủy</Button>
                     </div>
                     <div className="select-none cursor-pointer" onClick={handleAgree} autoFocus>
-                        <Button color="error" variant="contained">
+                        <Button disabled={confirm !== 'XÓA'} color="error" variant="contained">
                             Xóa
                         </Button>
                     </div>

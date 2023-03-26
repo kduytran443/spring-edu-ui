@@ -1,3 +1,4 @@
+import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faPen, faPlus, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UploadFile } from '@mui/icons-material';
@@ -149,13 +150,11 @@ const [nameState, setNameState] = useState();
                     {categoryState && (
                         <Box sx={{ minWidth: 120 }}>
                             <FormControl fullWidth>
-                                <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
                                     value={categoryState}
                                     defaultValue={categoryState}
-                                    label="Chủ đề"
                                     onChange={(e) => {
                                         setCategoryState(e.target.value);
                                     }}
@@ -172,7 +171,7 @@ const [nameState, setNameState] = useState();
                     )}
                 </div>
                 <div className="w-full">
-                    <h3 className="text-xl font-bold">Phí tham gia (Để 0 nếu miễn phí)</h3>
+                    <h3 className="text-xl font-bold">Phí tham gia (optional)</h3>
                     <div className="w-full">
                         <TextField
                             className="w-full"
@@ -189,7 +188,9 @@ const [nameState, setNameState] = useState();
                 {textData !== null && <RichTextEditor data={textData} setData={setTextData} />}
             </div>
             <div className="my-4">
-                <h3 className="text-xl font-bold">Video giới thiệu (Youtube url)</h3>
+                <h3 className="text-xl font-bold">
+                    <FontAwesomeIcon icon={faYoutube} /> Video giới thiệu (optional)
+                </h3>
                 <TextField
                     className="w-full"
                     value={video}
@@ -201,6 +202,11 @@ const [nameState, setNameState] = useState();
             <div className="my-4">
                 <h3 className="text-xl font-bold">Ảnh đại diện</h3>
                 <input type="file" onChange={uploadImage} />
+                {avatar && (
+                    <div className="max-w-[280px]">
+                        <img alt="avatar" src={avatar} />
+                    </div>
+                )}
             </div>
             <div
                 onClick={submit}

@@ -1,8 +1,11 @@
-import { CircularProgress, Divider } from '@mui/material';
+import { Button, CircularProgress, Divider } from '@mui/material';
+import { useContext } from 'react';
 import { useEffect, useState } from 'react';
+import audios from '~/assets/audios';
 import CategoryCard from '~/components/CategoryCard';
 import CourseListIntro from '~/components/ClassListIntro';
 import LoadingProcess from '~/components/LoadingProcess';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import SildeshowIntroduction from '~/components/SildeshowIntroduction';
 import TeacherListIntro from '~/components/TeacherListIntro';
 import { API_BASE_URL, CATEGORY_PAGE_URL } from '~/constants';
@@ -89,11 +92,20 @@ function HomePage() {
             });
     }, []);
 
+    const sendContext = useContext(NotificationSocketContext);
+
     return (
         <>
             <div className="md:p-4 p-0 w-full">
                 <SildeshowIntroduction />
             </div>
+            <Button
+                onClick={(e) => {
+                    sendContext();
+                }}
+            >
+                Load event
+            </Button>
             <ul className="flex flex-row flex-wrap">
                 {categoryListState === null ? (
                     <LoadingProcess />

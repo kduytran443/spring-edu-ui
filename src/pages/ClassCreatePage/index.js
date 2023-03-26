@@ -1,3 +1,4 @@
+import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UploadFile } from '@mui/icons-material';
@@ -21,7 +22,7 @@ function ClassCreatePage() {
     const [textData, setTextData] = useState();
     const [avatar, setAvatar] = useState();
     const [video, setVideo] = useState();
-    const [fee, setFee] = useState(0);
+    const [fee, setFee] = useState();
 
     const location = useLocation();
     useEffect(() => {
@@ -43,10 +44,14 @@ function ClassCreatePage() {
                 id: categoryState,
             },
             videoData: video,
-            fee: fee,
             avatar: avatar,
             content: textData,
         };
+        if (fee) {
+            obj.fee = fee;
+        } else {
+            obj.fee = 0;
+        }
 
         classService.postClass(obj).then((data) => {
             if (data.id) {
@@ -91,7 +96,9 @@ function ClassCreatePage() {
 
     return (
         <div>
-            <h1 className="font-bold text-2xl my-6">Tạo lớp</h1>
+            <h1 className="font-bold text-2xl my-6">
+                <FontAwesomeIcon icon={faPlus} /> Tạo lớp
+            </h1>
             <div>
                 <div className="w-full">
                     <h3 className="text-xl font-bold">Tên lớp</h3>
@@ -130,11 +137,12 @@ function ClassCreatePage() {
                     </Box>
                 </div>
                 <div className="w-full">
-                    <h3 className="text-xl font-bold">Phí tham gia (Để 0 nếu miễn phí)</h3>
+                    <h3 className="text-xl font-bold">Phí tham gia (optional)</h3>
                     <div className="w-full">
                         <TextField
                             className="w-full"
                             value={fee}
+                            type={'number'}
                             onInput={(e) => {
                                 setFee(e.target.value);
                             }}
@@ -147,8 +155,12 @@ function ClassCreatePage() {
                 <RichTextEditor setData={setTextData} />
             </div>
             <div className="my-4">
-                <h3 className="text-xl font-bold">Video giới thiệu</h3>
+                <h3 className="text-xl font-bold">
+                    <FontAwesomeIcon icon={faYoutube} />
+                    Video giới thiệu (optional)
+                </h3>
                 <TextField
+                    className="w-full"
                     value={video}
                     onChange={(e) => {
                         setVideo(e.target.value);
@@ -158,6 +170,11 @@ function ClassCreatePage() {
             <div className="my-4">
                 <h3 className="text-xl font-bold">Ảnh đại diện</h3>
                 <input type="file" onChange={uploadImage} />
+                {avatar && (
+                    <div className="max-w-[280px]">
+                        <img alt="avatar" src={avatar} />
+                    </div>
+                )}
             </div>
             <div
                 onClick={submit}

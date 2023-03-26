@@ -8,32 +8,36 @@ import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 import { useState } from 'react';
-import { Button } from '@mui/material';
-function HeaderNotifierBox() {
-    const [someLastNotifyState, setSomeLastNotifyState] = useState([
-        {
-            id: 1,
-            content: 'Mr.Beast đã đăng ký lớp học "Nấu ăn" của bạn',
-            date: new Date(2023, 0, 28, 20, 0),
-        },
-        {
-            id: 2,
-            content: 'Mr.Beast đã đăng ký lớp học "Nấu ăn" của bạn',
-            date: new Date(2023, 0, 28, 20, 0),
-        },
-    ]);
+import { Avatar, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { renderToTime } from '~/utils';
+function HeaderNotifierBox({ dataList = [] }) {
+    const navigate = useNavigate();
 
     return (
-        <div className="bg-white p-2 w-[300px] border-[1px] border-slate-300 min-h-[100px] shadow-lg rounded-lg flex flex-col">
+        <div className="bg-white p-2 w-[300px] lg:w-[420px] border-[1px] border-slate-300 min-h-[100px] shadow-lg rounded-lg flex flex-col">
             <ul>
-                {someLastNotifyState.map((notify, index) => {
-                    return (
-                        <li className="flex flex-col my-2 cursor-pointer hover:bg-slate-100 p-4" key={index}>
-                            <div className="text-gray-500">{notify.date.toDateString()}</div>
-                            <div>{notify.content}</div>
+                {dataList.map((notify, index) => {
+                    return index < 5 ? (
+                        <li
+                            onClick={(e) => {
+                                navigate(notify.redirectUrl);
+                            }}
+                            className="flex flex-col my-2 cursor-pointer hover:bg-slate-100 p-4"
+                            key={index}
+                        >
+                            <div className="flex flex-row items-center w-full">
+                                <Avatar src={notify.senderAvatar} />
+                                <div className="ml-4">{notify.senderFullname}</div>
+                            </div>
+                            <div className="text-gray-500 mt-2">{renderToTime(notify.time)}</div>
+                            <div className="mt-2">{notify.content}</div>
                         </li>
+                    ) : (
+                        <></>
                     );
                 })}
+                {dataList.length === 0 && <div className="w-full p-6 text-center">Không có thông báo nào</div>}
             </ul>
             <Button>Xem tất cả</Button>
         </div>

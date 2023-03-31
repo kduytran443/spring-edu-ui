@@ -1,7 +1,11 @@
+import { faPercent } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Autocomplete, TextField } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
+import { useMemo } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime } from '~/utils';
 
@@ -57,10 +61,10 @@ function ClassMarkPage() {
 
     const location = useLocation();
     const [submittedExercises, setSubmittedExercises] = useState([]);
+    const [exercises, setExercises] = useState([]);
 
     const loadData = () => {
         submittedExerciseService.getSubmittedExercisesByUserAndClass(classId).then((data) => {
-            console.log('CHẤM ĐIỂM', data);
             if (data.length >= 0) {
                 const arr = data.map((item) => {
                     const obj = {
@@ -73,23 +77,86 @@ function ClassMarkPage() {
                         max: item.classExcercise.mark,
                     };
 
-                    console.log('obj', obj);
-
                     return obj;
                 });
+                console.log('arrarrarr', arr);
                 setSubmittedExercises(arr);
+            }
+        });
+    };
+
+    const loadExercises = () => {
+        exerciseService.getExercisesByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                setExercises(data);
             }
         });
     };
 
     useEffect(() => {
         loadData();
+        loadExercises();
     }, [location]);
+
+    const avargeExerciseMark = useMemo(() => {
+        if (exercises) {
+            console.log(exercises);
+            return exercises.reduce((pre, cur) => {
+                return pre + cur.mark;
+            }, 0);
+        } else {
+            return 0;
+        }
+    }, [exercises]);
+
+    const avargeMark = useMemo(() => {
+        if (exercises) {
+            return submittedExercises.reduce((pre, cur) => {
+                return cur.mark.mark ? pre + cur.mark.mark : pre;
+            }, 0);
+        } else {
+            return 0;
+        }
+    }, [submittedExercises]);
+
+    const avargeEffectiveExerciseMark = useMemo(() => {
+        if (exercises) {
+            return exercises.reduce((pre, cur) => {
+                return cur.effective ? pre + cur.mark : pre;
+            }, 0);
+        } else {
+            return 0;
+        }
+    }, [exercises]);
+
+    const avargeEffectiveMark = useMemo(() => {
+        if (exercises) {
+            return submittedExercises
+                .filter((item) => item.effective)
+                .reduce((pre, cur) => {
+                    return cur.mark.mark ? pre + cur.mark.mark : pre;
+                }, 0);
+        } else {
+            return 0;
+        }
+    }, [submittedExercises]);
 
     return (
         <div>
             <div style={{ height: 400, width: '100%' }}>
                 <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
+            </div>
+            <div className="w-full mt-6 flex items-end justify-end">
+                <div className="p-6 text-lg border-slate-300 shadow border rounded">
+                    <div className="mb-2">
+                        Điểm trung bình: {Math.round(avargeMark)} / {avargeExerciseMark} (
+                        {Math.round((avargeMark / avargeExerciseMark) * 100, 1)}% )
+                    </div>
+                    <div>
+                        Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} ({' '}
+                        {Math.round((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
+                    </div>
+                </div>
             </div>
         </div>
     );

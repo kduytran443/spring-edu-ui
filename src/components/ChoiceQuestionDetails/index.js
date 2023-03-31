@@ -98,6 +98,8 @@ export default function ChoiceQuestionDetails({
         choiceAnswerSerivce.getChoiceAnswerByDrawQuizId(drawQuizId).then((data) => {
             if (data.length >= 0) {
                 setAnsweredList(data);
+                reload();
+                console.log('reload');
             }
         });
     };
@@ -153,6 +155,7 @@ export default function ChoiceQuestionDetails({
                                             label={'Đáp án ' + (index + 1)}
                                             variant="standard"
                                             value={choiceAnswer.content}
+                                            multiline
                                         />
                                     )}
                                     {choiceAnswer.type === 'image' && choiceAnswer.content && (

@@ -6,12 +6,14 @@ import { over } from 'stompjs';
 import { ThemeContext } from 'styled-components';
 import { API_BASE_URL } from '~/constants';
 import { getUserJWT } from '~/services/config';
+import { useUser } from '~/stores/UserStore';
 
 export const NotificationSocketContext = createContext();
 
 let stompClient = null;
 function NotificationSocketProvider({ children }) {
     const [connectedState, setConnectedState] = useState(false);
+    const [userData, userDataDispatch] = useUser();
     const [notificationEvent, setNotificationEvent] = useState(() => {
         const event = new CustomEvent('onNotificationEvent');
         return event;
@@ -22,15 +24,24 @@ function NotificationSocketProvider({ children }) {
         stompClient.subscribe(`/web-socket/notification`, onMessageReceived);
     };
 
+    const isIn = (arr = []) => {
+        return arr.includes(userData.id);
+    };
+
+    console.log('userData', userData);
+
     function onMessageReceived(messagePayload) {
         const message = JSON.parse(messagePayload.body);
-        switch (message.type) {
-            case 'NOTIFICATION': {
-                console.log('notificationEvent', notificationEvent);
-                window.dispatchEvent(notificationEvent);
-                break;
-            }
-            default: {
+        console.log('message', message, userData.id, isIn(message.receivers));
+        if (message.receivers.length === 0 || isIn(message.receivers)) {
+            switch (message.type) {
+                case 'NOTIFICATION': {
+                    console.log('notificationEvent', notificationEvent);
+                    window.dispatchEvent(notificationEvent);
+                    break;
+                }
+                default: {
+                }
             }
         }
     }
@@ -53,15 +64,16 @@ function NotificationSocketProvider({ children }) {
     }
 
     useEffect(() => {
-        if (!connectedState) {
+        if (!connectedState && userData.id) {
             register();
             setConnectedState(true);
         }
-    }, [connectedState]);
+    }, [userData]);
 
-    const send = (message) => {
+    const send = (receivers = []) => {
         const chatMessage = {
             type: 'NOTIFICATION',
+            receivers: receivers,
         };
         stompClient.send(`/app/notification.send`, {}, JSON.stringify(chatMessage));
     };

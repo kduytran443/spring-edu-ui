@@ -20,7 +20,7 @@ export const choiceQuestionSerivce = {
         return response.json();
     },
     async putChoiceQuestion(choiceQuestion) {
-        const config = postConfig(choiceQuestion);
+        const config = putConfig(choiceQuestion);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },

@@ -318,15 +318,7 @@ function ClassSettingPage() {
                     <UploadWidget multiple={false} />
                 </div>
             )}
-            <div className="my-12 p-4 bg-slate-100 rounded">
-                <div className="flex flex-row items-center mb-2">
-                    <h2 className="text-xl font-bold">Giảm giá</h2>
-                    <div className="ml-4">
-                        <AddDiscountDialog classId={classId} reload={loadDiscounts} />
-                    </div>
-                </div>
-                <DiscountTable data={discountListState} reload={loadDiscounts} />
-            </div>
+
             <div className="my-12 p-4 bg-slate-100 rounded">
                 <h2 className="text-xl font-bold mb-2">Thời gian mở lớp</h2>
                 <div className="flex lg:flex-row items-center flex-col">
@@ -460,3 +452,17 @@ function ClassSettingPage() {
 }
 
 export default ClassSettingPage;
+
+/*
+
+<div className="my-12 p-4 bg-slate-100 rounded">
+                <div className="flex flex-row items-center mb-2">
+                    <h2 className="text-xl font-bold">Giảm giá</h2>
+                    <div className="ml-4">
+                        <AddDiscountDialog classId={classId} reload={loadDiscounts} />
+                    </div>
+                </div>
+                <DiscountTable data={discountListState} reload={loadDiscounts} />
+            </div>
+
+*/

@@ -9,12 +9,24 @@ function RichTextEditor({ data, readOnly, setData = (e) => {}, disabled = false 
     const editorRef = useRef();
     const [dataState, setDataState] = useState(data);
 
+    useEffect(() => {
+        if (data !== dataState) {
+            setDataState(data);
+        }
+    }, [data]);
+
     const checkOnLoad = () => {
         if (disabled) {
             const toolbar = editorRef.current.getElementsByClassName('ck-editor__top')[0];
-            toolbar.style.display = 'none';
+            if (toolbar) {
+                toolbar.style.display = 'none';
+            }
         }
     };
+
+    useEffect(() => {
+        checkOnLoad();
+    }, []);
 
     const editorConfiguaration = {
         toolbar: {

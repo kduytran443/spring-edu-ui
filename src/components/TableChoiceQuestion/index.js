@@ -1,4 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
+import { memo } from 'react';
 
 function TableChoiceQuestion({ rows, columns }) {
     return (
@@ -10,4 +11,4 @@ function TableChoiceQuestion({ rows, columns }) {
     );
 }
 
-export default TableChoiceQuestion;
+export default memo(TableChoiceQuestion);

@@ -1,6 +1,6 @@
 import { Avatar } from '@mui/material';
 
-function UserItemCard({ avatar, name, size = '48px', mark, maxMark }) {
+function UserItemCard({ avatar, name, size = '48px', mark, maxMark, submitTime }) {
     console.log('user', mark, maxMark);
     return (
         <div className="flex flex-row items-center justify-between w-full p-2 select-none cursor-pointer duration-100">
@@ -15,7 +15,7 @@ function UserItemCard({ avatar, name, size = '48px', mark, maxMark }) {
                             <span className="text-green-500 font-bold">{mark}</span> / {maxMark}
                         </>
                     ) : (
-                        <div className="text-red-500">Chưa chấm</div>
+                        <div className="text-red-500">{submitTime ? 'Chưa chấm' : 'Chưa nộp'}</div>
                     )}
                 </div>
             )}

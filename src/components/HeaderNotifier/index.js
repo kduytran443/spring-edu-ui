@@ -33,9 +33,8 @@ function HeaderNotifier() {
     };
 
     useEffect(() => {
-        //loadNotification();
+        loadNotification();
         const trigger = (e) => {
-            console.log('LOAD NOTIFICATION!!!');
             loadNotification();
         };
         window.addEventListener('onNotificationEvent', trigger);
@@ -46,14 +45,28 @@ function HeaderNotifier() {
 
     useEffect(() => {
         if (notificationList.length !== previousLength) {
+            console.log('previousLength', previousLength, notificationList.length);
             //thong bao am thanh
             audioRef.current.play();
             setNotificationSnackbar(true);
+            setPreviousLength(notificationList.length);
             setTimeout(() => {
                 setNotificationSnackbar(false);
             }, 4000);
         }
     }, [notificationList]);
+
+    useEffect(() => {
+        if (visible) {
+            notificationService.readAll().then((data) => {
+                loadNotification();
+            });
+        }
+    }, [visible]);
+
+    const notReadedNotification = notificationList.reduce((previous, current) => {
+        return current.read === 0 ? previous + 1 : previous + 0;
+    }, 0);
 
     return (
         <Tippy
@@ -61,7 +74,7 @@ function HeaderNotifier() {
             visible={visible}
             onClickOutside={hide}
             render={(attrs) => (
-                <div className="box" tabIndex="-1" {...attrs}>
+                <div className="box max-h-[560px] overflow-y-auto" tabIndex="-1" {...attrs}>
                     <HeaderNotifierBox dataList={notificationList} />
                 </div>
             )}
@@ -73,7 +86,7 @@ function HeaderNotifier() {
                 }}
                 className={`cursor-pointer ${visible && ' outline outline-4 shadow-md outline-sky-500 rounded-full'}`}
             >
-                {notificationSnackbar && (
+                {notificationSnackbar && notReadedNotification > 0 && (
                     <CustomSnackbar
                         open={notificationSnackbar}
                         content={
@@ -84,12 +97,7 @@ function HeaderNotifier() {
                     />
                 )}
                 <audio ref={audioRef} src={audios.notificationSound} />
-                <Badge
-                    badgeContent={notificationList.reduce((previous, current) => {
-                        return current.read === 0 ? previous + 1 : previous + 0;
-                    }, 0)}
-                    color="primary"
-                >
+                <Badge badgeContent={notReadedNotification} color="primary">
                     <NotificationsNoneIcon color="action" />
                 </Badge>
             </div>

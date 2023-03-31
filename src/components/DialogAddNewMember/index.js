@@ -8,11 +8,14 @@ import {
     DialogTitle,
     TextField,
 } from '@mui/material';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { classMemberService } from '~/services/classMemberService';
+import { classService } from '~/services/classService';
+import { notificationService } from '~/services/notificationService';
 import { userDataService } from '~/services/userDataService';
+import { NotificationSocketContext } from '../NotificationSocketProvider';
 
 function DialogAddNewMember({ role, classId, currentList = [] }) {
     const navigate = useNavigate();
@@ -29,6 +32,7 @@ function DialogAddNewMember({ role, classId, currentList = [] }) {
         setOpen(false);
     };
 
+    const sendContext = useContext(NotificationSocketContext);
     const [searchValue, setSearchValue] = useState('');
     const [searchUserState, setSearchUserState] = useState({});
     const [canAddState, setCanAddState] = useState(false);
@@ -49,6 +53,13 @@ function DialogAddNewMember({ role, classId, currentList = [] }) {
         handleClose();
     };
 
+    const [classDataState, setClassDataState] = useState({});
+    useEffect(() => {
+        classService.getClassIntroById(classId).then((data) => {
+            setClassDataState(data);
+        });
+    }, []);
+
     const inviteUserToClass = () => {
         const classMember = {
             classId: classId,
@@ -60,9 +71,20 @@ function DialogAddNewMember({ role, classId, currentList = [] }) {
 
         classMemberService.inviteClassMember(classMember).then((data) => {
             if (data) {
-                console.log('lời mời', data);
                 setAlertState('Đã gửi lời mời!');
+
                 setTimeout(() => {
+                    const obj = {
+                        content: 'Bạn có lời mời trở thành học viên từ: ' + classDataState.name,
+                        redirectUrl: '/class/' + classId + '/intro',
+                        receiverIds: [searchUserState.id],
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        setTimeout(() => {
+                            sendContext([searchUserState.id]);
+                        }, 3000);
+                    });
                     handleClose();
                 }, 2000);
             } else {

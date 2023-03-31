@@ -8,7 +8,7 @@ function ReviewCard({ username = 'Ẩn danh', avatar, comment, stars = 0 }) {
                     <Avatar src={avatar} sx={{ width: '48px', height: '48px' }} />
                     <h3 className="text-lg font-bold ml-4">{username}</h3>
                 </div>
-                <Rating name="half-rating" readOnly defaultValue={stars} precision={0.5} />
+                <Rating name="half-rating" readOnly defaultValue={stars} value={stars} precision={0.5} />
             </div>
             <p className="mt-4">{comment}</p>
         </div>

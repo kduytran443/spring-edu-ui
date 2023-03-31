@@ -1,6 +1,7 @@
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton } from '@mui/material';
+import { useRef } from 'react';
 import { Fragment } from 'react';
 
 function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDelete = false, onCancel = () => {} }) {
@@ -16,10 +17,20 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
         );
     }
     const fileSize = size / 1024;
-    console.log(name);
+    const downloadRef = useRef();
+
+    const download = () => {
+        downloadRef.current.click();
+    };
 
     return (
-        <div className="flex bg-white hover:text-white hover:bg-blue-400 hover:shadow-blue-300 duration-100 cursor-pointer relative max-w-[300px] flex-col rounded-lg shadow border border-slate-100 p-4">
+        <div
+            onClick={download}
+            className="flex bg-white hover:text-white hover:bg-blue-400 hover:shadow-blue-300 duration-100 cursor-pointer relative max-w-[300px] flex-col rounded-lg shadow border border-slate-100 p-4"
+        >
+            <a ref={downloadRef} style={{ display: 'none' }} href={data} download={name}>
+                Download
+            </a>
             {noDelete && (
                 <div
                     onClick={(e) => {

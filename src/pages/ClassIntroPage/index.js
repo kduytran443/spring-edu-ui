@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, IconButton, Rating, Tab, TextField } from '@mui/material';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -38,6 +38,9 @@ import ReportClassDialog from '~/components/ReportClassDialog';
 import { discountService } from '~/services/discountService';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
 import AlertFailDialog from '~/components/AlertFailDialog';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
+import { notificationService } from '~/services/notificationService';
+import PaypalCheckout from '~/components/PaypalCheckout';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -98,6 +101,7 @@ function ClassIntroPage() {
     }, [classDataState]);
 
     const loadReviews = () => {
+        console.log('okokokokokokokok');
         fetch(`${API_BASE_URL}/public/api/review/${classId}`)
             .then((res) => res.json())
             .then((data) => {
@@ -152,15 +156,25 @@ function ClassIntroPage() {
             classId: classId,
             classRole: 'student',
             memberAccepted: 1,
-            classAccepted: 1,
+            classAccepted: 0,
         };
 
         classMemberService.postClassMember(classMember).then((data) => {
             if (data.status !== 500) {
                 setSuccessfulEnrollmentState(1);
-                setTimeout(() => {
-                    navigate('/class/' + classId);
-                }, 4000);
+                const obj = {
+                    content: userState.username + ' đã yêu cầu tham gia: ' + classDataState.name,
+                    redirectUrl: `/class/${classId}/everyone`,
+                    receiverIds: [classDataState.userId],
+                };
+
+                notificationService.post(obj).then((data) => {
+                    setTimeout(() => {
+                        sendContext([classDataState.userId]);
+                        loadMemberState();
+                        setSuccessfulEnrollmentState(0);
+                    }, 2000);
+                });
             } else {
             }
         });
@@ -227,8 +241,8 @@ function ClassIntroPage() {
         reviewService.postReview(review).then((data) => {
             if (data) {
                 setAlertSuccess(1);
-                loadReviews();
                 setTimeout(() => {
+                    loadReviews();
                     setAlertSuccess(0);
                 }, 1000);
             } else {
@@ -239,16 +253,18 @@ function ClassIntroPage() {
             }
         });
     };
+    const sendContext = useContext(NotificationSocketContext);
 
     const [memberState, setMemberState] = useState({});
-    useEffect(() => {
+    const loadMemberState = () => {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
-            console.log('memberState 1', data);
             if (data.userId) {
-                console.log('memberState 2', data);
                 setMemberState(data);
             }
         });
+    };
+    useEffect(() => {
+        loadMemberState();
     }, [location]);
 
     const acceptJoinClass = () => {
@@ -259,11 +275,21 @@ function ClassIntroPage() {
             classAccepted: 1,
             fee: 0,
         };
+        //classDataState.userId
         classMemberService.putClassMember(classMember).then((data) => {
             if (data) {
                 setAlertSuccess(1);
                 setTimeout(() => {
-                    navigate('/class/' + classId);
+                    const obj = {
+                        content: userState.username + ' đã tham gia: ' + classDataState.name,
+                        redirectUrl: `/class/${classId}/everyone`,
+                        receiverIds: [classDataState.userId],
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        sendContext([classDataState.userId]);
+                        navigate('/class/' + classId);
+                    });
                 }, 2000);
             }
         });
@@ -309,45 +335,20 @@ function ClassIntroPage() {
                     <div>{renderToDate(classDataState.createdDate)}</div>
                 </div>
                 <div className="my-4">
-                    <div>
-                        {!classDataState.userRoleCode ? (
+                    {reviewListState && (
+                        <div>
                             <Rating
                                 readOnly={true}
-                                defaultValue={classDataState.stars}
-                                value={classDataState.stars}
+                                defaultValue={reviewListState.reduce((pre, cur) => {
+                                    return pre + cur.stars;
+                                }, 0)}
+                                value={reviewListState.reduce((pre, cur) => {
+                                    return pre + cur.stars;
+                                }, 0)}
                                 precision={1}
                             />
-                        ) : (
-                            <>
-                                {reviewRatingState && (
-                                    <>
-                                        <p>Review của bạn về lớp này:</p>
-                                        <Rating
-                                            readOnly={false}
-                                            defaultValue={reviewRatingState.stars}
-                                            value={reviewRatingState.stars}
-                                            precision={1}
-                                            onChange={changeReviewRating}
-                                        />
-                                    </>
-                                )}
-                            </>
-                        )}
-                        {classDataState.userRoleCode && (
-                            <>
-                                <div className="w-full">
-                                    <TextField
-                                        className="w-full"
-                                        multiline
-                                        rows={2}
-                                        onInput={changeReviewComment}
-                                        value={reviewRatingState.comment}
-                                    />
-                                </div>
-                                <Button onClick={postReview}>Đánh giá</Button>
-                            </>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-row items-center mb-4 md:mb-0">
@@ -357,6 +358,15 @@ function ClassIntroPage() {
                         style={{ width: '64px', height: '64px' }}
                     />
                     <h1 className="ml-2 font-bold text-xl">{classDataState.userFullname}</h1>
+                </div>
+                <div>
+                    <PaypalCheckout
+                        username={'username'}
+                        email="email@gmail.com"
+                        orderDataId={1}
+                        totalPrice={200000}
+                        successAction={console.log('ok')}
+                    />
                 </div>
                 <div className="w-full">
                     {rowsState.length > 0 && (
@@ -368,12 +378,41 @@ function ClassIntroPage() {
                         </div>
                     )}
                     <div className="my-4">
-                        <div className="text-2xl mb-8 mt-2">
+                        <div className="text-2xl mb-4 mt-2">
                             <b>Mô tả:</b>
                         </div>
                         {classDataState.textData && <ShowTextData data={classDataState.textData} />}
                     </div>
-                    <div className="mt-10 w-full">
+                    <div className="mt-12">
+                        {reviewRatingState.stars && (
+                            <>
+                                <p className="font-bold">Review của bạn về lớp này:</p>
+                                <Rating
+                                    readOnly={false}
+                                    defaultValue={reviewRatingState.stars}
+                                    value={reviewRatingState.stars}
+                                    precision={1}
+                                    onChange={changeReviewRating}
+                                />
+                            </>
+                        )}
+                        {classDataState.userRoleCode && (
+                            <>
+                                <div className="w-full">
+                                    <TextField
+                                        label="Đánh giá"
+                                        className="w-full"
+                                        multiline
+                                        rows={2}
+                                        onInput={changeReviewComment}
+                                        value={reviewRatingState.comment}
+                                    />
+                                </div>
+                                <Button onClick={postReview}>Đánh giá</Button>
+                            </>
+                        )}
+                    </div>
+                    <div className="mt-2 w-full">
                         <Box sx={{ width: '100%', typography: 'body1' }}>
                             <TabContext value={value}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

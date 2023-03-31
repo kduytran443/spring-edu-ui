@@ -18,17 +18,21 @@ import {
 import { Box } from '@mui/system';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import { useContext } from 'react';
 import { useState } from 'react';
 import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertFailDialog from '~/components/AlertFailDialog';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { categoryService } from '~/services/categoryService';
+import { classMemberService } from '~/services/classMemberService';
 import { classService } from '~/services/classService';
 import { constructedResponseTestService } from '~/services/constructedResponseTestService';
 import { exerciseService } from '~/services/exerciseService';
+import { notificationService } from '~/services/notificationService';
 import { questionBankService } from '~/services/questionBankService';
 import { quizService } from '~/services/quizService';
 
@@ -102,12 +106,23 @@ function ClassCreateExercisePage() {
     const [startTimeState, setStartTimeState] = useState(new Date());
     const [endTimeState, setEndTimeState] = useState(new Date());
 
+    const [classMemberIds, setClassMemberIds] = useState([]);
+    const loadClassMemberIds = () => {
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                const arr = data.filter((item) => item.classRole === 'student').map((item) => item.userId);
+                setClassMemberIds(arr);
+            }
+        });
+    };
+
     useEffect(() => {
         questionBankService.getQuestionBankByClassId(classId).then((data) => {
             if (data.length > 0) {
                 setQuestionBankList(data);
             }
         });
+        loadClassMemberIds();
     }, [location]);
 
     const [selectedQuestionBank, setSelectedQuestionBank] = useState({});
@@ -145,8 +160,14 @@ function ClassCreateExercisePage() {
     const [timeLimitError, setTimeLimitError] = useState('');
     const [requiredMarkError, setRequiredMarkError] = useState('');
     const [excerciseType, setExcerciseType] = useState('');
+    const [classDataState, setClassDataState] = useState({});
 
     const [mark, setMark] = useState('');
+    useEffect(() => {
+        classService.getClassIntroById(classId).then((data) => {
+            setClassDataState(data);
+        });
+    }, []);
 
     const check = () => {
         let valid = true;
@@ -221,6 +242,7 @@ function ClassCreateExercisePage() {
         return valid;
     };
 
+    const sendContext = useContext(NotificationSocketContext);
     const [alertSuccess, setAlertSuccess] = useState(0);
 
     const submit = () => {
@@ -250,25 +272,48 @@ function ClassCreateExercisePage() {
 
             exerciseService.postExercise(obj).then((data) => {
                 if (data.id) {
+                    setAlertSuccess(1);
                     if (isQuizTest) {
                         const quizObj = {
                             classExcerciseId: data.id,
                             numberOfQuestion: numberOfQuestion,
                         };
-                        quizService.postQuiz(quizObj).then((data) => {});
+                        quizService.postQuiz(quizObj).then((quiz) => {
+                            const obj = {
+                                content: classDataState.name + ' vừa có bài trắc nghiệm mới: ' + data.name,
+                                redirectUrl: '/class/' + classId + '/exercise/' + data.id,
+                                receiverIds: classMemberIds,
+                            };
+
+                            notificationService.post(obj).then((test) => {
+                                setTimeout(() => {
+                                    sendContext(classMemberIds);
+                                    setAlertSuccess(0);
+                                    navigate('/class/' + classId + '/exercise/' + data.id);
+                                }, 3000);
+                            });
+                        });
                     } else if (isConstructedResponseTest) {
                         const constructedResponse = {
                             content: textData,
                             classExcerciseId: data.id,
                         };
-                        constructedResponseTestService.post(constructedResponse).then((data) => {});
-                    }
+                        constructedResponseTestService.post(constructedResponse).then((test) => {
+                            const obj = {
+                                content: classDataState.name + ' vừa có bài tự luận mới: ' + data.name,
+                                redirectUrl: '/class/' + classId + '/exercise/' + data.id,
+                                receiverIds: classMemberIds,
+                            };
 
-                    setAlertSuccess(1);
-                    setTimeout(() => {
-                        setAlertSuccess(0);
-                        navigate('/class/' + classId + '/exercise/' + data.id);
-                    }, 3000);
+                            notificationService.post(obj).then((data) => {
+                                setTimeout(() => {
+                                    sendContext(classMemberIds);
+                                    setAlertSuccess(0);
+                                    navigate('/class/' + classId + '/exercise/' + data.id);
+                                }, 3000);
+                            });
+                        });
+                    }
                 }
             });
         } else {

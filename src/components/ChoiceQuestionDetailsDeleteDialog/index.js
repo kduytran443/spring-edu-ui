@@ -50,9 +50,10 @@ export default function ChoiceQuestionDetailsDeleteDialog({ choiceQuestionId, re
     }, [open]);
 
     const submitDelete = () => {
-        choiceQuestionSerivce.deleteChoiceQuestion({ id: choiceQuestionId });
+        choiceQuestionSerivce.deleteChoiceQuestion({ id: choiceQuestionId }).then((data) => {
+            reload();
+        });
         handleClose();
-        reload();
     };
 
     return (

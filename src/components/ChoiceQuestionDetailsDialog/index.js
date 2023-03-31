@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
     Checkbox,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -22,15 +23,19 @@ import { useLocation } from 'react-router-dom';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
 import { choiceQuestionSerivce } from '~/services/choiceQuestionSerivce';
 import { questionBankService } from '~/services/questionBankService';
+import DialogProcessLoading from '../DialogProcessLoading';
+import LoadingPageProcess from '../LoadingPageProcess';
 import RichTextEditor from '../RichTextEditor';
 import ShowTextData from '../ShowTextData';
 
 export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
     const location = useLocation();
+    const [loadingState, setLoadingState] = useState(true);
 
     const handleClickOpen = () => {
         setOpen(true);
+        setLoadingState(true);
     };
 
     const handleClose = () => {
@@ -51,7 +56,9 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
             if (data.id) {
                 setNewQuestionName(data.name);
                 setNewQuestionContent(data.content);
-                console.log('data.content', data.content);
+                setTimeout(() => {
+                    setLoadingState(false);
+                }, 500);
             }
         });
     };
@@ -75,7 +82,6 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
                         id: item.id,
                     };
                 });
-                console.log(data);
                 setChoiceAnswerController(arr);
             }
         });
@@ -100,6 +106,7 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
                 <DialogTitle id="alert-dialog-title">Chi tiết câu hỏi</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
+                        {loadingState && <DialogProcessLoading />}
                         <div className="mt-4 w-full md:w-[500px]">
                             <div className="w-full">
                                 <div className="font-bold">Tên câu hỏi</div>
@@ -110,7 +117,6 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
                                 {<RichTextEditor disabled data={newQuestionContent} />}
                             </div>
                             {choiceAnswerController.map((choiceAnswer, index) => {
-                                console.log('choiceAnswer', choiceAnswer);
                                 return (
                                     <div key={index} className="w-full bg-slate-100 p-4 rounded my-8 md:my-6">
                                         <div className="flex flex-col-reverse md:flex-row items-center">

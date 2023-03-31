@@ -55,7 +55,7 @@ function ExerciseResultPage() {
                 <div className="p-4 rounded-lg bg-slate-100 shadow">
                     {exerciseData && submittedExercise && (
                         <div className="font-bold text-xl my-2">
-                            Điểm thi: {submittedExercise.mark >= 0 && Math.round(submittedExercise.mark, 2)}/
+                            Điểm thi: {submittedExercise.mark >= 0 && Math.round(submittedExercise.mark, 3)}/
                             {exerciseData.mark}
                         </div>
                     )}

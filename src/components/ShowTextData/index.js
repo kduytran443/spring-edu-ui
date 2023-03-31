@@ -14,7 +14,6 @@ function ShowTextData({ data }) {
             }
 
             const listEmptyError = divElement.querySelectorAll('.ck.ck-reset_all.ck-widget__resizer');
-            console.log('listEmptyError', listEmptyError);
             for (let i = 0; i < listEmptyError.length; i++) {
                 const error = listEmptyError[i];
                 error.style.display = 'none';

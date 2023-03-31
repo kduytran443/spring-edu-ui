@@ -39,7 +39,6 @@ function ClassEveryonePage() {
 
     const loadData = () => {
         classMemberService.getClassMemberByClassId(classId).then((data) => {
-            console.log('new list nè', data);
             setPeopleListState(data);
         });
         loadInvitedUser();
@@ -56,7 +55,6 @@ function ClassEveryonePage() {
     const [userRole, setUserRole] = useState();
     const loadUserData = () => {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
-            console.log(data);
             if (isValidRole(data.classRole)) {
                 setUserRole(data.classRole);
             } else {
@@ -70,16 +68,6 @@ function ClassEveryonePage() {
         }
         return false;
     };
-    /*
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/public/api/class-member?classId=${classId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                setPeopleListState(data);
-            });
-    }, [classId]);
-    */
 
     const [alertSuccess, setAlertSuccess] = useState(false);
     const sendToWaitingList = (userId) => {
@@ -91,8 +79,6 @@ function ClassEveryonePage() {
             fee: 0,
             userId: userId,
         };
-
-        console.log(classMember);
 
         classMemberService.sendToWaitingList(classMember).then((data) => {
             if (data) {

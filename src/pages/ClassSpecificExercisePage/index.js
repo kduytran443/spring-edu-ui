@@ -1,5 +1,5 @@
 import { faWpforms } from '@fortawesome/free-brands-svg-icons';
-import { faClock, faHistory, faMarker, faReply } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faHistory, faMarker, faPen, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, TextField } from '@mui/material';
 import { useEffect } from 'react';
@@ -20,6 +20,7 @@ import RichTextEditor from '~/components/RichTextEditor';
 import { constructedResponseTestService } from '~/services/constructedResponseTestService';
 import GradeDialog from '~/components/GradeDialog';
 import { quizService } from '~/services/quizService';
+import ClassExerciseDeleteDialog from './ClassExerciseDeleteDialog';
 
 function ClassSpecificExercisePage() {
     const navigate = useNavigate();
@@ -65,6 +66,12 @@ function ClassSpecificExercisePage() {
     const [submittedExerciseList, setSubmittedExerciseList] = useState([]);
     const [submittedExercise, setSubmittedExercise] = useState();
     const [finished, setFinished] = useState(false);
+
+    const date = new Date();
+    const checkUncomplete = () => {
+        if (exerciseData.endTime >= date.getTime()) {
+        }
+    };
 
     const loadSubmittedExercise = () => {
         submittedExerciseService.getSubmittedExercisesByUserAndClassExercise(exerciseId).then((data) => {
@@ -112,6 +119,16 @@ function ClassSpecificExercisePage() {
         loadData();
         loadRole();
     }, [location]);
+
+    useEffect(() => {
+        console.log('submittedExercise', submittedExercise);
+        console.log(
+            exerciseData.endTime,
+            date.getTime(),
+            date.getTime() >= exerciseData.endTime,
+            !submittedExercise || !submittedExercise.submitTime,
+        );
+    }, [submittedExercise]);
 
     useEffect(() => {
         if (classRole === 'teacher' || classRole === 'supporter') {
@@ -200,20 +217,29 @@ function ClassSpecificExercisePage() {
                             <b>Điểm</b>: {exerciseData.mark}
                         </div>
                         <div className="mb-4">
-                            {submittedExercise ? (
-                                <Button onClick={continueSubmit} variant="contained">
-                                    Tiếp tục thực hiện
+                            {date.getTime() >= exerciseData.endTime &&
+                            (!submittedExercise || !submittedExercise.submitTime) ? (
+                                <Button variant="contained" disabled>
+                                    Bạn chưa hoàn thành
                                 </Button>
                             ) : (
                                 <>
-                                    {!finished ? (
-                                        <Button onClick={submitNewSubmittedExercise} variant="contained">
-                                            Bắt đầu thực hiện
+                                    {submittedExercise ? (
+                                        <Button onClick={continueSubmit} variant="contained">
+                                            Tiếp tục thực hiện
                                         </Button>
                                     ) : (
-                                        <Button variant="contained" disabled>
-                                            Đã hoàn thành
-                                        </Button>
+                                        <>
+                                            {!finished ? (
+                                                <Button onClick={submitNewSubmittedExercise} variant="contained">
+                                                    Bắt đầu thực hiện
+                                                </Button>
+                                            ) : (
+                                                <Button variant="contained" disabled>
+                                                    Đã hoàn thành
+                                                </Button>
+                                            )}
+                                        </>
                                     )}
                                 </>
                             )}
@@ -270,8 +296,24 @@ function ClassSpecificExercisePage() {
                     </div>
                 ) : (
                     <>
-                        <div className="text-lg">
-                            Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
+                        <div className="w-full flex flex-row items-center justify-between">
+                            <div className="text-lg">
+                                Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
+                            </div>
+                            <div className="flex flex-row items-center">
+                                <div className="flex flex-row items-center">
+                                    <Button
+                                        onClick={(e) => {
+                                            navigate('/class/' + classId + '/exercise/' + exerciseId + '/edit');
+                                        }}
+                                        color="primary"
+                                        startIcon={<FontAwesomeIcon icon={faPen} />}
+                                    >
+                                        Sửa
+                                    </Button>
+                                    <ClassExerciseDeleteDialog />
+                                </div>
+                            </div>
                         </div>
                         {exerciseData.isConstructedResponseTest && (
                             <ul className="w-full">
@@ -283,7 +325,7 @@ function ClassSpecificExercisePage() {
                                                     <UserItemCard
                                                         avatar={submittedItem.userAvatar}
                                                         name={submittedItem.username}
-                                                        mark={submittedItem.mark}
+                                                        mark={Math.round(submittedItem.mark, 3)}
                                                         maxMark={exerciseData.mark}
                                                     />
                                                 }
@@ -315,15 +357,18 @@ function ClassSpecificExercisePage() {
                                                     <UserItemCard
                                                         avatar={submittedItem.userAvatar}
                                                         name={submittedItem.username}
-                                                        mark={submittedItem.mark}
+                                                        mark={Math.round(submittedItem.mark, 3)}
                                                         maxMark={exerciseData.mark}
+                                                        submitTime={submittedItem.submitTime}
                                                     />
                                                 }
                                             >
-                                                <div>
-                                                    <FontAwesomeIcon icon={faClock} /> Thời gian nộp:{' '}
-                                                    {renderToTime(submittedItem.submitTime)}
-                                                </div>
+                                                {submittedItem.submitTime && (
+                                                    <div>
+                                                        <FontAwesomeIcon icon={faClock} /> Thời gian nộp:{' '}
+                                                        {renderToTime(submittedItem.submitTime)}
+                                                    </div>
+                                                )}
                                             </UserAccordion>
                                         </li>
                                     );

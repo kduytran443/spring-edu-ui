@@ -24,12 +24,12 @@ export const choiceAnswerSerivce = {
         return response.json();
     },
     async putChoiceAnswer(choiceAnswer) {
-        const config = postConfig(choiceAnswer);
+        const config = putConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
     async deleteChoiceAnswer(choiceAnswer) {
-        const config = postConfig(choiceAnswer);
+        const config = deleteConfig(choiceAnswer);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },

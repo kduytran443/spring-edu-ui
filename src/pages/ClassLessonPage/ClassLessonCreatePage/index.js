@@ -3,13 +3,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Box } from '@mui/system';
 import { Editor } from 'draft-js';
+import { useContext } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import AlertFailDialog from '~/components/AlertFailDialog';
+import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import CloudinaryUploadWidget from '~/components/CloudinaryUploadWidget';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { classLessonService } from '~/services/classLessonService';
+import { classMemberService } from '~/services/classMemberService';
 import { fileService } from '~/services/fileService';
+import { notificationService } from '~/services/notificationService';
 import { topicService } from '~/services/topicService';
 
 function ClassLessonCreatePage() {
@@ -22,7 +28,6 @@ function ClassLessonCreatePage() {
     const [topicIdState, setTopicIdState] = useState();
     const [textDataState, setTextDataState] = useState('');
     const [fileListState, setFileListState] = useState([]);
-
     const [topicListState, setTopicListState] = useState([]);
 
     const loadTopic = () => {
@@ -34,8 +39,19 @@ function ClassLessonCreatePage() {
         });
     };
 
+    const [classMembers, setClassMembers] = useState([]);
+    const loadClassMembers = () => {
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            if (data.length >= 0) {
+                const arr = data.filter((item) => item.classRole === 'student').map((item) => item.userId);
+                setClassMembers(arr);
+            }
+        });
+    };
+
     useEffect(() => {
         loadTopic();
+        loadClassMembers();
     }, [location]);
 
     const setTextData = (data) => {
@@ -61,7 +77,9 @@ function ClassLessonCreatePage() {
     const uploadFiles = (classLessonId, file) => {
         fileService.postFileOnClassLessonId(classLessonId, file).then((data) => {});
     };
+    const sendContext = useContext(NotificationSocketContext);
 
+    const [success, setSuccess] = useState(0);
     const postLesson = () => {
         if (nameState && topicIdState && textDataState) {
             const obj = {
@@ -71,14 +89,32 @@ function ClassLessonCreatePage() {
             };
 
             classLessonService.postClassLesson(obj).then((data) => {
-                if (data.status !== 500) {
+                if (data.id) {
                     if (fileListState.length > 0) {
                         fileListState.forEach((file) => {
                             uploadFiles(data.id, file);
                         });
                     }
+                    setSuccess(1);
 
-                    navigate('/class/' + classId);
+                    const obj = {
+                        content: 'Bài học mới: ' + data.name,
+                        redirectUrl: `/class/${classId}/lesson/${data.id}`,
+                        receiverIds: classMembers,
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        setTimeout(() => {
+                            sendContext(classMembers);
+                            setSuccess(0);
+                            navigate('/class/' + classId);
+                        }, 3000);
+                    });
+                } else {
+                    setSuccess(-1);
+                    setTimeout(() => {
+                        setSuccess(0);
+                    }, 1000);
                 }
             });
 
@@ -111,6 +147,8 @@ function ClassLessonCreatePage() {
             </div>
             <h2 className="font-bold text-3xl">Tạo bài học</h2>
             <div className="w-full flex-col my-8">
+                <AlertFailDialog open={success === -1} />
+                <AlertSuccessDialog open={success === 1} />
                 <div className="w-full my-6">
                     <TextField className="w-full" label="Tên bài học" value={nameState} onInput={onInputName} />
                 </div>

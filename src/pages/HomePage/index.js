@@ -99,13 +99,6 @@ function HomePage() {
             <div className="md:p-4 p-0 w-full">
                 <SildeshowIntroduction />
             </div>
-            <Button
-                onClick={(e) => {
-                    sendContext();
-                }}
-            >
-                Load event
-            </Button>
             <ul className="flex flex-row flex-wrap">
                 {categoryListState === null ? (
                     <LoadingProcess />

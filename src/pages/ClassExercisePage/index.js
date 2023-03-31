@@ -102,9 +102,7 @@ function ClassExercisePage() {
                         <ListItem
                             className={`cursor-pointer ${isAvailable ? 'hover:bg-blue-100' : 'hover:bg-gray-100'}`}
                             onClick={(e) => {
-                                if (isAvailable) {
-                                    navigate('/class/' + classId + '/exercise/' + classExercise.id);
-                                }
+                                navigate('/class/' + classId + '/exercise/' + classExercise.id);
                             }}
                         >
                             <ListItemAvatar>

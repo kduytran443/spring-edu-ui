@@ -21,12 +21,15 @@ import {
     TextField,
 } from '@mui/material';
 import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { useRef } from 'react';
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ChoiceQuestionDetailsDeleteDialog from '~/components/ChoiceQuestionDetailsDeleteDialog';
 import ChoiceQuestionDetailsDialog from '~/components/ChoiceQuestionDetailsDialog';
+import ChoiceQuestionEditDetailsDialog from '~/components/ChoiceQuestionEditDetailsDialog';
 import QuestionBankCreateDialog from '~/components/QuestionBankCreateDialog';
 import QuestionBankDeleteDialog from '~/components/QuestionBankDeleteDialog';
 import QuestionBankEditDialog from '~/components/QuestionBankEditDialog';
@@ -214,38 +217,43 @@ function QuestionBankDetailsPage() {
         }
     };
 
-    const columns = [
-        { field: 'name', headerName: 'Tên câu hỏi', width: 320 },
-        {
-            field: 'content',
-            headerName: 'Nội dung',
-            width: 320,
-            renderCell: (param) => {
-                return (
-                    <div>
-                        <ShowTextData data={param.value} />
-                    </div>
-                );
-            },
-        },
-        {
-            field: 'id',
-            headerName: 'Thao tác',
-            width: 220,
-            renderCell: (param) => {
-                return (
-                    <>
-                        <div className="mr-4">
-                            <ChoiceQuestionDetailsDialog choiceQuestionId={param.value} />
-                        </div>
+    const columns = useMemo(() => {
+        return [
+            { field: 'name', headerName: 'Tên câu hỏi', width: 320 },
+            {
+                field: 'content',
+                headerName: 'Nội dung',
+                width: 320,
+                renderCell: (param) => {
+                    return (
                         <div>
-                            <ChoiceQuestionDetailsDeleteDialog reload={loadQuestion} choiceQuestionId={param.value} />
+                            <ShowTextData data={param.value} />
                         </div>
-                    </>
-                );
+                    );
+                },
             },
-        },
-    ];
+            {
+                field: 'id',
+                headerName: 'Thao tác',
+                width: 220,
+                renderCell: (param) => {
+                    return (
+                        <>
+                            <div className="mr-4">
+                                <ChoiceQuestionEditDetailsDialog choiceQuestionId={param.value} />
+                            </div>
+                            <div>
+                                <ChoiceQuestionDetailsDeleteDialog
+                                    reload={loadQuestion}
+                                    choiceQuestionId={param.value}
+                                />
+                            </div>
+                        </>
+                    );
+                },
+            },
+        ];
+    }, []);
 
     return (
         <div className="p-4">

@@ -27,7 +27,6 @@ function DoExercisePage() {
         exerciseService.getExerciseById(exerciseId).then((data) => {
             if (data.id) {
                 setExerciseData(data);
-                console.log(data);
             }
         });
     };
@@ -39,7 +38,6 @@ function DoExercisePage() {
             if (data.length > 0) {
                 const lastestSubmittedExercise = data[data.length - 1];
                 setSubmittedExercise(lastestSubmittedExercise);
-                console.log(lastestSubmittedExercise);
             }
         });
     };
@@ -62,7 +60,6 @@ function DoExercisePage() {
     const loadQuiz = () => {
         if (submittedExercise) {
             drawQuizService.getAllBySubmittedExerciseId(submittedExercise.id).then((data) => {
-                console.log('5', data);
                 if (data.length) {
                     setDrawQuizzes(data);
                 }
@@ -98,10 +95,6 @@ function DoExercisePage() {
         }
     }, [submittedExercise]);
 
-    const endTime = () => {
-        console.log('END');
-    };
-
     const [choiceQuestion, setChoiceQuestion] = useState();
     const [selectedChoiceAnswerIds, setSelectedChoiceAnswerIds] = useState([]);
     const selectChoiceQuestion = (choiceQuestionId) => {};
@@ -118,16 +111,53 @@ function DoExercisePage() {
         }
     };
 
-    const [answeredQuizList, setAnsweredQuizList] = useState([]);
-    const isAnswered = async (drawQuizId) => {
-        console.log('drawQuizId', drawQuizId);
-        let result = false;
-        result = await choiceAnswerSerivce.getChoiceAnswerByDrawQuizId(drawQuizId).then((data) => {
+    const [answeredDrawQuizList, setAnsweredDrawQuizList] = useState([]);
+
+    const addDrawQuizAnswer = (drawQuizId) => {
+        if (answeredDrawQuizList.indexOf(drawQuizId) === -1) {
+            setAnsweredDrawQuizList((pre) => {
+                return [...pre, drawQuizId];
+            });
+        }
+    };
+    const removeDrawQuizAnswer = (drawQuizId) => {
+        const arr = [...answeredDrawQuizList];
+        const index = arr.indexOf(drawQuizId);
+        if (index >= 0) {
+            arr.splice(index, 1);
+            setAnsweredDrawQuizList(arr);
+        }
+    };
+
+    const loadSelectedQuiz = () => {
+        drawQuizzes.forEach((drawQuiz) => {
+            choiceAnswerSerivce.getChoiceAnswerByDrawQuizId(drawQuiz.id).then((data) => {
+                if (data.length > 0) {
+                    addDrawQuizAnswer(drawQuiz.id);
+                } else {
+                    removeDrawQuizAnswer(drawQuiz.id);
+                }
+            });
+        });
+    };
+
+    const isAnswered = (drawQuizId) => {
+        const index = answeredDrawQuizList.indexOf(drawQuizId);
+        if (answeredDrawQuizList.indexOf(drawQuizId) >= 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+        /*
+        choiceAnswerSerivce.getChoiceAnswerByDrawQuizId(drawQuizId).then((data) => {
             if (data.length > 0) {
-                return true;
+                setAnsweredQuizList((pre) => {
+                    return [...pre, data];
+                });
             }
         });
-        return result;
+        */
     };
 
     const [alertSuccess, setAlertSuccess] = useState(false);
@@ -143,6 +173,16 @@ function DoExercisePage() {
                     }, 2000);
                 }
             });
+    };
+
+    useEffect(() => {
+        if (drawQuizzes.length > 0) {
+            loadSelectedQuiz();
+        }
+    }, [drawQuizzes]);
+
+    const endTime = () => {
+        submit();
     };
 
     return (
@@ -170,6 +210,7 @@ function DoExercisePage() {
                         drawQuizId={drawQuizId}
                         selectAnswer={selectAnswer}
                         choiceQuestionId={choiceQuestion}
+                        reload={loadSelectedQuiz}
                     />
                 )}
                 <div className="flex flex-col items-center w-full">
@@ -186,6 +227,7 @@ function DoExercisePage() {
                                                   setDrawQuizId(drawQuiz.id);
                                               }
                                     }
+                                    color={`${isAnswered(drawQuiz.id) ? 'primary' : 'error'}`}
                                 >
                                     {index + 1}
                                 </Button>

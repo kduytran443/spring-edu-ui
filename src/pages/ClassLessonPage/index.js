@@ -52,7 +52,6 @@ function ClassLessonPage() {
     const loadData = () => {
         classLessonService.getClassLessonServiceById(lessonId).then((data) => {
             if (data.status !== 500) {
-                console.log(data);
                 setLessonDataState(data);
             } else {
                 navigate('/class/' + classId);
@@ -62,7 +61,6 @@ function ClassLessonPage() {
 
     const textDataRef = useRef();
     useEffect(() => {
-        console.log('load dataaaaaa');
         loadData();
     }, [location]);
 
@@ -76,28 +74,10 @@ function ClassLessonPage() {
     }, [lessonDataState]);
 
     useEffect(() => {
-        console.log('LONG LOADING...');
         const timeout = setTimeout(() => {
             setLoadingState(false);
         }, 2000);
     }, [location]);
-
-    /*
-    useEffect(() => {
-        const config = getConfig();
-        fetch(`${API_BASE_URL}/api/class-lesson/${lessonId}`, config)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                if (data.status === 500) {
-                    navigate('/page-not-found');
-                } else setLessonDataState(data);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
-    }, [lessonId]);
-    */
 
     /*PRIVATE*/
     useEffect(() => {

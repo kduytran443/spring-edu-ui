@@ -5,9 +5,10 @@ import { DataGrid, gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
+import LinearWithValueLabel from '~/components/LinearWithValueLabel';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
-import { renderToTime } from '~/utils';
+import { renderToTime, showScore } from '~/utils';
 
 const columns = [
     { field: 'name', headerName: 'Bài', width: 130 },
@@ -39,7 +40,7 @@ const columns = [
                         ''
                     ) : (
                         <div>
-                            {Math.round(param.value.mark, 1)}/{param.value.max}
+                            {showScore(param.value.mark, 1)} / {param.value.max}
                         </div>
                     )}
                 </>
@@ -79,7 +80,6 @@ function ClassMarkPage() {
 
                     return obj;
                 });
-                console.log('arrarrarr', arr);
                 setSubmittedExercises(arr);
             }
         });
@@ -146,15 +146,20 @@ function ClassMarkPage() {
             <div style={{ height: 400, width: '100%' }}>
                 <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
             </div>
-            <div className="w-full mt-6 flex items-end justify-end">
-                <div className="p-6 text-lg border-slate-300 shadow border rounded">
+            <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
+                <div className="w-full p-2">
+                    <LinearWithValueLabel
+                        progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
+                    />
+                </div>
+                <div className="p-6  border-slate-300 shadow border rounded">
                     <div className="mb-2">
-                        Điểm trung bình: {Math.round(avargeMark)} / {avargeExerciseMark} (
-                        {Math.round((avargeMark / avargeExerciseMark) * 100, 1)}% )
+                        Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
+                        {showScore((avargeMark / avargeExerciseMark) * 100, 1)}% )
                     </div>
                     <div>
                         Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} ({' '}
-                        {Math.round((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
+                        {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
                     </div>
                 </div>
             </div>

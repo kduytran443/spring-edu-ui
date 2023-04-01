@@ -1,14 +1,19 @@
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { questionBankService } from '~/services/questionBankService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import AlertFailDialog from '../AlertFailDialog';
 import AlertSuccessDialog from '../AlertSuccessDialog';
+import { faPen, faSchoolCircleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { useParams } from 'react-router-dom';
+import { notificationService } from '~/services/notificationService';
+import { NotificationSocketContext } from '../NotificationSocketProvider';
 
 export default function GradeDialog({ button, maxMark, submittedExerciseId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
+    const { classId, exerciseId } = useParams();
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -30,10 +35,21 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
     const [grade, setGrade] = useState(0);
     const [success, setSuccess] = useState(0);
 
+    const sendContext = useContext(NotificationSocketContext);
     const handleAgree = () => {
         submittedExerciseService.grade(submittedExerciseId, grade).then((data) => {
             if (data.id) {
                 setSuccess(1);
+                const userIds = [data.userId];
+                const obj = {
+                    content: 'Bài làm của bạn đã được chấm điểm',
+                    redirectUrl: `/class/${classId}/exercise/${exerciseId}`,
+                    receiverIds: userIds,
+                };
+
+                notificationService.post(obj).then((data) => {
+                    sendContext(userIds);
+                });
                 setTimeout(() => {
                     reload();
                     setSuccess(0);
@@ -51,7 +67,7 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <Button startIcon={<FontAwesomeIcon icon={faMarkdown} />}>Chấm điểm</Button>
+                <Button startIcon={<FontAwesomeIcon icon={faPen} />}>Chấm điểm</Button>
             </div>
             <Dialog
                 open={open}

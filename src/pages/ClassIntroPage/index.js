@@ -339,12 +339,18 @@ function ClassIntroPage() {
                         <div>
                             <Rating
                                 readOnly={true}
-                                defaultValue={reviewListState.reduce((pre, cur) => {
-                                    return pre + cur.stars;
-                                }, 0)}
-                                value={reviewListState.reduce((pre, cur) => {
-                                    return pre + cur.stars;
-                                }, 0)}
+                                defaultValue={
+                                    reviewListState.reduce((pre, cur) => {
+                                        console.log('stars1', pre);
+                                        return pre + cur.stars;
+                                    }, 0) / reviewListState.length
+                                }
+                                value={
+                                    reviewListState.reduce((pre, cur) => {
+                                        console.log('stars2', pre);
+                                        return pre + cur.stars;
+                                    }, 0) / reviewListState.length
+                                }
                                 precision={1}
                             />
                         </div>

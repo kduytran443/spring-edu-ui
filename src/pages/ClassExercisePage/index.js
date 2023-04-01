@@ -10,7 +10,7 @@ import {
     ListItemText,
     Typography,
 } from '@mui/material';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import ClassTopic from '~/components/ClassTopic';
 import SimpleAccordion from '~/components/SimpleAccordion';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
@@ -22,12 +22,15 @@ import { exerciseService } from '~/services/exerciseService';
 import { renderToTime } from '~/utils';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
-import { blue, grey } from '@mui/material/colors';
+import { blue, green, grey, orange } from '@mui/material/colors';
+import { useMemo } from 'react';
+import AppsIcon from '@mui/icons-material/Apps';
 
 function ClassExercisePage() {
     const { classId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const navigateToExercise = (exerciseId) => {
         navigate('/class/' + classId + '/exercise/' + exerciseId);
@@ -35,7 +38,6 @@ function ClassExercisePage() {
     const [userRole, setUserRole] = useState();
     const loadUserData = () => {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
-            console.log(data);
             if (data.classRole) {
                 setUserRole(data.classRole);
             }
@@ -61,11 +63,99 @@ function ClassExercisePage() {
             }
         });
     };
+
+    const [submittedExercises, setSubmittedExercises] = useState([]);
+    const loadSubmittedExerciseData = () => {
+        submittedExerciseService.getSubmittedExercisesByUserAndClass(classId).then((data) => {
+            if (data.length >= 0) {
+                const arr = data.map((item) => {
+                    const obj = {
+                        ...item.classExcercise,
+                        ...item,
+                    };
+
+                    obj.mark = {
+                        mark: item.mark,
+                        max: item.classExcercise.mark,
+                    };
+
+                    return obj;
+                });
+                setSubmittedExercises(arr);
+            }
+        });
+    };
+
+    const getStatus = (obj) => {
+        if (obj) {
+            if (obj.submitTime) {
+                return 1; //1 = đã nộp bài
+            } else {
+                return -1; //-1 = đã làm nhưng chưa nộp
+            }
+        } else {
+            return 0; //0 = chưa làm
+        }
+    };
+
+    const checkStatus = (exerciseDataId) => {
+        const obj = submittedExercises.find((item) => {
+            return item.classExcercise.id === exerciseDataId;
+        });
+
+        return getStatus(obj);
+    };
+    const count = () => {
+        console.log('Count');
+        const complete = classExerciseList.filter((classExercise) => {
+            return checkStatus(classExercise.id) === 1;
+        }).length;
+        const doing = classExerciseList.filter((classExercise) => {
+            return date.getTime() < classExercise.endTime && checkStatus(classExercise.id) === -1;
+        }).length;
+        const notComplete = classExerciseList.filter((classExercise) => {
+            const status = checkStatus(classExercise.id);
+            const isAvailable = date.getTime() > classExercise.endTime && (status === 0 || status === -1);
+            return isAvailable;
+        }).length;
+        const opening = classExerciseList.filter((classExercise) => {
+            const isAvailable = date.getTime() < classExercise.endTime && checkStatus(classExercise.id) === 0;
+            return isAvailable;
+        }).length;
+
+        setCountComplete(complete);
+        setCountDoing(doing);
+        setCountNotComplete(notComplete);
+        setCountOpening(opening);
+    };
     useEffect(() => {
         loadData();
+        loadSubmittedExerciseData();
+        count();
     }, [location]);
 
+    useEffect(() => {
+        count();
+    }, [classExerciseList]);
+
     const date = new Date();
+
+    const [countOpening, setCountOpening] = useState(0);
+    const [countComplete, setCountComplete] = useState(0);
+    const [countDoing, setCountDoing] = useState(0);
+    const [countNotComplete, setCountNotComplete] = useState(0);
+    const filterParam = searchParams.get('filter');
+    const getFilterParam = () => {
+        const number = Number(filterParam);
+        if (typeof number === 'number') {
+            return number;
+        } else return 0;
+    };
+    const [filterSelect, setFilterSelect] = useState(getFilterParam()); //0: all, 1: opening, 2:complete, 3:doing, 4:not complete
+
+    useEffect(() => {
+        setFilterSelect(getFilterParam());
+    }, [filterParam]);
 
     return (
         <div>
@@ -87,38 +177,127 @@ function ClassExercisePage() {
                     </Button>
                 )}
             </div>
-            <div>
-                {classExerciseList.map((classExercise) => {
-                    const colorAvatar = {};
-                    const isAvailable = date.getTime() < classExercise.endTime;
+            <div className="flex md:flex-row items-center flex-col">
+                <div
+                    onClick={(e) => {
+                        navigate(`/class/${classId}/exercise?filter=0`);
+                    }}
+                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                        filterSelect === 0 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                    }`}
+                >
+                    <Avatar sx={{ bgcolor: blue[500] }}>
+                        <AppsIcon />
+                    </Avatar>
+                    <div>Tất cả ({countOpening + countComplete + countDoing + countNotComplete})</div>
+                </div>
+                <div
+                    onClick={(e) => {
+                        navigate(`/class/${classId}/exercise?filter=1`);
+                    }}
+                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                        filterSelect === 1 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                    }`}
+                >
+                    <Avatar sx={{ bgcolor: blue[500] }}>
+                        <FactCheckIcon />
+                    </Avatar>
+                    <div>Đang mở ({countOpening})</div>
+                </div>
+                <div
+                    onClick={(e) => {
+                        navigate(`/class/${classId}/exercise?filter=2`);
+                    }}
+                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                        filterSelect === 2 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                    }`}
+                >
+                    <Avatar sx={{ bgcolor: green[500] }}>
+                        <FactCheckIcon />
+                    </Avatar>
+                    <div>Đã hoàn thành ({countComplete})</div>
+                </div>
+                <div
+                    onClick={(e) => {
+                        navigate(`/class/${classId}/exercise?filter=3`);
+                    }}
+                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                        filterSelect === 3 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                    }`}
+                >
+                    <Avatar sx={{ bgcolor: orange[500] }}>
+                        <FactCheckIcon />
+                    </Avatar>
+                    <div>Đang thực hiện ({countDoing})</div>
+                </div>
+                <div
+                    onClick={(e) => {
+                        navigate(`/class/${classId}/exercise?filter=4`);
+                    }}
+                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                        filterSelect === 4 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                    }`}
+                >
+                    <Avatar sx={{ bgcolor: grey[500] }}>
+                        <FactCheckIcon />
+                    </Avatar>
+                    <div>Không hoàn thành ({countNotComplete})</div>
+                </div>
+            </div>
+            <div className="my-8">
+                {classExerciseList &&
+                    classExerciseList.map((classExercise) => {
+                        const colorAvatar = {};
+                        const isAvailable = date.getTime() < classExercise.endTime;
 
-                    if (isAvailable) {
-                        colorAvatar.bgcolor = blue[500];
-                    } else {
-                        colorAvatar.bgcolor = grey[500];
-                    }
+                        if (isAvailable) {
+                            colorAvatar.bgcolor = blue[500];
+                        } else {
+                            colorAvatar.bgcolor = grey[500];
+                        }
 
-                    return (
-                        <ListItem
-                            className={`cursor-pointer ${isAvailable ? 'hover:bg-blue-100' : 'hover:bg-gray-100'}`}
-                            onClick={(e) => {
-                                navigate('/class/' + classId + '/exercise/' + classExercise.id);
-                            }}
-                        >
-                            <ListItemAvatar>
-                                <Avatar sx={colorAvatar}>
-                                    <FactCheckIcon />
-                                </Avatar>
-                            </ListItemAvatar>
-                            <ListItemText
-                                primary={classExercise.name}
-                                secondary={`Bắt đầu: ${renderToTime(
-                                    classExercise.startTime,
-                                )} | Kết thúc: ${renderToTime(classExercise.endTime)}`}
-                            />
-                        </ListItem>
-                    );
-                })}
+                        const resultStatus = checkStatus(classExercise.id);
+                        if (resultStatus === 1) {
+                            colorAvatar.bgcolor = green[500];
+                        } else if (resultStatus === 1) {
+                            colorAvatar.bgcolor = orange[500];
+                        }
+
+                        let filter = false;
+                        if (filterSelect === 0) filter = true;
+                        if (filterSelect === 1 && colorAvatar.bgcolor == blue[500]) {
+                            filter = true;
+                        } else if (filterSelect === 2 && colorAvatar.bgcolor == green[500]) {
+                            filter = true;
+                        } else if (filterSelect === 3 && colorAvatar.bgcolor == orange[500]) {
+                            filter = true;
+                        } else if (filterSelect === 4 && colorAvatar.bgcolor == grey[500]) {
+                            filter = true;
+                        }
+
+                        if (!filter) return <></>;
+
+                        return (
+                            <ListItem
+                                className={`cursor-pointer ${isAvailable ? 'hover:bg-blue-100' : 'hover:bg-gray-100'}`}
+                                onClick={(e) => {
+                                    navigate('/class/' + classId + '/exercise/' + classExercise.id);
+                                }}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar sx={colorAvatar}>
+                                        <FactCheckIcon />
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={classExercise.name}
+                                    secondary={`Bắt đầu: ${renderToTime(
+                                        classExercise.startTime,
+                                    )} | Kết thúc: ${renderToTime(classExercise.endTime)}`}
+                                />
+                            </ListItem>
+                        );
+                    })}
                 {classExerciseList.length === 0 && <div className="text-xl my-4">Không có bài tập nào</div>}
             </div>
         </div>

@@ -8,7 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import RichTextEditor from '~/components/RichTextEditor';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
-import { renderToTime } from '~/utils';
+import { renderToTime, showScore } from '~/utils';
 
 function ExerciseResultPage() {
     const navigate = useNavigate();
@@ -55,7 +55,7 @@ function ExerciseResultPage() {
                 <div className="p-4 rounded-lg bg-slate-100 shadow">
                     {exerciseData && submittedExercise && (
                         <div className="font-bold text-xl my-2">
-                            Điểm thi: {submittedExercise.mark >= 0 && Math.round(submittedExercise.mark, 3)}/
+                            Điểm thi: {submittedExercise.mark >= 0 && showScore(submittedExercise.mark)}/
                             {exerciseData.mark}
                         </div>
                     )}

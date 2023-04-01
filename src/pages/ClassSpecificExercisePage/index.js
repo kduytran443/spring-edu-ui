@@ -21,6 +21,7 @@ import { constructedResponseTestService } from '~/services/constructedResponseTe
 import GradeDialog from '~/components/GradeDialog';
 import { quizService } from '~/services/quizService';
 import ClassExerciseDeleteDialog from './ClassExerciseDeleteDialog';
+import images from '~/assets/images';
 
 function ClassSpecificExercisePage() {
     const navigate = useNavigate();
@@ -193,7 +194,7 @@ function ClassSpecificExercisePage() {
     const gradeTest = () => {};
 
     return (
-        <div>
+        <div className="p-4 md:p-0">
             <div className="mb-[6px]">
                 <Button
                     onClick={(e) => {
@@ -212,91 +213,137 @@ function ClassSpecificExercisePage() {
                     {exerciseData.effective ? 'Bài kiểm tra' : 'Bài tập'}: {exerciseData.name}
                 </h1>
                 {!(classRole === 'supporter' || classRole === 'teacher') ? (
-                    <div className="min-h-[420px] flex flex-col items-center justify-center">
-                        <div className="mb-4">
-                            <b>Điểm</b>: {exerciseData.mark}
-                        </div>
-                        <div className="mb-4">
-                            {date.getTime() >= exerciseData.endTime &&
-                            (!submittedExercise || !submittedExercise.submitTime) ? (
-                                <Button variant="contained" disabled>
-                                    Bạn chưa hoàn thành
-                                </Button>
-                            ) : (
-                                <>
-                                    {submittedExercise ? (
-                                        <Button onClick={continueSubmit} variant="contained">
-                                            Tiếp tục thực hiện
-                                        </Button>
-                                    ) : (
-                                        <>
-                                            {!finished ? (
-                                                <Button onClick={submitNewSubmittedExercise} variant="contained">
-                                                    Bắt đầu thực hiện
-                                                </Button>
-                                            ) : (
-                                                <Button variant="contained" disabled>
-                                                    Đã hoàn thành
-                                                </Button>
-                                            )}
-                                        </>
-                                    )}
-                                </>
+                    <div className="min-h-[420px] mt-0 flex md:flex-row md:items-center md:justify-between flex-col justify-evenly">
+                        <div className="w-full">
+                            <div className="mb-4">
+                                <b>Điểm</b>: {exerciseData.mark}
+                            </div>
+
+                            {exerciseData.timeLimit && (
+                                <div className="mb-4">
+                                    <b>
+                                        <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                    </b>
+                                    : {exerciseData.timeLimit} phút
+                                </div>
                             )}
-                        </div>
-                        {exerciseData.timeLimit && (
                             <div className="mb-4">
                                 <b>
-                                    <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
+                                </b>{' '}
+                                {renderToTime(exerciseData.startTime)}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian kết thúc:
+                                </b>{' '}
+                                {renderToTime(exerciseData.endTime)}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faWpforms} /> Hình thức kiểm tra:
+                                </b>{' '}
+                                {exerciseData.isQuizTest && `Trắc nghiệm (${exerciseData.quizNumberOfQuestion} câu)`}{' '}
+                                {exerciseData.isConstructedResponseTest && 'Tự luận'}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faMarker} /> Tính điểm
                                 </b>
-                                : {exerciseData.timeLimit} phút
+                                : {exerciseData.effective === 1 ? 'Có' : 'Không'}
                             </div>
-                        )}
-                        <div className="mb-4">
-                            <b>
-                                <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
-                            </b>{' '}
-                            {renderToTime(exerciseData.startTime)}
-                        </div>
-                        <div className="mb-4">
-                            <b>
-                                <FontAwesomeIcon icon={faClock} /> Thời gian kết thúc:
-                            </b>{' '}
-                            {renderToTime(exerciseData.endTime)}
-                        </div>
-                        <div className="mb-4">
-                            <b>
-                                <FontAwesomeIcon icon={faWpforms} /> Hình thức kiểm tra:
-                            </b>{' '}
-                            {exerciseData.isQuizTest && `Trắc nghiệm (${exerciseData.quizNumberOfQuestion} câu)`}{' '}
-                            {exerciseData.isConstructedResponseTest && 'Tự luận'}
-                        </div>
-                        <div className="mb-4">
-                            <b>
-                                <FontAwesomeIcon icon={faMarker} /> Tính điểm
-                            </b>
-                            : {exerciseData.effective === 1 ? 'Có' : 'Không'}
-                        </div>
-                        {submittedExerciseList.length > 0 && (
-                            <div>
-                                <h2>
-                                    <FontAwesomeIcon icon={faHistory} /> Lịch sử làm bài
-                                </h2>
+                            {submittedExerciseList.length > 0 && (
                                 <div>
-                                    {submittedExerciseList.map((item, index) => {
-                                        return (
-                                            <div>
-                                                Lần thứ: {index + 1}: Điểm {calMark(item.quizMark, item.mark)}
-                                            </div>
-                                        );
-                                    })}
+                                    <h2>
+                                        <FontAwesomeIcon icon={faHistory} /> Lịch sử làm bài
+                                    </h2>
+                                    <div>
+                                        {submittedExerciseList.map((item, index) => {
+                                            return (
+                                                <div>
+                                                    Lần thứ: {index + 1}: Điểm {calMark(item.quizMark, item.mark)}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
+                            )}
+                        </div>
+                        <div className="w-full flex flex-col items-center justify-center">
+                            <div className="max-w-[300px] mb-4">
+                                <img alt="" src={images.doTestImage} />
                             </div>
-                        )}
+                            <div className="w-full flex flex-col items-center justify-center">
+                                {date.getTime() >= exerciseData.endTime &&
+                                (!submittedExercise || !submittedExercise.submitTime) ? (
+                                    <Button variant="contained" disabled>
+                                        Bạn chưa hoàn thành
+                                    </Button>
+                                ) : (
+                                    <>
+                                        {submittedExercise ? (
+                                            <Button onClick={continueSubmit} variant="contained">
+                                                Tiếp tục thực hiện
+                                            </Button>
+                                        ) : (
+                                            <>
+                                                {!finished ? (
+                                                    <Button onClick={submitNewSubmittedExercise} variant="contained">
+                                                        Bắt đầu thực hiện
+                                                    </Button>
+                                                ) : (
+                                                    <Button variant="contained" disabled>
+                                                        Đã hoàn thành
+                                                    </Button>
+                                                )}
+                                            </>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     <>
-                        <div className="w-full flex flex-row items-center justify-between">
+                        <div className="w-full">
+                            <div className="mb-4">
+                                <b>Điểm</b>: {exerciseData.mark}
+                            </div>
+                            {exerciseData.timeLimit && (
+                                <div className="mb-4">
+                                    <b>
+                                        <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                    </b>
+                                    : {exerciseData.timeLimit} phút
+                                </div>
+                            )}
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
+                                </b>{' '}
+                                {renderToTime(exerciseData.startTime)}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian kết thúc:
+                                </b>{' '}
+                                {renderToTime(exerciseData.endTime)}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faWpforms} /> Hình thức kiểm tra:
+                                </b>{' '}
+                                {exerciseData.isQuizTest && `Trắc nghiệm (${exerciseData.quizNumberOfQuestion} câu)`}{' '}
+                                {exerciseData.isConstructedResponseTest && 'Tự luận'}
+                            </div>
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faMarker} /> Tính điểm
+                                </b>
+                                : {exerciseData.effective === 1 ? 'Có' : 'Không'}
+                            </div>
+                        </div>
+                        <div className="flex flex-row items-center justify-between">
                             <div className="text-lg">
                                 Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
                             </div>
@@ -325,21 +372,30 @@ function ClassSpecificExercisePage() {
                                                     <UserItemCard
                                                         avatar={submittedItem.userAvatar}
                                                         name={submittedItem.username}
-                                                        mark={Math.round(submittedItem.mark, 3)}
+                                                        mark={
+                                                            submittedItem.mark !== null
+                                                                ? Math.round(submittedItem.mark, 3)
+                                                                : submittedItem.mark
+                                                        }
+                                                        submitTime={submittedItem.submitTime}
                                                         maxMark={exerciseData.mark}
                                                     />
                                                 }
                                             >
-                                                <div>
-                                                    <h3 className="text-xl font-bold">Bài làm:</h3>
-                                                    <RichTextEditor disabled data={submittedItem.content} />
-                                                </div>
-                                                {(classRole === 'teacher' || classRole === 'supporter') && (
-                                                    <GradeDialog
-                                                        submittedExerciseId={submittedItem.id}
-                                                        maxMark={exerciseData.mark}
-                                                        reload={loadSubmittedExercises}
-                                                    />
+                                                {submittedItem.submitTime && (
+                                                    <>
+                                                        <div>
+                                                            <h3 className="text-xl font-bold">Bài làm:</h3>
+                                                            <RichTextEditor disabled data={submittedItem.content} />
+                                                        </div>
+                                                        {(classRole === 'teacher' || classRole === 'supporter') && (
+                                                            <GradeDialog
+                                                                submittedExerciseId={submittedItem.id}
+                                                                maxMark={exerciseData.mark}
+                                                                reload={loadSubmittedExercises}
+                                                            />
+                                                        )}
+                                                    </>
                                                 )}
                                             </UserAccordion>
                                         </li>

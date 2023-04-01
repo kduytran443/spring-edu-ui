@@ -15,7 +15,7 @@ function UserItemCard({ avatar, name, size = '48px', mark, maxMark, submitTime }
                             <span className="text-green-500 font-bold">{mark}</span> / {maxMark}
                         </>
                     ) : (
-                        <div className="text-red-500">{submitTime ? 'Chưa chấm' : 'Chưa nộp'}</div>
+                        <div className="text-red-500">{submitTime ? 'Chưa chấm điểm' : 'Chưa nộp bài'}</div>
                     )}
                 </div>
             )}

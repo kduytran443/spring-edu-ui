@@ -46,9 +46,9 @@ function DoExercisePage() {
         loadSubmittedExercise();
     }, [location]);
 
-    const [timeLeft, setTimeLeft] = useState();
+    const [timeLeft, setTimeLeft] = useState(null);
     useEffect(() => {
-        if (submittedExercise) {
+        if (submittedExercise && submittedExercise.timeLimit) {
             const date = new Date();
             let left = date.getTime() - submittedExercise.startTime;
             left = exerciseData.timeLimit * 60000 - left;
@@ -182,7 +182,7 @@ function DoExercisePage() {
     }, [drawQuizzes]);
 
     const endTime = () => {
-        submit();
+        //submit();
     };
 
     return (
@@ -201,7 +201,7 @@ function DoExercisePage() {
                 <h1 className="font-bold text-2xl my-6">
                     {exerciseData.effective ? 'Bài kiểm tra' : 'Bài tập'}: {exerciseData.name}
                 </h1>
-                <div>{timeLeft && <Countdown onComplete={endTime} date={Date.now() + timeLeft} />}</div>
+                <div>{timeLeft !== null && <Countdown onComplete={endTime} date={Date.now() + timeLeft} />}</div>
             </div>
             <AlertSuccessDialog open={alertSuccess} />
             <div className="flex flex-row items-start w-full justify-between flex-wrap-reverse md:flex-wrap">

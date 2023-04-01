@@ -40,7 +40,7 @@ function LoginPage() {
             .then((data) => {
                 if (data.id) {
                     dispatchUserState(setUserInfo(data));
-                    navigate('/home');
+                    navigate('/joined-class');
                 } else {
                     setError('Sai tên đăng nhập hoặc mật khẩu');
                 }

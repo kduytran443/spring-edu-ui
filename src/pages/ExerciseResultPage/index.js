@@ -1,5 +1,5 @@
 import { faWpforms } from '@fortawesome/free-brands-svg-icons';
-import { faClock, faMarker, faReply } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faComment, faMarker, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
@@ -77,6 +77,14 @@ function ExerciseResultPage() {
                             {exerciseData.isQuizTest ? 'Trắc nghiệm' : 'Tự luận'}
                         </div>
                     </div>
+                </div>
+            )}
+            {submittedExercise && (
+                <div className="my-4">
+                    <b className="text-blue-600">
+                        <FontAwesomeIcon icon={faComment} /> Lời phê của giáo viên:
+                    </b>{' '}
+                    {submittedExercise.teacherComment}
                 </div>
             )}
             {submittedExercise && submittedExercise.content && (

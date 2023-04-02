@@ -44,9 +44,9 @@ export const submittedExerciseService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/submit`, config);
         return response.json();
     },
-    async grade(id, grade) {
-        const config = putConfig();
-        const response = await fetch(`${API_BASE_URL}/${this.api}/grade/${id}/${grade}`, config);
+    async grade(score) {
+        const config = putConfig(score);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/grade`, config);
         return response.json();
     },
 };

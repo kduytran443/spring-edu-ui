@@ -24,6 +24,7 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
         submittedExerciseService.getSubmittedExerciseById(submittedExerciseId).then((data) => {
             if (data.id) {
                 setGrade(data.mark || 0);
+                setTeacherComment(data.teacherComment);
             }
         });
     };
@@ -34,10 +35,12 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
 
     const [grade, setGrade] = useState(0);
     const [success, setSuccess] = useState(0);
+    const [teacherComment, setTeacherComment] = useState('');
 
     const sendContext = useContext(NotificationSocketContext);
     const handleAgree = () => {
-        submittedExerciseService.grade(submittedExerciseId, grade).then((data) => {
+        const obj = { submittedExerciseId: submittedExerciseId, mark: grade, teacherComment: teacherComment };
+        submittedExerciseService.grade(obj).then((data) => {
             if (data.id) {
                 setSuccess(1);
                 const userIds = [data.userId];
@@ -46,7 +49,6 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
                     redirectUrl: `/class/${classId}/exercise/${exerciseId}`,
                     receiverIds: userIds,
                 };
-
                 notificationService.post(obj).then((data) => {
                     sendContext(userIds);
                 });
@@ -78,22 +80,37 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
                 <DialogTitle id="alert-dialog-title">Chấm điểm</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <div className="mt-4 md:w-[300px] flex flex-row items-center">
-                            <TextField
-                                className="w-full"
-                                value={grade}
-                                onInput={(e) => {
-                                    if (e.target.value <= maxMark && e.target.value >= 0) {
-                                        setGrade(e.target.value);
-                                    }
-                                }}
-                                type="number"
-                                label="Điểm"
-                                variant="standard"
-                            />
-                            <div className="text-lg flex flex-row items-center">
-                                <div className="mx-2">/</div>
-                                <div>{maxMark}</div>
+                        <div className="mt-4 md:w-[300px] flex flex-col">
+                            <div className="flex flex-row items-center">
+                                <TextField
+                                    className="w-full"
+                                    value={grade}
+                                    onInput={(e) => {
+                                        if (e.target.value <= maxMark && e.target.value >= 0) {
+                                            setGrade(e.target.value);
+                                        }
+                                    }}
+                                    type="number"
+                                    label="Điểm"
+                                    variant="standard"
+                                />
+                                <div className="text-lg flex flex-row items-center">
+                                    <div className="mx-2">/</div>
+                                    <div>{maxMark}</div>
+                                </div>
+                            </div>
+                            <div className="w-full mt-4">
+                                <TextField
+                                    className="w-full"
+                                    value={teacherComment}
+                                    onInput={(e) => {
+                                        setTeacherComment(e.target.value);
+                                    }}
+                                    multiline
+                                    maxRows={3}
+                                    label="Lời phê (optional)"
+                                    variant="standard"
+                                />
                             </div>
                         </div>
 

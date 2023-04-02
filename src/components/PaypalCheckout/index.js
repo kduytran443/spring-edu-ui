@@ -25,7 +25,6 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
                 <PayPalScriptProvider
                     options={{
                         'client-id': 'AcHaKF7CapLkTqFZvw7ouPLY3mh_xyQxwn2OFq98--jiFh5IEJl9UyerIF5g0DIzwHwU12n2m5srgsr6',
-                        'merchant-id': '6EWJ4DX5UUTZQ',
                     }}
                 >
                     <PayPalButtons
@@ -38,7 +37,7 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
                         }}
                         onClick={(data, actions) => {
                             return actions.resolve();
-                        }}
+                        }} //abc
                         createOrder={(data, actions) => {
                             return actions.order.create({
                                 purchase_units: [

@@ -106,7 +106,6 @@ function ClassExercisePage() {
         return getStatus(obj);
     };
     const count = () => {
-        console.log('Count');
         const complete = classExerciseList.filter((classExercise) => {
             return checkStatus(classExercise.id) === 1;
         }).length;
@@ -177,73 +176,117 @@ function ClassExercisePage() {
                     </Button>
                 )}
             </div>
-            <div className="flex md:flex-row items-center flex-col">
-                <div
-                    onClick={(e) => {
-                        navigate(`/class/${classId}/exercise?filter=0`);
-                    }}
-                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
-                        filterSelect === 0 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
-                    }`}
-                >
-                    <Avatar sx={{ bgcolor: blue[500] }}>
-                        <AppsIcon />
-                    </Avatar>
-                    <div>Tất cả ({countOpening + countComplete + countDoing + countNotComplete})</div>
+            {isValidRole(userRole) ? (
+                <div className="flex md:flex-row flex-col items-stretch">
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=0`);
+                        }}
+                        className={`flex text-center select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 0 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: blue[500] }}>
+                            <AppsIcon />
+                        </Avatar>
+                        <div>Tất cả ({countOpening + countComplete + countDoing + countNotComplete})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=1`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 1 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: blue[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Đang mở ({countOpening})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=4`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 4 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: grey[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Đã hết thời gian ({countNotComplete})</div>
+                    </div>
                 </div>
-                <div
-                    onClick={(e) => {
-                        navigate(`/class/${classId}/exercise?filter=1`);
-                    }}
-                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
-                        filterSelect === 1 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
-                    }`}
-                >
-                    <Avatar sx={{ bgcolor: blue[500] }}>
-                        <FactCheckIcon />
-                    </Avatar>
-                    <div>Đang mở ({countOpening})</div>
+            ) : (
+                <div className="flex md:flex-row flex-col items-stretch">
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=0`);
+                        }}
+                        className={`flex text-center select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 0 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: blue[500] }}>
+                            <AppsIcon />
+                        </Avatar>
+                        <div>Tất cả ({countOpening + countComplete + countDoing + countNotComplete})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=1`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 1 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: blue[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Đang mở ({countOpening})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=2`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 2 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: green[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Đã hoàn thành ({countComplete})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=3`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 3 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: orange[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Đang thực hiện ({countDoing})</div>
+                    </div>
+                    <div
+                        onClick={(e) => {
+                            navigate(`/class/${classId}/exercise?filter=4`);
+                        }}
+                        className={`flex select-none text-center cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
+                            filterSelect === 4 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
+                        }`}
+                    >
+                        <Avatar sx={{ bgcolor: grey[500] }}>
+                            <FactCheckIcon />
+                        </Avatar>
+                        <div>Không hoàn thành ({countNotComplete})</div>
+                    </div>
                 </div>
-                <div
-                    onClick={(e) => {
-                        navigate(`/class/${classId}/exercise?filter=2`);
-                    }}
-                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
-                        filterSelect === 2 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
-                    }`}
-                >
-                    <Avatar sx={{ bgcolor: green[500] }}>
-                        <FactCheckIcon />
-                    </Avatar>
-                    <div>Đã hoàn thành ({countComplete})</div>
-                </div>
-                <div
-                    onClick={(e) => {
-                        navigate(`/class/${classId}/exercise?filter=3`);
-                    }}
-                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
-                        filterSelect === 3 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
-                    }`}
-                >
-                    <Avatar sx={{ bgcolor: orange[500] }}>
-                        <FactCheckIcon />
-                    </Avatar>
-                    <div>Đang thực hiện ({countDoing})</div>
-                </div>
-                <div
-                    onClick={(e) => {
-                        navigate(`/class/${classId}/exercise?filter=4`);
-                    }}
-                    className={`flex select-none cursor-pointer flex-col hover:bg-blue-100 duration-200 items-center w-[100%] lg:min-w-[200px]  justify-center p-2 border rounded ${
-                        filterSelect === 4 && 'bg-blue-100 shadow shadow-blue-100 border-blue-100'
-                    }`}
-                >
-                    <Avatar sx={{ bgcolor: grey[500] }}>
-                        <FactCheckIcon />
-                    </Avatar>
-                    <div>Không hoàn thành ({countNotComplete})</div>
-                </div>
-            </div>
+            )}
             <div className="my-8">
                 {classExerciseList &&
                     classExerciseList.map((classExercise) => {

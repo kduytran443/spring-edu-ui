@@ -438,7 +438,7 @@ function ClassSettingPage() {
             <div className="mt-16 mb-4 flex flex-row items-center">
                 <Button
                     onClick={(e) => {
-                        navigate('/edit-class/' + classId);
+                        navigate(`/class/${classId}/setting/edit`);
                     }}
                     variant="outlined"
                     startIcon={<FontAwesomeIcon icon={faPen} />}

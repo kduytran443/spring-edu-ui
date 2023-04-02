@@ -306,6 +306,8 @@ function ClassIntroPage() {
 
     const [commentPagination, setCommentPagination] = useState(1);
 
+    console.log('reviewRatingState.stars', reviewRatingState);
+
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
@@ -341,13 +343,11 @@ function ClassIntroPage() {
                                 readOnly={true}
                                 defaultValue={
                                     reviewListState.reduce((pre, cur) => {
-                                        console.log('stars1', pre);
                                         return pre + cur.stars;
                                     }, 0) / reviewListState.length
                                 }
                                 value={
                                     reviewListState.reduce((pre, cur) => {
-                                        console.log('stars2', pre);
                                         return pre + cur.stars;
                                     }, 0) / reviewListState.length
                                 }
@@ -391,6 +391,18 @@ function ClassIntroPage() {
                     </div>
                     <div className="mt-12">
                         {reviewRatingState.stars && (
+                            <>
+                                <p className="font-bold">Review của bạn về lớp này:</p>
+                                <Rating
+                                    readOnly={false}
+                                    defaultValue={reviewRatingState.stars}
+                                    value={reviewRatingState.stars}
+                                    precision={1}
+                                    onChange={changeReviewRating}
+                                />
+                            </>
+                        )}
+                        {!reviewRatingState.stars && (
                             <>
                                 <p className="font-bold">Review của bạn về lớp này:</p>
                                 <Rating

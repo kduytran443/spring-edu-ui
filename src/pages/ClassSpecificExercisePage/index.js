@@ -1,5 +1,5 @@
 import { faWpforms } from '@fortawesome/free-brands-svg-icons';
-import { faClock, faHistory, faMarker, faPen, faReply } from '@fortawesome/free-solid-svg-icons';
+import { faClock, faComment, faHistory, faMarker, faPen, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, TextField } from '@mui/material';
 import { useEffect } from 'react';
@@ -343,23 +343,15 @@ function ClassSpecificExercisePage() {
                                 : {exerciseData.effective === 1 ? 'Có' : 'Không'}
                             </div>
                         </div>
-                        <div className="flex flex-row items-center justify-between">
-                            <div className="text-lg">
-                                Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
+                        {constructedResponseTest.content && (
+                            <div className="my-4">
+                                <div className="text-lg font-bold">Đề bài:</div>
+                                <RichTextEditor disabled data={constructedResponseTest.content} />
                             </div>
-                            <div className="flex flex-row items-center">
-                                <div className="flex flex-row items-center">
-                                    <Button
-                                        onClick={(e) => {
-                                            navigate('/class/' + classId + '/exercise/' + exerciseId + '/edit');
-                                        }}
-                                        color="primary"
-                                        startIcon={<FontAwesomeIcon icon={faPen} />}
-                                    >
-                                        Sửa
-                                    </Button>
-                                    <ClassExerciseDeleteDialog />
-                                </div>
+                        )}
+                        <div className="flex flex-row items-center">
+                            <div className="text-lg font-bold">
+                                Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
                             </div>
                         </div>
                         {exerciseData.isConstructedResponseTest && (
@@ -387,6 +379,12 @@ function ClassSpecificExercisePage() {
                                                         <div>
                                                             <h3 className="text-xl font-bold">Bài làm:</h3>
                                                             <RichTextEditor disabled data={submittedItem.content} />
+                                                        </div>
+                                                        <div className="my-4">
+                                                            <b>
+                                                                <FontAwesomeIcon icon={faComment} /> Lời phê:
+                                                            </b>{' '}
+                                                            {submittedItem.teacherComment}
                                                         </div>
                                                         {(classRole === 'teacher' || classRole === 'supporter') && (
                                                             <GradeDialog
@@ -431,6 +429,20 @@ function ClassSpecificExercisePage() {
                                 })}
                             </ul>
                         )}
+                        <div className="flex flex-row items-center justify-end mt-8">
+                            <div className="flex flex-row items-center">
+                                <Button
+                                    onClick={(e) => {
+                                        navigate('/class/' + classId + '/exercise/' + exerciseId + '/edit');
+                                    }}
+                                    color="primary"
+                                    startIcon={<FontAwesomeIcon icon={faPen} />}
+                                >
+                                    Sửa
+                                </Button>
+                                <ClassExerciseDeleteDialog />
+                            </div>
+                        </div>
                     </>
                 )}
             </div>

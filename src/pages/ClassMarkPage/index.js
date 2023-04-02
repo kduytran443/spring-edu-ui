@@ -155,10 +155,10 @@ function ClassMarkPage() {
                 <div className="p-6  border-slate-300 shadow border rounded">
                     <div className="mb-2">
                         Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
-                        {showScore((avargeMark / avargeExerciseMark) * 100, 1)}% )
+                        {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
                     </div>
                     <div>
-                        Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} ({' '}
+                        Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} (
                         {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
                     </div>
                 </div>

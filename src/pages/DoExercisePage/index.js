@@ -1,4 +1,4 @@
-import { faReply } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faReply } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button } from '@mui/material';
 import { useEffect } from 'react';
@@ -250,7 +250,14 @@ function DoExercisePage() {
                         </>
                     )}
                     <div className="mt-8">
-                        <Button onClick={submit}>Kết thúc làm bài</Button>
+                        <Button
+                            variant="outlined"
+                            onClick={submit}
+                            size="large"
+                            startIcon={<FontAwesomeIcon icon={faCheck} />}
+                        >
+                            Nộp bài
+                        </Button>
                     </div>
                 </div>
             </div>

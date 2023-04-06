@@ -30,10 +30,19 @@ import {
     CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
     CLASS_RESULT_EXERCISE_PAGE_URL,
     SEARCH_PAGE_URL,
+    ADMIN_HOME_PAGE,
+    ADMIN_USER_PAGE,
+    ADMIN_CLASS_PAGE,
+    ADMIN_REPORT_PAGE,
 } from '~/constants';
+import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
+import AdminClassPage from '~/pages/Admin/AdminClassPage';
+import AdminHomePage from '~/pages/Admin/AdminHomePage';
+import AdminReportPage from '~/pages/Admin/AdminReportPage';
+import AdminUserPage from '~/pages/Admin/AdminUserPage';
 import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
 import ClassCreateExercisePage from '~/pages/ClassCreateExercisePage';
@@ -232,4 +241,32 @@ const privateRoutes = [
     },
 ];
 
-export { publicRoutes, privateRoutes };
+const adminRoutes = [
+    {
+        path: `${ADMIN_HOME_PAGE}`,
+        component: AdminHomePage,
+        layout: AdminLayout,
+    },
+    {
+        path: `/admin/`,
+        component: AdminHomePage,
+        layout: AdminLayout,
+    },
+    {
+        path: `${ADMIN_USER_PAGE}`,
+        component: AdminUserPage,
+        layout: AdminLayout,
+    },
+    {
+        path: `${ADMIN_CLASS_PAGE}`,
+        component: AdminClassPage,
+        layout: AdminLayout,
+    },
+    {
+        path: `${ADMIN_REPORT_PAGE}`,
+        component: AdminReportPage,
+        layout: AdminLayout,
+    },
+];
+
+export { publicRoutes, privateRoutes, adminRoutes };

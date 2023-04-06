@@ -1,22 +1,6 @@
 import { deleteConfig, getConfig, postConfig, putConfig } from '~/services/config';
 import { API_BASE_URL } from '~/constants';
 
-/*
-    id
-	name
-	visiable
-	status
-	createdDate
-	avatar
-	accepted
-	category
-	backgroundImage
-	video
-	fee
-	shortDescription
-	creatorId
-*/
-
 export const classService = {
     api: 'api/class',
     async searchClass(data) {
@@ -52,14 +36,17 @@ export const classService = {
         const response = await fetch(queryString, config);
         return response.json();
     },
+    async getClasses() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/public/api/class-intro`, config);
+        return response.json();
+    },
     async getClassIntroById(id) {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}-intro/${id}`, config);
         return response.json();
     },
     async getClassReviewCardByUserId() {
-        //classLessonId
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}-review`, config);
         return response.json();
@@ -80,6 +67,12 @@ export const classService = {
     async deleteClass(classData) {
         const config = deleteConfig(classData);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
+
+    async unblockClass(classId) {
+        const config = deleteConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/${classId}/unblock`, config);
         return response.json();
     },
     async changeClassTime(classData) {

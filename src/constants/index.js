@@ -31,6 +31,13 @@ const QUESTION_BANK_URL = '/question-bank';
 const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
 const SEARCH_PAGE_URL = '/search';
 
+//ADMIN
+const ADMIN_HOME_PAGE = '/admin/home';
+const ADMIN_USER_PAGE = '/admin/user';
+const ADMIN_CLASS_PAGE = '/admin/class';
+const ADMIN_PERSONAL_PAGE = '/admin/personal';
+const ADMIN_REPORT_PAGE = '/admin/report';
+
 const API_BASE_URL = 'http://192.168.1.3:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
 
@@ -76,4 +83,9 @@ export {
     CLASS_DO_SPECIFIC_EXERCISE_PAGE_URL,
     CLASS_RESULT_EXERCISE_PAGE_URL,
     SEARCH_PAGE_URL,
+    ADMIN_HOME_PAGE,
+    ADMIN_CLASS_PAGE,
+    ADMIN_PERSONAL_PAGE,
+    ADMIN_REPORT_PAGE,
+    ADMIN_USER_PAGE,
 };

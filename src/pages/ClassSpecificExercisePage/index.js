@@ -380,12 +380,14 @@ function ClassSpecificExercisePage() {
                                                             <h3 className="text-xl font-bold">Bài làm:</h3>
                                                             <RichTextEditor disabled data={submittedItem.content} />
                                                         </div>
-                                                        <div className="my-4">
-                                                            <b>
-                                                                <FontAwesomeIcon icon={faComment} /> Lời phê:
-                                                            </b>{' '}
-                                                            {submittedItem.teacherComment}
-                                                        </div>
+                                                        {submittedItem.teacherComment && (
+                                                            <div className="my-4">
+                                                                <b>
+                                                                    <FontAwesomeIcon icon={faComment} /> Lời phê:
+                                                                </b>{' '}
+                                                                {submittedItem.teacherComment}
+                                                            </div>
+                                                        )}
                                                         {(classRole === 'teacher' || classRole === 'supporter') && (
                                                             <GradeDialog
                                                                 submittedExerciseId={submittedItem.id}

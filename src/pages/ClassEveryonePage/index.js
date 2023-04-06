@@ -13,6 +13,7 @@ import SimpleCustomAccordion from '~/components/SimpleCustomAccordion';
 import InvitedClassMember from '~/components/InvitedClassMember';
 import RequestClassMember from '~/components/RequestClassMember';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import { classService } from '~/services/classService';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -92,6 +93,16 @@ function ClassEveryonePage() {
         });
     };
 
+    const [classDataState, setClassDataState] = useState(null);
+
+    useEffect(() => {
+        classService.getClassIntroById(classId).then((data) => {
+            if (data.status === 0) {
+                navigate('/page-not-found');
+            } else setClassDataState(data);
+        });
+    }, [classId]);
+
     return (
         <div>
             {userRole && userRole === 'teacher' && (
@@ -100,6 +111,7 @@ function ClassEveryonePage() {
                         {invitedUserListState.map((user, index) => {
                             return (
                                 <InvitedClassMember
+                                    classDataName={classDataState.name}
                                     key={index}
                                     avatar={user.avatar}
                                     classId={classId}
@@ -115,6 +127,7 @@ function ClassEveryonePage() {
                         {requestUserListState.map((user, index) => {
                             return (
                                 <RequestClassMember
+                                    classDataName={classDataState.name}
                                     key={index}
                                     avatar={user.avatar}
                                     classId={classId}

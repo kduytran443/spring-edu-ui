@@ -1,10 +1,14 @@
 import { Avatar, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
+import { useContext } from 'react';
 import { useState } from 'react';
 import { classMemberService } from '~/services/classMemberService';
+import { notificationService } from '~/services/notificationService';
+import { NotificationSocketContext } from '../NotificationSocketProvider';
 
-function RequestClassMember({ username = 'nguyena', userId, date, classId, avatar, reload = () => {} }) {
+function RequestClassMember({ username = 'nguyena', userId, date, classId, classDataName, avatar, reload = () => {} }) {
     const [open, setOpen] = useState(false);
 
+    const sendContext = useContext(NotificationSocketContext);
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -16,12 +20,34 @@ function RequestClassMember({ username = 'nguyena', userId, date, classId, avata
     const cancelRequest = () => {
         classMemberService.deleteClassMember({ userId: userId, classId: classId }).then((data) => {
             reload();
+            const obj = {
+                content: 'Bạn đã bị từ chối trở thành học viên của: ' + classDataName,
+                redirectUrl: '/class/' + classId + '/intro',
+                receiverIds: [userId],
+            };
+
+            notificationService.post(obj).then((data) => {
+                setTimeout(() => {
+                    sendContext([userId]);
+                }, 3000);
+            });
         });
     };
 
     const acceptRequest = () => {
         classMemberService.acceptClassMember({ userId: userId, classId: classId }).then((data) => {
             reload();
+            const obj = {
+                content: 'Bạn đã được chấp nhận trở thành học viên của: ' + classDataName,
+                redirectUrl: '/class/' + classId + '/',
+                receiverIds: [userId],
+            };
+
+            notificationService.post(obj).then((data) => {
+                setTimeout(() => {
+                    sendContext([userId]);
+                }, 3000);
+            });
         });
     };
 
@@ -33,7 +59,6 @@ function RequestClassMember({ username = 'nguyena', userId, date, classId, avata
 
     const submitUser = () => {
         acceptRequest();
-        console.log('RELOAD');
         handleClose();
     };
 
@@ -46,36 +71,38 @@ function RequestClassMember({ username = 'nguyena', userId, date, classId, avata
                     </div>
                     <div>{username}</div>
                 </div>
-                <div>
-                    <Button onClick={cancelUser} autoFocus>
-                        Hủy
-                    </Button>
-                </div>
-                <div>
-                    <Button variant="contained" onClick={handleClickOpen}>
-                        Đồng ý
-                    </Button>
-                    <Dialog
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                    >
-                        <DialogTitle id="alert-dialog-title">{'Xác nhận'}</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText id="alert-dialog-description">
-                                <div className="min-w-[300px]">
-                                    Đồng ý chấp nhận <b>{username}</b>
-                                </div>
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={handleClose}>Hủy</Button>
-                            <Button onClick={submitUser} autoFocus>
-                                Xác nhận
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                <div className="flex flex-row items-center">
+                    <div>
+                        <Button onClick={cancelUser} autoFocus>
+                            Hủy
+                        </Button>
+                    </div>
+                    <div>
+                        <Button variant="contained" onClick={handleClickOpen}>
+                            Đồng ý
+                        </Button>
+                        <Dialog
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">{'Xác nhận'}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    <div className="min-w-[300px]">
+                                        Đồng ý chấp nhận <b>{username}</b>
+                                    </div>
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Hủy</Button>
+                                <Button variant="contained" onClick={submitUser} autoFocus>
+                                    Xác nhận
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </div>
                 </div>
             </div>
         </div>

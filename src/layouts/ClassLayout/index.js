@@ -12,6 +12,7 @@ import { API_BASE_URL } from '~/constants';
 import { getConfig } from '~/services/config';
 import { classMemberService } from '~/services/classMemberService';
 import { useUser } from '~/stores/UserStore';
+import { classService } from '~/services/classService';
 
 function ClassLayout({ children }) {
     const { classId } = useParams();
@@ -64,15 +65,19 @@ function ClassLayout({ children }) {
     const [classDataState, setClassDataState] = useState(null);
 
     useEffect(() => {
-        const config = getConfig();
-
+        /*
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
                 if (data.status === 0) {
                     navigate('/page-not-found');
                 } else setClassDataState(data);
-            });
+            });*/
+        classService.getClassIntroById(classId).then((data) => {
+            if (data.status === 0) {
+                navigate('/page-not-found');
+            } else setClassDataState(data);
+        });
     }, [classId]);
 
     const [value, setValue] = useState(1);

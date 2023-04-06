@@ -29,7 +29,6 @@ export default function ReportClassDialog({ classId, reload = () => {} }) {
 
     const handleAgree = () => {
         report();
-        handleClose();
     };
 
     const [error, setError] = useState(false);
@@ -37,16 +36,19 @@ export default function ReportClassDialog({ classId, reload = () => {} }) {
     const [alertSuccess, setAlertSuccess] = useState(0);
     const [reportTextData, setReportTextData] = useState('');
     const report = () => {
+        console.log(reportTextData);
         if (reportTextData) {
             const obj = {
                 classId: classId,
                 content: reportTextData,
             };
+            console.log('obj', obj);
             reportService.postReport(obj).then((data) => {
                 if (data.id) {
                     setAlertSuccess(1);
                     setTimeout(() => {
                         setAlertSuccess(0);
+                        handleClose();
                     }, 1000);
                 }
             });
@@ -80,8 +82,9 @@ export default function ReportClassDialog({ classId, reload = () => {} }) {
                                 multiline
                                 rows={5}
                                 label="Nội dung"
-                                data={reportTextData}
-                                setData={setTextData}
+                                onChange={(e) => {
+                                    setReportTextData(e.target.value);
+                                }}
                             />
                             {error && <div className="text-red-600">*Nội dung không được bỏ trống</div>}
                         </div>
@@ -91,8 +94,8 @@ export default function ReportClassDialog({ classId, reload = () => {} }) {
                     <div className="select-none cursor-pointer" onClick={handleClose}>
                         <Button color="inherit">Hủy</Button>
                     </div>
-                    <div className="select-none cursor-pointer" onClick={handleAgree} autoFocus>
-                        <Button disabled={!reportTextData} color="primary" variant="contained">
+                    <div className="select-none cursor-pointer" onClick={report} autoFocus>
+                        <Button color="primary" variant="contained">
                             Báo cáo
                         </Button>
                     </div>

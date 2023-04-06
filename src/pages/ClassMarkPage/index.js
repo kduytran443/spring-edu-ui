@@ -147,20 +147,24 @@ function ClassMarkPage() {
                 <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
             </div>
             <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
-                <div className="w-full p-2">
-                    <LinearWithValueLabel
-                        progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
-                    />
-                </div>
+                {!!avargeEffectiveExerciseMark && (
+                    <div className="w-full p-2">
+                        <LinearWithValueLabel
+                            progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
+                        />
+                    </div>
+                )}
                 <div className="p-6  border-slate-300 shadow border rounded">
                     <div className="mb-2">
                         Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
                         {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
                     </div>
-                    <div>
-                        Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} (
-                        {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
-                    </div>
+                    {!!avargeEffectiveExerciseMark && (
+                        <div>
+                            Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} (
+                            {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

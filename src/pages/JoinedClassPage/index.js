@@ -10,13 +10,6 @@ import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
 import { classService } from '~/services/classService';
 
 function JoinedClassPage() {
-    const [categoryDataState, setCategoryDataState] = useState({
-        title: 'Lập trình',
-        icon: 'https://cdn-icons-png.flaticon.com/512/3662/3662830.png',
-        description: `Lập trình là một công việc mà người lập trình viên thiết kế, xây dựng và bảo trì các chương trình máy tính (phần mềm). Những người làm nghề lập trình được gọi là lập trình viên.
-        Bằng cách sử dụng các đoạn mã lệnh (code), ngôn ngữ lập trình, và các tiện ích có sẵn, họ xây dựng, sửa lỗi hay nâng cấp các chương trình, ứng dụng, trò chơi, phần mềm, các trang web, hệ thống xử lí,… Giúp người dùng tương tác với nhau thông qua các thiết bị điện tử hoặc thực hiện các mệnh lệnh với máy tính.`,
-    });
-
     const [classListState, setClassListState] = useState([]);
 
     const [quantityState, setQuantityState] = useState(classListState.length);
@@ -59,7 +52,9 @@ function JoinedClassPage() {
                     />
                 </div>
             )}
-            {classListState !== null && classListState.length === 0 && <NoClassFound />}
+            {classListState !== null && classListState.length === 0 && (
+                <NoClassFound message="Chưa hoạt động trong bất kỳ lớp học nào" />
+            )}
         </div>
     );
 }

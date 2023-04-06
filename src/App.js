@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
-import { publicRoutes, privateRoutes } from './routes';
+import { publicRoutes, privateRoutes, adminRoutes } from './routes';
 import FullLayout from './layouts/FullLayout';
 import { Fragment, useEffect, useState } from 'react';
 import { authorize, getUserInfo } from './services/userService';
@@ -101,6 +101,28 @@ function App() {
                                                     <Page />
                                                 </Layout>
                                             )
+                                        }
+                                    />
+                                );
+                            })}
+                            {adminRoutes.map((route, index) => {
+                                const Page = route.component;
+
+                                let Layout = FullLayout;
+                                if (route.layout) {
+                                    Layout = route.layout;
+                                } else if (route.layout === null) {
+                                    Layout = Fragment;
+                                }
+
+                                return (
+                                    <Route
+                                        key={route.path}
+                                        path={route.path}
+                                        element={
+                                            <Layout>
+                                                <Page />
+                                            </Layout>
                                         }
                                     />
                                 );

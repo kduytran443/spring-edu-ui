@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Line from '~/components/Line';
-import { API_BASE_URL, HOME_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
+import { ADMIN_HOME_PAGE, API_BASE_URL, HOME_PAGE_URL, SIGNUP_PAGE_URL } from '~/constants';
 import { setUserInfo, useUser } from '~/stores/UserStore';
 
 function LoginPage() {
@@ -40,9 +40,14 @@ function LoginPage() {
             .then((data) => {
                 if (data.id) {
                     dispatchUserState(setUserInfo(data));
-                    navigate('/joined-class');
+                    console.log('data');
+                    if (data.role === 'ADMIN') {
+                        navigate(ADMIN_HOME_PAGE);
+                    } else {
+                        navigate('/joined-class');
+                    }
                 } else {
-                    setError('Sai tên đăng nhập hoặc mật khẩu');
+                    setError(data.message);
                 }
             })
             .catch((error) => {
@@ -76,7 +81,14 @@ function LoginPage() {
         <div className="shadow-lg border rounded-lg bg-white p-6 min-h-[240px] max-w-md w-full flex flex-col sm:w-[420px]">
             <div className="my-2 mt-4 w-full">
                 <TextField
-                    onChange={(e) => setUsernameState(e.target.value)}
+                    onKeyUp={(e) => {
+                        if (e.key === 'Enter') {
+                            submitForm();
+                        }
+                    }}
+                    onChange={(e) => {
+                        setUsernameState(e.target.value);
+                    }}
                     className="w-full"
                     value={usernameState}
                     label="Tài khoản"
@@ -98,6 +110,11 @@ function LoginPage() {
 
             <div className="mb-2 mt-4 w-full">
                 <TextField
+                    onKeyUp={(e) => {
+                        if (e.key === 'Enter') {
+                            submitForm();
+                        }
+                    }}
                     onChange={(e) => setPasswordState(e.target.value)}
                     className="w-full"
                     label="Mật khẩu"

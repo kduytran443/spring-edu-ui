@@ -328,7 +328,7 @@ function ClassIntroPage() {
                 )}
                 <div className="w-full flex flex-row items-center">
                     <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
-                    <ReportClassDialog />
+                    <ReportClassDialog classId={classId} />
                 </div>
                 <div className="flex flex-row items-center">
                     <b>
@@ -390,7 +390,7 @@ function ClassIntroPage() {
                         {classDataState.textData && <ShowTextData data={classDataState.textData} />}
                     </div>
                     <div className="mt-12">
-                        {reviewRatingState.stars && (
+                        {reviewRatingState.stars && classDataState.userRoleCode && (
                             <>
                                 <p className="font-bold">Review của bạn về lớp này:</p>
                                 <Rating
@@ -402,7 +402,7 @@ function ClassIntroPage() {
                                 />
                             </>
                         )}
-                        {!reviewRatingState.stars && (
+                        {!reviewRatingState.stars && classDataState.userRoleCode && (
                             <>
                                 <p className="font-bold">Review của bạn về lớp này:</p>
                                 <Rating

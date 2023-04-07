@@ -88,7 +88,7 @@ function HomePage() {
         fetch(`${API_BASE_URL}/public/api/category`)
             .then((res) => res.json())
             .then((data) => {
-                setCategoryListState(data);
+                setCategoryListState(data.filter((item) => item.status === 1));
             });
     }, []);
 

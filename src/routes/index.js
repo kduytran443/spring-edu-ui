@@ -34,11 +34,13 @@ import {
     ADMIN_USER_PAGE,
     ADMIN_CLASS_PAGE,
     ADMIN_REPORT_PAGE,
+    ADMIN_CATEGORY_PAGE,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
 import FullLayout from '~/layouts/FullLayout';
 import LoginLayout from '~/layouts/LoginLayout';
+import AdminCategoryPage from '~/pages/Admin/AdminCategoryPage';
 import AdminClassPage from '~/pages/Admin/AdminClassPage';
 import AdminHomePage from '~/pages/Admin/AdminHomePage';
 import AdminReportPage from '~/pages/Admin/AdminReportPage';
@@ -265,6 +267,11 @@ const adminRoutes = [
     {
         path: `${ADMIN_REPORT_PAGE}`,
         component: AdminReportPage,
+        layout: AdminLayout,
+    },
+    {
+        path: `${ADMIN_CATEGORY_PAGE}`,
+        component: AdminCategoryPage,
         layout: AdminLayout,
     },
 ];

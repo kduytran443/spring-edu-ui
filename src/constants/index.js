@@ -35,10 +35,11 @@ const SEARCH_PAGE_URL = '/search';
 const ADMIN_HOME_PAGE = '/admin/home';
 const ADMIN_USER_PAGE = '/admin/user';
 const ADMIN_CLASS_PAGE = '/admin/class';
+const ADMIN_CATEGORY_PAGE = '/admin/category';
 const ADMIN_PERSONAL_PAGE = '/admin/personal';
 const ADMIN_REPORT_PAGE = '/admin/report';
 
-const API_BASE_URL = 'http://192.168.1.3:8085';
+const API_BASE_URL = 'http://192.168.1.2:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
 
 const ACTION_GET_USER_INFO = 'ACTION_GET_USER_INFO';
@@ -88,4 +89,5 @@ export {
     ADMIN_PERSONAL_PAGE,
     ADMIN_REPORT_PAGE,
     ADMIN_USER_PAGE,
+    ADMIN_CATEGORY_PAGE,
 };

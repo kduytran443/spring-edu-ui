@@ -9,9 +9,19 @@ export const categoryService = {
         const response = await fetch(`${API_BASE_URL}/public/${this.api}`, config);
         return response.json();
     },
+    async findAll() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
     async getCategoryByCode(code) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${code}`, config);
+        return response.json();
+    },
+    async getCategoryById(id) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);
         return response.json();
     },
 
@@ -27,9 +37,13 @@ export const categoryService = {
         return response.json();
     },
 
+    async unblockCategory(category) {
+        const config = putConfig(category);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/unblock`, config);
+    },
+
     async deleteCategory(category) {
         const config = deleteConfig(category);
-        const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
-        return response.json();
+        await fetch(`${API_BASE_URL}/${this.api}`, config);
     },
 };

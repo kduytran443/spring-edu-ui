@@ -1,8 +1,16 @@
-import { faArrowDown, faArrowLeft, faArrowUp, faEdit, faEyeSlash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowDown,
+    faArrowLeft,
+    faArrowUp,
+    faEdit,
+    faEye,
+    faEyeSlash,
+    faPlus,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Alert, AlertTitle, Breadcrumbs, Button, Divider, IconButton, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertDialog from '~/components/AlertDialog';
 import ClassTopic from '~/components/ClassTopic';
 import LoadingProcess from '~/components/LoadingProcess';
@@ -18,8 +26,10 @@ import TopicUpdateDialog from '~/components/TopicUpdateDialog';
 import EditTopicDialog from '~/components/EditTopicDialog';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import DeleteTopicDialog from '~/components/DeleteTopicDialog';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
 
 function ClassPage() {
+    const [loadingState, setLoadingState] = useState(true);
     const [classDataState, setClassDataState] = useState(() => {
         return {
             name: 'Tên lớp học',
@@ -32,6 +42,7 @@ function ClassPage() {
             status: 'Đã bắt đầu',
         };
     });
+    const location = useLocation();
     const { classId } = useParams();
     const [topicListState, setTopicListState] = useState([]);
 
@@ -47,35 +58,9 @@ function ClassPage() {
         });
     };
     useEffect(() => {
-        /*
-        const config = getConfig();
-        fetch(`${API_BASE_URL}/api/topic/${classId}`, config)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.status === 500) {
-                } else setTopicListState(data);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
-        */
-
         loadTopic();
-    }, []);
+    }, [location]);
 
-    /*
-    useEffect(() => {
-        fetch(`${API_BASE_URL}/api/topic/${classId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.status === 500) {
-                } else setTopicListState(data);
-            })
-            .catch((error) => {
-                console.log('error', error);
-            });
-    }, []);
-*/
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -85,6 +70,7 @@ function ClassPage() {
             .then((data) => {
                 if (data.userRoleCode) {
                     setClassDataState(data);
+                    setLoadingState(false);
                 } else {
                     navigate('/page-not-found');
                 }
@@ -122,6 +108,35 @@ function ClassPage() {
         });
     };
 
+    const [justChangedOrdinalNumber, setJustChangedOrdinalNumber] = useState();
+    const changeOrdinalNumber = (obj) => {
+        if (obj.ordinalNumber < 1) {
+            obj.ordinalNumber = topicListState.length;
+        }
+        if (obj.ordinalNumber > topicListState.length) {
+            obj.ordinalNumber = 1;
+        }
+
+        topicService.putOrdinalNumber(obj).then((data) => {
+            if (data) {
+                loadTopic();
+                setJustChangedOrdinalNumber(data.ordinalNumber);
+
+                setTimeout(() => {
+                    setJustChangedOrdinalNumber();
+                }, 1200);
+            }
+        });
+    };
+
+    const changeVisible = (obj) => {
+        topicService.putVisible(obj).then((data) => {
+            if (data.id) {
+                loadTopic();
+            }
+        });
+    };
+
     return (
         <>
             <div className="mb-6">
@@ -134,13 +149,14 @@ function ClassPage() {
                     Trang giới thiệu
                 </Button>
             </div>
+            {loadingState && <LoadingPageProcess />}
             {classDataState &&
                 (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
                     <div className="flex flex-col md:flex-row items-center">
                         <div className="aspect-ratio">
                             <TopicUpdateDialog
                                 buttonOpen={
-                                    <div className="flex flex-col text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow shadow-blue-300 cursor-pointer text-blue-500">
+                                    <div className="flex flex-col text-lg select-none hover:bg-blue-50 active:bg-blue-200 items-center hover:outline-2 hover:outline-blue-400 hover:outline-dashed justify-center p-6 border-blue-500 cursor-pointer text-blue-500">
                                         <FontAwesomeIcon icon={faPlus} /> Thêm chủ đề
                                     </div>
                                 }
@@ -152,7 +168,7 @@ function ClassPage() {
                                 onClick={(e) => {
                                     navigate('lesson-create');
                                 }}
-                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow shadow-blue-300 cursor-pointer text-blue-500"
+                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-50 active:bg-blue-200 items-center hover:outline-2 hover:outline-blue-400 hover:outline-dashed justify-center p-6 border-blue-500 cursor-pointer text-blue-500"
                             >
                                 <MenuBookIcon color="primary" /> Thêm bài học
                             </div>
@@ -162,7 +178,7 @@ function ClassPage() {
                                 onClick={(e) => {
                                     navigate('exercise-create');
                                 }}
-                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-100 active:bg-blue-200 items-center justify-center p-6 border-blue-500 rounded-lg hover:shadow shadow-blue-300 cursor-pointer text-blue-500"
+                                className="flex flex-col md:ml-4 text-lg select-none hover:bg-blue-50 active:bg-blue-200 items-center hover:outline-2 hover:outline-blue-400 hover:outline-dashed justify-center p-6 border-blue-500 cursor-pointer text-blue-500"
                             >
                                 <FactCheckIcon color="primary" /> Thêm bài tập
                             </div>
@@ -177,7 +193,12 @@ function ClassPage() {
                         topicListState &&
                         topicListState?.map((topic, index) => {
                             return (
-                                <div className="w-full flex flex-col">
+                                <div
+                                    className={`w-full duration-100 flex flex-col ${
+                                        topic.ordinalNumber === justChangedOrdinalNumber &&
+                                        'outline-2 rounded-sm outline-blue-500 outline-dashed'
+                                    }`}
+                                >
                                     {classDataState &&
                                         (classDataState.userRoleCode === 'supporter' ||
                                             classDataState.userRoleCode === 'teacher') && (
@@ -189,21 +210,53 @@ function ClassPage() {
                                                         reload={loadTopic}
                                                         topicName={topic.name}
                                                     />
+                                                    <IconButton
+                                                        onClick={(e) => {
+                                                            const obj = {
+                                                                id: topic.id,
+                                                            };
+                                                            if (topic.visible) {
+                                                                obj.visible = 0;
+                                                            } else {
+                                                                obj.visible = 1;
+                                                            }
+                                                            changeVisible(obj);
+                                                        }}
+                                                        color="primary"
+                                                    >
+                                                        <FontAwesomeIcon icon={topic.visible ? faEye : faEyeSlash} />
+                                                    </IconButton>
                                                     <div className="flex flex-row items-center mr-2">
-                                                        {index !== topicListState.length - 1 && (
-                                                            <div className="mr-2">
-                                                                <IconButton color="primary" size="small">
-                                                                    <FontAwesomeIcon icon={faArrowDown} />
-                                                                </IconButton>
-                                                            </div>
-                                                        )}
-                                                        {index !== 0 && (
-                                                            <div>
-                                                                <IconButton color="primary" size="small">
-                                                                    <FontAwesomeIcon icon={faArrowUp} />
-                                                                </IconButton>
-                                                            </div>
-                                                        )}
+                                                        <div className="mr-2">
+                                                            <IconButton
+                                                                onClick={(e) => {
+                                                                    const obj = {
+                                                                        ordinalNumber: topic.ordinalNumber - 1,
+                                                                        id: topic.id,
+                                                                    };
+                                                                    changeOrdinalNumber(obj);
+                                                                }}
+                                                                color="primary"
+                                                                size="small"
+                                                            >
+                                                                <FontAwesomeIcon icon={faArrowUp} />
+                                                            </IconButton>
+                                                        </div>
+                                                        <div>
+                                                            <IconButton
+                                                                onClick={(e) => {
+                                                                    const obj = {
+                                                                        ordinalNumber: topic.ordinalNumber + 1,
+                                                                        id: topic.id,
+                                                                    };
+                                                                    changeOrdinalNumber(obj);
+                                                                }}
+                                                                color="primary"
+                                                                size="small"
+                                                            >
+                                                                <FontAwesomeIcon icon={faArrowDown} />
+                                                            </IconButton>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 {isAddingNewLesson(topic.id) && (
@@ -237,11 +290,26 @@ function ClassPage() {
                                                 )}
                                             </div>
                                         )}
-                                    <SimpleAccordion
-                                        key={index}
-                                        name={index + 1 + '. ' + topic.name}
-                                        classLessons={topic.classLessonReviews}
-                                    />
+                                    {classDataState && topic.visible ? (
+                                        <SimpleAccordion
+                                            key={index}
+                                            name={index + 1 + '. ' + topic.name}
+                                            classLessons={topic.classLessonReviews}
+                                        />
+                                    ) : (
+                                        <>
+                                            {(classDataState.userRoleCode === 'supporter' ||
+                                                classDataState.userRoleCode === 'teacher') && (
+                                                <div className="w-full opacity-40">
+                                                    <SimpleAccordion
+                                                        key={index}
+                                                        name={index + 1 + '. ' + topic.name}
+                                                        classLessons={topic.classLessonReviews}
+                                                    />
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
                                 </div>
                             );
                         })

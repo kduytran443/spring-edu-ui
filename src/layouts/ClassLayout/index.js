@@ -13,6 +13,7 @@ import { getConfig } from '~/services/config';
 import { classMemberService } from '~/services/classMemberService';
 import { useUser } from '~/stores/UserStore';
 import { classService } from '~/services/classService';
+import BasicSpeedDial from '~/components/BasicSpeedDial';
 
 function ClassLayout({ children }) {
     const { classId } = useParams();
@@ -167,6 +168,7 @@ function ClassLayout({ children }) {
                 </div>
                 <div className="w-full">{children}</div>
             </div>
+            <BasicSpeedDial />
         </FullLayout>
     );
 }

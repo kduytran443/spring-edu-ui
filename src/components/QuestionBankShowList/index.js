@@ -63,7 +63,7 @@ function QuestionBankShowList() {
                     );
                 })}
                 <div className="flex flex-row mb-10 md:mb-0 items-center">
-                    <AddQuestionBankToClassDialog reload={loadData} />
+                    <AddQuestionBankToClassDialog alreadyList={questionBankList} reload={loadData} />
                 </div>
             </div>
         </div>

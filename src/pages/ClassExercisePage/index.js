@@ -25,6 +25,9 @@ import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import { blue, green, grey, orange } from '@mui/material/colors';
 import { useMemo } from 'react';
 import AppsIcon from '@mui/icons-material/Apps';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFileCirclePlus, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 function ClassExercisePage() {
     const { classId } = useParams();
@@ -131,6 +134,9 @@ function ClassExercisePage() {
         loadData();
         loadSubmittedExerciseData();
         count();
+        setTimeout(() => {
+            setLoadingState(false);
+        }, 1000);
     }, [location]);
 
     useEffect(() => {
@@ -139,6 +145,7 @@ function ClassExercisePage() {
 
     const date = new Date();
 
+    const [loadingState, setLoadingState] = useState(true);
     const [countOpening, setCountOpening] = useState(0);
     const [countComplete, setCountComplete] = useState(0);
     const [countDoing, setCountDoing] = useState(0);
@@ -158,6 +165,7 @@ function ClassExercisePage() {
 
     return (
         <div>
+            {loadingState && <LoadingPageProcess />}
             <div>
                 {isValidRole(userRole) && (
                     <div className="bg-slate-100 rounded p-4">
@@ -171,6 +179,9 @@ function ClassExercisePage() {
                         onClick={(e) => {
                             navigate(`/class/${classId}/exercise-create`);
                         }}
+                        size="large"
+                        variant="outlined"
+                        startIcon={<FontAwesomeIcon icon={faFileCirclePlus} />}
                     >
                         Tạo bài tập
                     </Button>

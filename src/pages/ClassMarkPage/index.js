@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import LinearWithValueLabel from '~/components/LinearWithValueLabel';
+import LoadingPageProcess from '~/components/LoadingPageProcess';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime, showScore } from '~/utils';
@@ -59,6 +60,7 @@ const columns = [
 
 function ClassMarkPage() {
     const { classId } = useParams();
+    const [loadingState, setLoadingState] = useState(true);
 
     const location = useLocation();
     const [submittedExercises, setSubmittedExercises] = useState([]);
@@ -96,6 +98,9 @@ function ClassMarkPage() {
     useEffect(() => {
         loadData();
         loadExercises();
+        setTimeout(() => {
+            setLoadingState(false);
+        }, 1000);
     }, [location]);
 
     const avargeExerciseMark = useMemo(() => {
@@ -146,6 +151,7 @@ function ClassMarkPage() {
             <div style={{ height: 400, width: '100%' }}>
                 <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
             </div>
+            {loadingState && <LoadingPageProcess />}
             <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
                 {!!avargeEffectiveExerciseMark && (
                     <div className="w-full p-2">

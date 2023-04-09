@@ -230,7 +230,7 @@ function ClassLessonPage() {
                                 ) : (
                                     topicListState &&
                                     topicListState?.map((topic, index) => {
-                                        return (
+                                        return topic.visible ? (
                                             <div
                                                 onClick={(e) => {
                                                     loadData();
@@ -243,6 +243,8 @@ function ClassLessonPage() {
                                                     classLessons={topic.classLessonReviews}
                                                 />
                                             </div>
+                                        ) : (
+                                            <></>
                                         );
                                     })
                                 )}

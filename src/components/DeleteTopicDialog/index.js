@@ -5,9 +5,11 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { topicService } from '~/services/topicService';
+import AlertSuccessDialog from '../AlertSuccessDialog';
 
 function DeleteTopicDialog({ topicId, topicName, reload = () => {} }) {
     const [open, setOpen] = useState(false);
+    const [alert, setAlert] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -20,8 +22,12 @@ function DeleteTopicDialog({ topicId, topicName, reload = () => {} }) {
     const submit = () => {
         topicService.deleteTopic({ id: topicId }).then((data) => {
             if (data) {
+                setAlert(true);
                 reload();
-                handleClose();
+                setTimeout(() => {
+                    setAlert(false);
+                    handleClose();
+                }, 1000);
             }
         });
     };
@@ -40,6 +46,7 @@ function DeleteTopicDialog({ topicId, topicName, reload = () => {} }) {
                 <DialogTitle id="alert-dialog-title">Xóa chủ đề</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
+                        <AlertSuccessDialog open={alert} />
                         <div className="lg:w-[500px] my-2 w-[320px] flex flex-col">
                             Xác nhận xóa chủ đề: {topicName}
                         </div>

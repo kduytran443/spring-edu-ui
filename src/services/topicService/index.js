@@ -1,22 +1,6 @@
 import { deleteConfig, getConfig, postConfig, putConfig } from '~/services/config';
 import { API_BASE_URL } from '~/constants';
 
-/*
-    id
-	name
-	visiable
-	status
-	createdDate
-	avatar
-	accepted
-	category
-	backgroundImage
-	video
-	fee
-	shortDescription
-	creatorId
-*/
-
 export const topicService = {
     api: 'api/topic',
 
@@ -34,6 +18,18 @@ export const topicService = {
     async postTopic(topic) {
         const config = postConfig(topic);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
+
+    async putVisible(topic) {
+        const config = putConfig(topic);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/visible`, config);
+        return response.json();
+    },
+
+    async putOrdinalNumber(topic) {
+        const config = putConfig(topic);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/ordinal`, config);
         return response.json();
     },
 

@@ -20,8 +20,9 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { questionBankService } from '~/services/questionBankService';
 import { useUser } from '~/stores/UserStore';
+import AlertSuccessDialog from '../AlertSuccessDialog';
 
-export default function AddQuestionBankToClassDialog({ reload = () => {} }) {
+export default function AddQuestionBankToClassDialog({ alreadyList = [], reload = () => {} }) {
     const [open, setOpen] = useState(false);
     const [userState, dispatchUserState] = useUser();
     const { classId } = useParams();
@@ -32,16 +33,27 @@ export default function AddQuestionBankToClassDialog({ reload = () => {} }) {
 
     const handleClose = () => {
         setOpen(false);
+        setSelectedId();
+        setQuestionBankList([]);
     };
 
     const [questionBankList, setQuestionBankList] = useState([]);
     const loadQuestionBanks = () => {
         questionBankService.getQuestionBankByUser().then((data) => {
-            setQuestionBankList(data);
+            const arr = data.filter((item) => {
+                return !checkExisted(item.id);
+            });
+            setQuestionBankList(arr);
         });
     };
 
+    const checkExisted = (id) => {
+        const index = alreadyList.findIndex((item) => item.id === id);
+        return index === -1 ? false : true;
+    };
+
     const [selectedId, setSelectedId] = useState();
+    const [alert, setAlert] = useState(false);
 
     useEffect(() => {
         loadQuestionBanks();
@@ -51,12 +63,15 @@ export default function AddQuestionBankToClassDialog({ reload = () => {} }) {
         if (selectedId) {
             questionBankService.postQuestionBankToClass(classId, { id: selectedId }).then((data) => {
                 if (data) {
-                    reload();
-                    handleClose();
+                    setAlert(true);
+                    setTimeout(() => {
+                        reload();
+                        handleClose();
+                        setAlert(false);
+                    }, 1200);
                 }
             });
         }
-        console.log(selectedId);
     };
 
     return (
@@ -73,6 +88,7 @@ export default function AddQuestionBankToClassDialog({ reload = () => {} }) {
                 <DialogTitle id="alert-dialog-title">Thêm ngân hàng câu hỏi vào lớp học</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
+                        <AlertSuccessDialog open={alert} />
                         <div className="mt-4">
                             <Box sx={{ minWidth: 120 }}>
                                 <FormControl fullWidth>

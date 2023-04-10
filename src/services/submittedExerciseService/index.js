@@ -9,6 +9,11 @@ export const submittedExerciseService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/class-exercise/user/${classExerciseId}`, config);
         return response.json();
     },
+    async getSubmittedExercisesByUserIdAndClassId(userId, classId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/class/user/${classId}/${userId}`, config);
+        return response.json();
+    },
     async getSubmittedExercisesByUserAndClass(classId) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}/class/user/${classId}`, config);

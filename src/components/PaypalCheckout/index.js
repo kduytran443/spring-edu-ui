@@ -46,6 +46,9 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
                                         amount: {
                                             value: price,
                                         },
+                                        payee: {
+                                            email_address: 'nienluanctu2023user_a@gmail.com',
+                                        },
                                     },
                                 ],
                             });

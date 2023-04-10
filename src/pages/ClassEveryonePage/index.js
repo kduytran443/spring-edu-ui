@@ -123,7 +123,7 @@ function ClassEveryonePage() {
                             );
                         })}
                     </SimpleCustomAccordion>
-                    <SimpleCustomAccordion name="Danh sách yêu cầu">
+                    <SimpleCustomAccordion name="Danh sách chờ">
                         {requestUserListState.map((user, index) => {
                             return (
                                 <RequestClassMember

@@ -346,7 +346,7 @@ function ClassSpecificExercisePage() {
                         {constructedResponseTest.content && (
                             <div className="my-4">
                                 <div className="text-lg font-bold">Đề bài:</div>
-                                <RichTextEditor disabled data={constructedResponseTest.content} />
+                                <RichTextEditor disabled readOnly data={constructedResponseTest.content} />
                             </div>
                         )}
                         <div className="flex flex-row items-center">

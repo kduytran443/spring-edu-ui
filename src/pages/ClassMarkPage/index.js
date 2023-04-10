@@ -1,12 +1,22 @@
 import { faPercent } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Autocomplete, TextField } from '@mui/material';
+import {
+    Autocomplete,
+    Avatar,
+    FormControl,
+    FormControlLabel,
+    FormLabel,
+    Radio,
+    RadioGroup,
+    TextField,
+} from '@mui/material';
 import { DataGrid, gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import LinearWithValueLabel from '~/components/LinearWithValueLabel';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import { classMemberService } from '~/services/classMemberService';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime, showScore } from '~/utils';
@@ -34,7 +44,6 @@ const columns = [
         headerName: 'Điểm',
         width: 160,
         renderCell: (param) => {
-            console.log('param.value', param.value);
             return (
                 <>
                     {param.value.mark === null ? (
@@ -95,7 +104,63 @@ function ClassMarkPage() {
         });
     };
 
+    const [userRole, setUserRole] = useState({});
+    const loadRole = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            setUserRole(data);
+        });
+    };
+
+    const isTeacherRole = () => {
+        if (userRole && (userRole.classRole === 'teacher' || userRole.classRole === 'supporter')) {
+            return true;
+        }
+        return false;
+    };
+
+    const [classMemberList, setClassMemberList] = useState([]);
+    const [classMemberInfoList, setClassMemberInfoList] = useState({});
+    const loadAllMember = () => {
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            const arr = data.filter((item) => item.classRole === 'student');
+            data.forEach((item) => {
+                setClassMemberInfoList((pre) => {
+                    return { ...pre, [item.userId]: item };
+                });
+            });
+            setClassMemberList(arr);
+        });
+    };
+
+    const [submittedExercisesAllMember, setSubmittedExercisesAllMember] = useState({});
+    const loadSubmittedExercises = () => {
+        setSubmittedExercisesAllMember([]);
+        classMemberList.forEach((classMember) => {
+            submittedExerciseService
+                .getSubmittedExercisesByUserIdAndClassId(classMember.userId, classId)
+                .then((data) => {
+                    const arr = data.map((item) => {
+                        const obj = {
+                            ...item.classExcercise,
+                            ...item,
+                        };
+
+                        obj.mark = {
+                            mark: item.mark,
+                            max: item.classExcercise.mark,
+                        };
+
+                        return obj;
+                    });
+                    setSubmittedExercisesAllMember((pre) => {
+                        return { ...pre, [classMember.userId]: arr };
+                    });
+                });
+        });
+    };
+
     useEffect(() => {
+        loadRole();
         loadData();
         loadExercises();
         setTimeout(() => {
@@ -103,9 +168,20 @@ function ClassMarkPage() {
         }, 1000);
     }, [location]);
 
+    useEffect(() => {
+        if (isTeacherRole()) {
+            loadSubmittedExercises();
+        }
+    }, [classMemberList]);
+
+    useEffect(() => {
+        if (isTeacherRole()) {
+            loadAllMember();
+        }
+    }, [userRole]);
+
     const avargeExerciseMark = useMemo(() => {
         if (exercises) {
-            console.log(exercises);
             return exercises.reduce((pre, cur) => {
                 return pre + cur.mark;
             }, 0);
@@ -146,33 +222,183 @@ function ClassMarkPage() {
         }
     }, [submittedExercises]);
 
+    const getAvargeMark = (submittedExercises) => {
+        if (exercises) {
+            return submittedExercises.reduce((pre, cur) => {
+                return cur.mark.mark ? pre + cur.mark.mark : pre;
+            }, 0);
+        } else {
+            return 0;
+        }
+    };
+    const getAvargeEffectiveMark = (submittedExercises) => {
+        if (exercises) {
+            return submittedExercises
+                .filter((item) => item.effective)
+                .reduce((pre, cur) => {
+                    return cur.mark.mark ? pre + cur.mark.mark : pre;
+                }, 0);
+        } else {
+            return 0;
+        }
+    };
+
+    const [filterState, setFilterState] = useState({
+        grade: 0,
+        username: '',
+        fullname: '',
+    });
+
+    const handleChangeFilter = (e) => {
+        setFilterState((pre) => {
+            return { ...pre, grade: e.target.value };
+        });
+    };
+
+    const isSuitableName = (username = '', fullname = '') => {
+        let valid = false;
+        if (username.includes(filterState.username) || fullname.includes(filterState.fullname)) {
+            valid = true;
+        }
+        return valid;
+    };
+
     return (
         <div>
-            <div style={{ height: 400, width: '100%' }}>
-                <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
-            </div>
             {loadingState && <LoadingPageProcess />}
-            <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
-                {!!avargeEffectiveExerciseMark && (
-                    <div className="w-full p-2">
-                        <LinearWithValueLabel
-                            progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
-                        />
+            {!isTeacherRole() ? (
+                <>
+                    <div style={{ height: 400, width: '100%' }}>
+                        <DataGrid rows={submittedExercises} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
                     </div>
-                )}
-                <div className="p-6  border-slate-300 shadow border rounded">
-                    <div className="mb-2">
-                        Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
-                        {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
-                    </div>
-                    {!!avargeEffectiveExerciseMark && (
-                        <div>
-                            Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} (
-                            {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}% )
+                    <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
+                        {!!avargeEffectiveExerciseMark && (
+                            <div className="w-full p-2">
+                                <LinearWithValueLabel
+                                    progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
+                                />
+                            </div>
+                        )}
+                        <div className="p-6  border-slate-300 shadow border rounded">
+                            <div className="mb-2">
+                                Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
+                                {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
+                            </div>
+                            {!!avargeEffectiveExerciseMark && (
+                                <div>
+                                    Điểm tích lũy: {avargeEffectiveMark} / {avargeEffectiveExerciseMark} (
+                                    {showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}%)
+                                </div>
+                            )}
                         </div>
-                    )}
+                    </div>
+                </>
+            ) : (
+                <div className="w-full mt-4 flex items-start flex-col">
+                    <div className="w-full">
+                        <FormControl>
+                            <FormLabel id="demo-row-radio-buttons-group-label">Bộ lọc</FormLabel>
+                            <RadioGroup
+                                defaultValue="0"
+                                row
+                                aria-labelledby="demo-row-radio-buttons-group-label"
+                                name="row-radio-buttons-group"
+                            >
+                                <FormControlLabel
+                                    defaultChecked
+                                    onClick={handleChangeFilter}
+                                    value="0"
+                                    control={<Radio defaultChecked checked={filterState.grade == 0} />}
+                                    label="Tất cả"
+                                />
+                                <FormControlLabel
+                                    value="1"
+                                    onClick={handleChangeFilter}
+                                    control={<Radio checked={filterState.grade == 1} />}
+                                    label="Đạt"
+                                />
+                                <FormControlLabel
+                                    value="2"
+                                    onClick={handleChangeFilter}
+                                    control={<Radio checked={filterState.grade == 2} />}
+                                    label="Không đạt"
+                                />
+                            </RadioGroup>
+                        </FormControl>
+                        <div className="w-full mt-2">
+                            <TextField
+                                className="w-full"
+                                label="Tên"
+                                placeholder="Username hoặc họ tên"
+                                value={filterState.username}
+                                onInput={(e) => {
+                                    setFilterState((pre) => {
+                                        return { ...pre, fullname: e.target.value, username: e.target.value };
+                                    });
+                                }}
+                            />
+                        </div>
+                    </div>
+                    {Object.keys(submittedExercisesAllMember).length > 0 &&
+                        Object.keys(submittedExercisesAllMember).map((key) => {
+                            const list = submittedExercisesAllMember[key];
+                            const obj = classMemberInfoList[key];
+
+                            const avargeEffective = getAvargeEffectiveMark(list);
+                            const avargeMark = getAvargeMark(list);
+
+                            let suitableFilter = isSuitableName(obj.username, obj.fullname);
+                            if (filterState.grade == 1) {
+                                suitableFilter = suitableFilter && avargeEffective >= 50;
+                            }
+                            if (filterState.grade == 2) {
+                                suitableFilter = suitableFilter && avargeEffective < 50;
+                            }
+
+                            return suitableFilter ? (
+                                <div className="w-full my-4">
+                                    <div className="w-full p-4 flex flex-row items-center">
+                                        <Avatar src={obj.avatar} />
+                                        <div className="ml-4">{obj.fullname}</div>
+                                    </div>
+                                    <div style={{ height: 320, width: '100%' }}>
+                                        <DataGrid rows={list} columns={columns} pageSize={5} rowsPerPageOptions={[5]} />
+                                    </div>
+                                    <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
+                                        {!!avargeEffectiveExerciseMark && (
+                                            <div className="w-full p-2">
+                                                <LinearWithValueLabel
+                                                    progress={showScore(
+                                                        (avargeEffective / avargeEffectiveExerciseMark) * 100,
+                                                        1,
+                                                    )}
+                                                />
+                                            </div>
+                                        )}
+                                        <div className="p-6  border-slate-300 shadow border rounded">
+                                            <div className="mb-2">
+                                                Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
+                                                {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
+                                            </div>
+                                            {!!avargeEffectiveExerciseMark && (
+                                                <div>
+                                                    Điểm tích lũy: {avargeEffective} / {avargeEffectiveExerciseMark} (
+                                                    {showScore(
+                                                        (avargeEffective / avargeEffectiveExerciseMark) * 100,
+                                                        1,
+                                                    )}
+                                                    %)
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <></>
+                            );
+                        })}
                 </div>
-            </div>
+            )}
         </div>
     );
 }

@@ -114,14 +114,14 @@ function EditDiscountDialog({ discountId, reload = () => {} }) {
                                             return { ...pre, discountPercent: e.target.value };
                                         });
                                     }}
-                                    label="Tên chủ đề"
+                                    label="Phần trăm giảm giá"
                                 />
                                 <div className="flex flex-col items-center w-full">
                                     {discount.startDate && (
-                                        <div className="z-[40] w-full">
+                                        <div className="z-[40] w-full mt-4">
                                             <div className="font-bold">Bắt đầu:</div>
                                             <DateTimePicker
-                                                className="h-[40px] w-full md:w-auto"
+                                                className="h-[40px] min-w-full md:w-auto"
                                                 onChange={(e) => {
                                                     changeStartDate(new Date(e.getTime()));
                                                 }}
@@ -130,10 +130,10 @@ function EditDiscountDialog({ discountId, reload = () => {} }) {
                                         </div>
                                     )}
                                     {discount.endDate && (
-                                        <div className="z-[40] w-full">
+                                        <div className="z-[40] w-full mt-4">
                                             <div className="font-bold">Kết thúc:</div>
                                             <DateTimePicker
-                                                className="h-[40px] w-full md:w-auto"
+                                                className="h-[40px] min-w-full md:w-auto"
                                                 onChange={(e) => {
                                                     changeEndDate(new Date(e.getTime()));
                                                 }}

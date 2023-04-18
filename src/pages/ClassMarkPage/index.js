@@ -264,7 +264,7 @@ function ClassMarkPage() {
     };
 
     return (
-        <div>
+        <div className="p-4 md:p-0">
             {loadingState && <LoadingPageProcess />}
             {!isTeacherRole() ? (
                 <>
@@ -279,7 +279,7 @@ function ClassMarkPage() {
                                 />
                             </div>
                         )}
-                        <div className="p-6  border-slate-300 shadow border rounded">
+                        <div className="p-6  border-slate-300 shadow border rounded text-sm w-full md:w-auto">
                             <div className="mb-2">
                                 Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
                                 {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
@@ -375,7 +375,7 @@ function ClassMarkPage() {
                                                 />
                                             </div>
                                         )}
-                                        <div className="p-6  border-slate-300 shadow border rounded">
+                                        <div className="p-6  border-slate-300 shadow border rounded text-sm w-full md:w-auto">
                                             <div className="mb-2">
                                                 Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
                                                 {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)

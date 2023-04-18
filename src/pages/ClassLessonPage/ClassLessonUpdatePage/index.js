@@ -1,4 +1,4 @@
-import { faArrowLeft, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faPen, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { Box } from '@mui/system';
@@ -138,7 +138,7 @@ function ClassLessonUpdatePage() {
     }, [location]);
 
     return (
-        <div className="w-full">
+        <div className="w-full p-4 md:p-0">
             <div className="mb-6">
                 <Button
                     onClick={(e) => {
@@ -188,7 +188,7 @@ function ClassLessonUpdatePage() {
                     onClick={updateLesson}
                     className="w-full mt-16 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
                 >
-                    <FontAwesomeIcon icon={faPlus} className="mr-2" /> Thêm
+                    <FontAwesomeIcon icon={faPen} className="mr-2" /> Sửa
                 </div>
             </div>
         </div>

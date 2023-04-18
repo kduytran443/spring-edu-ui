@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, IconButton, Rating, Tab, TextField } from '@mui/material';
-import { useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import CustomVideoPlayer from '~/components/CustomVideoPlayer';
 import ReactQuill from 'react-quill';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -31,7 +31,7 @@ import { useUser } from '~/stores/UserStore';
 import ShowTextData from '~/components/ShowTextData';
 import { reviewService } from '~/services/reviewService';
 import SimpleSnackbar from '~/components/SimpleSnackbar';
-import { renderToDate } from '~/utils';
+import { isValidTime, renderToDate, renderToVND } from '~/utils';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import { reportService } from '~/services/reportService';
 import ReportClassDialog from '~/components/ReportClassDialog';
@@ -41,6 +41,8 @@ import AlertFailDialog from '~/components/AlertFailDialog';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import { notificationService } from '~/services/notificationService';
 import PaypalCheckout from '~/components/PaypalCheckout';
+import CheckoutDialog from '~/components/CheckoutDialog';
+import { transactionService } from '~/services/transactionService';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -62,6 +64,7 @@ function ClassIntroPage() {
     const [reviewListState, setReviewListState] = useState(null);
     const [commentListState, setCommentListState] = useState(null);
     const { classId } = useParams();
+    const [discountList, setDiscountList] = useState([]);
 
     const [rowsState, setRowsState] = useState([]);
 
@@ -101,7 +104,6 @@ function ClassIntroPage() {
     }, [classDataState]);
 
     const loadReviews = () => {
-        console.log('okokokokokokokok');
         fetch(`${API_BASE_URL}/public/api/review/${classId}`)
             .then((res) => res.json())
             .then((data) => {
@@ -146,46 +148,108 @@ function ClassIntroPage() {
         classMemberService.postClassMember(classMember).then((data) => {
             if (data.status !== 500) {
                 setSuccessfulEnrollmentState(2);
-            } else {
-            }
-        });
-    };
-
-    const buyClass = () => {
-        const classMember = {
-            classId: classId,
-            classRole: 'student',
-            memberAccepted: 1,
-            classAccepted: 0,
-        };
-
-        classMemberService.postClassMember(classMember).then((data) => {
-            if (data.status !== 500) {
-                setSuccessfulEnrollmentState(1);
                 const obj = {
                     content: userState.username + ' đã yêu cầu tham gia: ' + classDataState.name,
                     redirectUrl: `/class/${classId}/everyone`,
                     receiverIds: [classDataState.userId],
                 };
-
                 notificationService.post(obj).then((data) => {
                     setTimeout(() => {
                         sendContext([classDataState.userId]);
                         loadMemberState();
                         setSuccessfulEnrollmentState(0);
+                        navigate('/class/' + classId);
                     }, 2000);
                 });
             } else {
             }
         });
     };
+    const paySuccessfully = (transactionId) => {
+        console.log('transactionId', transactionId);
+        const classMember = {
+            classId: classId,
+            classRole: 'student',
+            memberAccepted: 1,
+            classAccepted: 1,
+            discount: discount,
+        };
+        classMemberService.postClassMember(classMember).then((data) => {
+            if (data.status !== 500) {
+                setSuccessfulEnrollmentState(1);
+                const obj = {
+                    content: userState.username + ' đã tham gia: ' + classDataState.name + `: + ${totalFee} VNĐ`,
+                    redirectUrl: `/class/${classId}/everyone`,
+                    receiverIds: [classDataState.userId],
+                };
 
-    let discount = null;
+                const transactionObj = {
+                    fee: totalFee,
+                    code: transactionId,
+                    classId: classId,
+                    userId: data.userId,
+                };
+                transactionService.post(transactionObj).then((transaction) => {
+                    if (transaction.id) {
+                        notificationService.post(obj).then((data) => {
+                            setTimeout(() => {
+                                sendContext([classDataState.userId]);
+                                loadMemberState();
+                                setSuccessfulEnrollmentState(0);
+                                navigate('/class/' + classId);
+                            }, 2000);
+                        });
+                    }
+                });
+            } else {
+            }
+        });
+    };
+
+    let discount = discountList
+        .filter((item) => isValidTime(item.startDate, item.endDate))
+        .reduce((previous, current) => {
+            return previous + current.discountPercent;
+        }, 0);
+    if (discount > 100) discount = 100;
+    const [clicked, setClicked] = useState(false);
+    const buyClass = () => {
+        if (totalFee > 0) {
+            setClicked(true);
+        } else {
+            const classMember = {
+                classId: classId,
+                classRole: 'student',
+                memberAccepted: 1,
+                classAccepted: 1,
+                discount: discount,
+            };
+
+            classMemberService.postClassMember(classMember).then((data) => {
+                if (data.status !== 500) {
+                    setSuccessfulEnrollmentState(1);
+                    const obj = {
+                        content: userState.username + ' đã tham gia: ' + classDataState.name + `: Miễn phí`,
+                        redirectUrl: `/class/${classId}/everyone`,
+                        receiverIds: [classDataState.userId],
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        setTimeout(() => {
+                            sendContext([classDataState.userId]);
+                            loadMemberState();
+                            setSuccessfulEnrollmentState(0);
+                            navigate('/class/' + classId);
+                        }, 2000);
+                    });
+                }
+            });
+        }
+    };
 
     if (classDataState?.discount) {
         const timeNow = new Date().getTime();
         if (timeNow >= classDataState.discount.startDate && timeNow <= classDataState.discount.endDate) {
-            console.log('phù hợp');
             discount = classDataState.discount.discountPercent;
             console.log(classDataState.fee, classDataState.discountPercent);
         }
@@ -210,7 +274,6 @@ function ClassIntroPage() {
 
     useEffect(() => {
         reviewService.getReviewByUserAndClass(classId).then((data) => {
-            console.log('chú ý', data);
             if (data.stars > 0) {
                 setReviewRatingState(data);
             }
@@ -295,7 +358,6 @@ function ClassIntroPage() {
         });
     };
 
-    const [discountList, setDiscountList] = useState([]);
     useEffect(() => {
         discountService.getAllByClassId(classId).then((data) => {
             if (data.length >= 0) {
@@ -306,7 +368,22 @@ function ClassIntroPage() {
 
     const [commentPagination, setCommentPagination] = useState(1);
 
-    console.log('reviewRatingState.stars', reviewRatingState);
+    const paypalRef = useRef();
+
+    const cal = () => {
+        const totalDiscount = discount;
+        let fee = classDataState.fee;
+        if (totalDiscount) {
+            fee -= classDataState.fee * (totalDiscount / 100);
+        }
+        if (fee < 0) fee = 0;
+
+        return fee;
+    };
+
+    const totalFee = cal();
+
+    const checkoutRef = useRef();
 
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
@@ -332,9 +409,19 @@ function ClassIntroPage() {
                 </div>
                 <div className="flex flex-row items-center">
                     <b>
-                        <FontAwesomeIcon className="mr-2" icon={faCalendar} /> Ngày khởi tạo lớp:{' '}
+                        <FontAwesomeIcon className="mr-2" icon={faCalendar} /> Ngày khởi tạo lớp:
                     </b>
-                    <div>{renderToDate(classDataState.createdDate)}</div>
+                    <div className="ml-4">{renderToDate(classDataState.createdDate)}</div>
+                </div>
+                <div ref={checkoutRef}>
+                    <CheckoutDialog
+                        setClicked={setClicked}
+                        totalFee={totalFee}
+                        classDataState={classDataState}
+                        paySuccessfully={paySuccessfully}
+                        userState={userState}
+                        clicked={clicked}
+                    />
                 </div>
                 <div className="my-4">
                     {reviewListState && (
@@ -365,15 +452,7 @@ function ClassIntroPage() {
                     />
                     <h1 className="ml-2 font-bold text-xl">{classDataState.userFullname}</h1>
                 </div>
-                <div>
-                    <PaypalCheckout
-                        username={'username'}
-                        email="email@gmail.com"
-                        orderDataId={1}
-                        totalPrice={200000}
-                        successAction={console.log('ok')}
-                    />
-                </div>
+
                 <div className="w-full">
                     {rowsState.length > 0 && (
                         <div>
@@ -500,7 +579,6 @@ function ClassIntroPage() {
                                                             fullname={review.fullname}
                                                             date={review.createdDate}
                                                         />
-                                                        {index < commentListState.length - 1 && <Line />}
                                                     </li>
                                                 );
                                             })
@@ -514,7 +592,7 @@ function ClassIntroPage() {
                     </div>
                 </div>
             </div>
-            <div className="w-full top-0 left-0 w-full xl:w-[480px] lg:w-[360px] relative flex flex-col">
+            <div className="w-full top-0 left-0 xl:w-[480px] lg:w-[360px] relative flex flex-col">
                 <div className="flex flex-col w-full xl:w-[480px] lg:w-[360px] items-center justify-start mb-6 lg:mb-0 lg:fixed">
                     <div className="mb-[6px] lg:hidden block">
                         <Button
@@ -532,7 +610,7 @@ function ClassIntroPage() {
                                 width="100%"
                                 height="360"
                                 src={'https://www.youtube.com/embed/' + getId(classDataState.video)}
-                                title="Con đường trở thành lập trình viên Front-end! Học gì? Thứ tự học ra sao? Nên tập trung vào cái nào?"
+                                title="Youtube"
                                 frameborder="0"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowfullscreen
@@ -550,25 +628,11 @@ function ClassIntroPage() {
                         )}
                     </div>
                     <div className="flex flex-col items-center mt-4 sm:mt-0">
-                        {classDataState && !classDataState.userRoleCode && (
+                        {classDataState && !classDataState.userRoleCode && totalFee >= 0 && (
                             <div>
-                                {discount === null ? (
-                                    <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                        <div>{classDataState.fee > 0 ? classDataState.fee : 'Miễn phí'} VNĐ</div>
-                                    </span>
-                                ) : (
-                                    <div className="flex flex-col justify-center items-center">
-                                        <p className="text-lg">
-                                            <del>{classDataState.fee}</del>
-                                            <span className="ml-4 text-blue-500">
-                                                <b>Giảm {discount}%</b>
-                                            </span>
-                                        </p>
-                                        <span className={'text-3xl font-bold text-orange-400 text-center'}>
-                                            {classDataState.fee - classDataState.fee * (discount / 100)} usd
-                                        </span>
-                                    </div>
-                                )}
+                                <span className={'text-3xl font-bold text-orange-400 text-center'}>
+                                    <div>{totalFee > 0 ? `${totalFee} VNĐ` : 'Miễn phí'}</div>
+                                </span>
                             </div>
                         )}
                         <div className="my-4">
@@ -603,11 +667,7 @@ function ClassIntroPage() {
                                                     <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
                                                 </Button>
                                             }
-                                            agreeAction={
-                                                classDataState.fee - classDataState.fee * (discount / 100) > 0
-                                                    ? buyClass
-                                                    : enrollClass
-                                            }
+                                            agreeAction={classDataState.fee > 0 ? buyClass : enrollClass}
                                             title={'Đăng ký học'}
                                             visibleButton={
                                                 !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
@@ -659,13 +719,11 @@ function ClassIntroPage() {
                         </div>
                         {discountList.length > 0 && (
                             <div className="flex mb-2 flex-row items-center">
-                                <b>Giảm giá</b>
-                                <div className="ml-4">
-                                    {discountList.reduce((previous, current) => {
-                                        return previous + current.discountPercent;
-                                    }, 0)}
-                                    %
+                                <div className="mr-6 text-red-500">
+                                    <del>{renderToVND(classDataState.fee)}</del>
                                 </div>
+                                <b>Giảm giá</b>
+                                <div className="ml-4">{discount}%</div>
                             </div>
                         )}
                         {classDataState.classSchedules && (

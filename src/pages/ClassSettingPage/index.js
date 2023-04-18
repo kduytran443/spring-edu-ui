@@ -1,4 +1,4 @@
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBill, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
@@ -273,7 +273,13 @@ function ClassSettingPage() {
     const loadDiscounts = () => {
         discountService.getAllByClassId(classId).then((data) => {
             if (data.length >= 0) {
-                setDiscountListState(data);
+                const arr = data.map((item) => {
+                    const obj = { ...item };
+                    const date = new Date();
+                    obj.effective = date.getTime() >= item.startDate && date.getTime() <= item.endDate;
+                    return obj;
+                });
+                setDiscountListState(arr);
             }
         });
     };
@@ -298,6 +304,12 @@ function ClassSettingPage() {
                     label="Ẩn lớp học khỏi trang chính"
                 />
             </FormGroup>
+            {classDataState.paypalAccount && (
+                <div className="my-4">
+                    <FontAwesomeIcon className="mr-2" icon={faMoneyBill} />
+                    Tài khoản nhận phí: <b>{classDataState.paypalAccount}</b>
+                </div>
+            )}
             <div className="mt-8">
                 <div className="flex flex-row items-center mb-2">
                     <h2 className="text-xl font-bold">Hình nền chủ đề</h2>
@@ -318,7 +330,15 @@ function ClassSettingPage() {
                     <UploadWidget multiple={false} />
                 </div>
             )}
-
+            <div className="my-12 p-4 bg-slate-100 rounded">
+                <div className="flex flex-row items-center mb-2">
+                    <h2 className="text-xl font-bold">Giảm giá</h2>
+                    <div className="ml-4">
+                        <AddDiscountDialog classId={classId} reload={loadDiscounts} />
+                    </div>
+                </div>
+                <DiscountTable data={discountListState} reload={loadDiscounts} />
+            </div>
             <div className="my-12 p-4 bg-slate-100 rounded">
                 <h2 className="text-xl font-bold mb-2">Thời gian mở lớp</h2>
                 <div className="flex lg:flex-row items-center flex-col">
@@ -366,6 +386,7 @@ function ClassSettingPage() {
                                                 onInputSchedule('startHours', e.target.value);
                                             }}
                                             className="w-full"
+                                            type="number"
                                             label="Giờ bắt đầu"
                                         />
                                         <TextField
@@ -374,6 +395,7 @@ function ClassSettingPage() {
                                                 onInputSchedule('startMinutes', e.target.value);
                                             }}
                                             className="w-full"
+                                            type="number"
                                             label="Phút bắt đầu"
                                         />
                                     </div>
@@ -384,6 +406,7 @@ function ClassSettingPage() {
                                                 onInputSchedule('endHours', e.target.value);
                                             }}
                                             className="w-full"
+                                            type="number"
                                             label="Giờ kết thúc"
                                         />
                                         <TextField
@@ -392,6 +415,7 @@ function ClassSettingPage() {
                                                 onInputSchedule('endMinutes', e.target.value);
                                             }}
                                             className="w-full"
+                                            type="number"
                                             label="Phút kết thúc"
                                         />
                                     </div>

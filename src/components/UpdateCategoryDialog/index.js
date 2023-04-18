@@ -74,6 +74,7 @@ export default function UpdateCategoryDialog({ id, button = 'Thêm', alreadyList
 
     const check = () => {
         let valid = true;
+        console.log('CHẤM HỎI');
 
         if (!dataState.name.trim()) {
             valid = false;

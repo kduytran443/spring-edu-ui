@@ -23,7 +23,7 @@ function ClassLayout({ children }) {
     const [allTabsState, setAllTabsState] = useState([
         {
             id: 1,
-            name: 'Bảng tin',
+            name: 'Trang chủ',
             path: '',
         },
         {
@@ -33,7 +33,7 @@ function ClassLayout({ children }) {
         },
         {
             id: 3,
-            name: 'Mọi người',
+            name: 'Thành viên',
             path: '/everyone',
         },
         {
@@ -168,7 +168,6 @@ function ClassLayout({ children }) {
                 </div>
                 <div className="w-full">{children}</div>
             </div>
-            <BasicSpeedDial />
         </FullLayout>
     );
 }

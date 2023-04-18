@@ -15,7 +15,7 @@ import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { categoryService } from '~/services/categoryService';
 import { classService } from '~/services/classService';
-import { inputNumber } from '~/utils';
+import { inputNumber, validateEmail } from '~/utils';
 
 function ClassEditPage() {
     const [nameState, setNameState] = useState();
@@ -27,6 +27,45 @@ function ClassEditPage() {
     const [video, setVideo] = useState();
     const [fee, setFee] = useState(0);
     const { classId } = useParams();
+    const [paypalAccount, setPaypalAccount] = useState('');
+
+    const [nameError, setNameError] = useState();
+    const [categoryError, setCategoryError] = useState();
+    const [visibleError, setVisibleError] = useState();
+    const [textDataError, setTextDataError] = useState();
+    const [avatarError, setAvatarError] = useState();
+    const [emailError, setemailError] = useState();
+
+    const check = () => {
+        let valid = true;
+
+        if (!nameState) {
+            valid = false;
+            setNameError('Tên không được bỏ trống');
+        }
+
+        if (!categoryState) {
+            valid = false;
+            setCategoryError('Chưa chọn danh mục');
+        }
+
+        if (!textData) {
+            valid = false;
+            setTextDataError('Nội dung giới thiệu không được bỏ trống');
+        }
+
+        if (!avatar) {
+            valid = false;
+            setAvatarError('Chưa upload ảnh đại diện');
+        }
+
+        if (fee > 0 && !validateEmail(paypalAccount)) {
+            valid = false;
+            setemailError('Email không đúng định dạng');
+        }
+
+        return valid;
+    };
 
     const location = useLocation();
     useEffect(() => {
@@ -42,7 +81,7 @@ function ClassEditPage() {
     const [success, setSuccess] = useState(0);
 
     const submit = () => {
-        if (nameState && classId && categoryState && fee >= 0) {
+        if (check()) {
             const obj = {
                 name: nameState,
                 status: 1,
@@ -55,6 +94,7 @@ function ClassEditPage() {
                 fee: fee,
                 avatar: avatar,
                 content: textData,
+                paypalAccount: paypalAccount,
             };
 
             classService.putClass(obj).then((data) => {
@@ -93,19 +133,9 @@ function ClassEditPage() {
             }
         }
     };
-    /*
-const [nameState, setNameState] = useState();
-    const [categoryList, setCategoryList] = useState([]);
-    const [categoryState, setCategoryState] = useState();
-    const [visibleState, setVisibleState] = useState();
-    const [textData, setTextData] = useState();
-    const [avatar, setAvatar] = useState();
-    const [video, setVideo] = useState();
-    const [fee, setFee] = useState(0);
-*/
+
     useEffect(() => {
         classService.getClassIntroById(classId).then((data) => {
-            console.log('data', data);
             if (data.id) {
                 setNameState(data.name);
                 setCategoryState(data.categoryId);
@@ -113,12 +143,13 @@ const [nameState, setNameState] = useState();
                 setAvatar(data.avatar);
                 setVideo(data.video);
                 setFee(data.fee);
+                setPaypalAccount(data.paypalAccount);
             }
         });
     }, [location]);
 
     return (
-        <div>
+        <div className="p-4 md:p-0">
             <div className="mb-[6px]">
                 <Button
                     onClick={(e) => {
@@ -182,6 +213,24 @@ const [nameState, setNameState] = useState();
                         />
                     </div>
                 </div>
+                {!(fee <= 0 || !fee) && (
+                    <div className="w-full mt-2">
+                        <h3 className="text-xl font-bold">Tài khoản paypal</h3>
+                        <div className="w-full">
+                            <TextField
+                                disabled={fee <= 0 || !fee}
+                                className="w-full"
+                                value={paypalAccount}
+                                type={'email'}
+                                onInput={(e) => {
+                                    setPaypalAccount(e.target.value);
+                                }}
+                                error={emailError}
+                            />
+                        </div>
+                        {emailError && <div className="text-red-500">*{emailError}</div>}
+                    </div>
+                )}
             </div>
             <div className="w-full my-6">
                 <h3 className="text-xl font-bold">Nội dung giới thiệu</h3>

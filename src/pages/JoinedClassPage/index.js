@@ -1,8 +1,8 @@
-import { faReply, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faReply, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ClassListIntro from '~/components/ClassListIntro';
 import LoadingProcess from '~/components/LoadingProcess';
 import NoClassFound from '~/components/NoClassFound';
@@ -13,6 +13,7 @@ function JoinedClassPage() {
     const [classListState, setClassListState] = useState([]);
 
     const [quantityState, setQuantityState] = useState(classListState.length);
+    const location = useLocation();
 
     useEffect(() => {
         setQuantityState(classListState.length);
@@ -25,7 +26,7 @@ function JoinedClassPage() {
                 setClassListState(data);
             }
         });
-    }, []);
+    }, [location]);
 
     return (
         <div className="flex flex-col p-4">
@@ -37,6 +38,19 @@ function JoinedClassPage() {
                     startIcon={<FontAwesomeIcon icon={faReply} />}
                 >
                     Trang chủ
+                </Button>
+            </div>
+            <div className="my-4">
+                <Button
+                    onClick={(e) => {
+                        navigate('/create-class');
+                    }}
+                    startIcon={<FontAwesomeIcon icon={faPlus} />}
+                    color="primary"
+                    size="large"
+                    variant="outlined"
+                >
+                    Tạo lớp
                 </Button>
             </div>
             {classListState === null ? (

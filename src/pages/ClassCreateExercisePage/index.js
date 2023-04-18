@@ -459,19 +459,6 @@ function ClassCreateExercisePage() {
                         />
                         {quizMarkError && <div className="text-red-500">*{quizMarkError}</div>}
                     </div>
-                    <div className="ml-4">
-                        <TextField
-                            value={requiredMark}
-                            onInput={(e) => {
-                                console.log('mark', mark, e.target.value);
-                                setRequiredMark(e.target.value);
-                            }}
-                            id="standard-basic"
-                            label="Điểm cần đạt (Tùy chọn)"
-                            variant="standard"
-                            type={'number'}
-                        />
-                    </div>
                 </div>
                 <div className="z-[41] w-full mt-8 flex flex-row flex-wrap items-center md:w-auto">
                     <div className="z-[40] w-full md:w-auto">
@@ -524,16 +511,7 @@ function ClassCreateExercisePage() {
             </div>
 
             {excerciseType && <div className="mt-10 text-red-500">*{excerciseType}</div>}
-            <div className="mt-6">
-                <Button
-                    onClick={(e) => {
-                        check();
-                    }}
-                    startIcon={<FontAwesomeIcon icon={faSearch} />}
-                >
-                    Kiểm tra dữ liệu
-                </Button>
-            </div>
+
             <div
                 onClick={submit}
                 className="w-full mt-10 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"

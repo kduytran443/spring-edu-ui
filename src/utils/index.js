@@ -27,3 +27,10 @@ export const showScore = (score) => {
     }
     return '';
 };
+export const renderToVND = (money) => {
+    return `${money} VNĐ`;
+};
+export const isValidTime = (startTime, endTime) => {
+    const date = new Date();
+    return date.getTime() >= startTime && date.getTime() <= endTime;
+};

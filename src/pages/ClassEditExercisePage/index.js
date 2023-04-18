@@ -85,10 +85,10 @@ function ClassEditExercisePage() {
         }
     };
 
-    const [isConstructedResponseTest, setIsConstructedResponseTest] = useState(false);
+    const [isConstructedResponseTest, setIsConstructedResponseTest] = useState();
     const [constructedResponseTestMark, setConstructedResponseTestMark] = useState(0);
 
-    const [isQuizTest, setIsQuizTest] = useState(true);
+    const [isQuizTest, setIsQuizTest] = useState();
     const [quizMark, setQuizMark] = useState(0);
     const [questionBankList, setQuestionBankList] = useState([]);
     const [questionBankId, setQuestionBankId] = useState();
@@ -229,7 +229,7 @@ function ClassEditExercisePage() {
                     setIsQuizTest(true);
                     setQuestionBankId(data.questionBankId);
                     setNumberOfQuestion(data.quizNumberOfQuestion);
-                    console.log('data.quizNumberOfQuestion', data.quizNumberOfQuestion);
+                    setIsConstructedResponseTest(false);
                 } else {
                     setIsConstructedResponseTest(true);
                 }
@@ -332,99 +332,8 @@ function ClassEditExercisePage() {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-row items-center mt-10 select-none">
-                <FormControl>
-                    <FormLabel id="demo-radio-buttons-group-label">Hình thức kiểm tra</FormLabel>
-                    <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        defaultValue="quiz"
-                        name="radio-buttons-group"
-                        onChange={(e) => {
-                            if (e.target.value === 'quiz') {
-                                setIsQuizTest(true);
-                                setIsConstructedResponseTest(false);
-                            } else if (e.target.value === 'constructedResponse') {
-                                setIsQuizTest(false);
-                                setIsConstructedResponseTest(true);
-                            }
-                        }}
-                    >
-                        <FormControlLabel disabled value="quiz" control={<Radio />} label="Trắc nghiệm" />
-                        <FormControlLabel disabled value="constructedResponse" control={<Radio />} label="Tự luận" />
-                    </RadioGroup>
-                </FormControl>
-            </div>
 
             <div className="mt-16">
-                {isQuizTest && (
-                    <>
-                        <div className="my-4">
-                            {questionBankList.length > 0 ? (
-                                <div className="my-2">Chọn ngân hàng câu hỏi</div>
-                            ) : (
-                                <div className="my-2">Chưa có ngân hàng câu hỏi</div>
-                            )}
-                            {questionBankList.length > 0 && questionBankId && (
-                                <Box sx={{ minWidth: 120 }}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-label">Ngân hàng câu hỏi</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={questionBankId}
-                                            defaultValue={questionBankId}
-                                            label="Chủ đề"
-                                            disabled
-                                            onChange={(e) => {
-                                                setQuestionBankId(e.target.value);
-                                            }}
-                                        >
-                                            {questionBankList.map((item) => (
-                                                <MenuItem key={item.id} value={item.id}>
-                                                    {item.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Box>
-                            )}
-                        </div>
-                        {questionBankError && <div className="text-red-500">*{questionBankError}</div>}
-                        <div className="my-6">
-                            <div>Số câu hỏi kiểm tra</div>
-                            <div className="flex flex-row items-center">
-                                <TextField
-                                    value={numberOfQuestion}
-                                    disabled
-                                    onChange={(e) => {
-                                        setNumberOfQuestion(e.target.value);
-                                    }}
-                                    className="w-[120px]"
-                                    variant="standard"
-                                    type="number"
-                                />
-                                <div>/ {selectedQuestionBank.questionQuantity}</div>
-                            </div>
-                            {numberOfQuestionError && <div className="text-red-500">*{numberOfQuestionError}</div>}
-                        </div>
-                    </>
-                )}
-                <div className="flex flex-row items-center mt-8">
-                    <div className="">
-                        <TextField
-                            value={mark}
-                            disabled
-                            onInput={(e) => {
-                                setMark(e.target.value);
-                            }}
-                            id="standard-basic"
-                            label="Điểm"
-                            variant="standard"
-                            type={'number'}
-                        />
-                        {quizMarkError && <div className="text-red-500">*{quizMarkError}</div>}
-                    </div>
-                </div>
                 <div className="z-[41] w-full mt-8 flex flex-row flex-wrap items-center md:w-auto">
                     <div className="z-[40] w-full md:w-auto">
                         <div className="font-bold">Bắt đầu:</div>
@@ -477,6 +386,119 @@ function ClassEditExercisePage() {
                 </div>
                 {timeLimitError && <div className="text-red-500">*{timeLimitError}</div>}
             </div>
+            <div
+                onClick={submit}
+                className="w-full mt-10 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
+            >
+                <FontAwesomeIcon icon={faPen} className="mr-2" /> Sửa
+            </div>
+        </div>
+    );
+}
+
+export default ClassEditExercisePage;
+
+/*
+
+
+            <div className="flex flex-row items-center mt-10 select-none">
+                {(isConstructedResponseTest == true || isConstructedResponseTest == false) && (
+                    <FormControl>
+                        <FormLabel id="demo-radio-buttons-group-label">Hình thức kiểm tra</FormLabel>
+                        <RadioGroup
+                            aria-labelledby="demo-radio-buttons-group-label"
+                            defaultValue={isConstructedResponseTest ? 'constructedResponse' : 'quiz'}
+                            name="radio-buttons-group"
+                            onChange={(e) => {
+                                if (e.target.value === 'quiz') {
+                                    setIsQuizTest(true);
+                                    setIsConstructedResponseTest(false);
+                                } else if (e.target.value === 'constructedResponse') {
+                                    setIsQuizTest(false);
+                                    setIsConstructedResponseTest(true);
+                                }
+                            }}
+                        >
+                            <FormControlLabel disabled value="quiz" control={<Radio />} label="Trắc nghiệm" />
+                            <FormControlLabel
+                                disabled
+                                value="constructedResponse"
+                                control={<Radio />}
+                                label="Tự luận"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                )}
+            </div>
+
+{isQuizTest && questionBankList.length > 0 && questionBankId && (
+                    <>
+                        <div className="my-4">
+                            {questionBankList.length > 0 ? (
+                                <div className="my-2">Chọn ngân hàng câu hỏi</div>
+                            ) : (
+                                <div className="my-2">Chưa có ngân hàng câu hỏi</div>
+                            )}
+                            <Box sx={{ minWidth: 120 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Ngân hàng câu hỏi</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={questionBankId}
+                                        defaultValue={questionBankId}
+                                        label="Chủ đề"
+                                        disabled
+                                        onChange={(e) => {
+                                            setQuestionBankId(e.target.value);
+                                        }}
+                                    >
+                                        {questionBankList.map((item) => (
+                                            <MenuItem key={item.id} value={item.id}>
+                                                {item.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Box>
+                        </div>
+                        {questionBankError && <div className="text-red-500">*{questionBankError}</div>}
+                        <div className="my-6">
+                            <div>Số câu hỏi kiểm tra</div>
+                            <div className="flex flex-row items-center">
+                                <TextField
+                                    value={numberOfQuestion}
+                                    disabled
+                                    onChange={(e) => {
+                                        setNumberOfQuestion(e.target.value);
+                                    }}
+                                    className="w-[120px]"
+                                    variant="standard"
+                                    type="number"
+                                />
+                                <div>/ {selectedQuestionBank.questionQuantity}</div>
+                            </div>
+                            {numberOfQuestionError && <div className="text-red-500">*{numberOfQuestionError}</div>}
+                        </div>
+                    </>
+                )}
+                <div className="flex flex-row items-center mt-8">
+                    <div className="">
+                        <TextField
+                            value={mark}
+                            disabled
+                            onInput={(e) => {
+                                setMark(e.target.value);
+                            }}
+                            id="standard-basic"
+                            label="Điểm"
+                            variant="standard"
+                            type={'number'}
+                        />
+                        {quizMarkError && <div className="text-red-500">*{quizMarkError}</div>}
+                    </div>
+                </div>
+
 
             {excerciseType && <div className="mt-10 text-red-500">*{excerciseType}</div>}
             <div className="mt-6">
@@ -489,14 +511,4 @@ function ClassEditExercisePage() {
                     Kiểm tra dữ liệu
                 </Button>
             </div>
-            <div
-                onClick={submit}
-                className="w-full mt-10 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
-            >
-                <FontAwesomeIcon icon={faPen} className="mr-2" /> Sửa
-            </div>
-        </div>
-    );
-}
-
-export default ClassEditExercisePage;
+*/

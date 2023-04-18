@@ -3,6 +3,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import { renderToTime } from '~/utils';
 import DeleteDiscountDialog from './DeleteDiscountDialog';
 import EditDiscountDialog from './EditDiscountDialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 
 function DiscountTable({ data = [], reload = () => {} }) {
     const columns = [
@@ -16,7 +18,7 @@ function DiscountTable({ data = [], reload = () => {} }) {
         },
         {
             field: 'startDate',
-            headerName: 'Giờ bắt đầu',
+            headerName: 'Bắt đầu',
             width: 150,
             renderCell: (param) => {
                 return <>{renderToTime(param.value)}</>;
@@ -24,10 +26,26 @@ function DiscountTable({ data = [], reload = () => {} }) {
         },
         {
             field: 'endDate',
-            headerName: 'Phút bắt đầu',
+            headerName: 'Kết thúc',
             width: 150,
             renderCell: (param) => {
                 return <>{renderToTime(param.value)}</>;
+            },
+        },
+        {
+            field: 'effective',
+            headerName: 'Đang áp dụng',
+            width: 150,
+            renderCell: (param) => {
+                return (
+                    <>
+                        {param.value ? (
+                            <FontAwesomeIcon className="text-green-500" icon={faCheck} />
+                        ) : (
+                            <FontAwesomeIcon className="text-red-500" icon={faX} />
+                        )}
+                    </>
+                );
             },
         },
         {

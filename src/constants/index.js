@@ -39,7 +39,7 @@ const ADMIN_CATEGORY_PAGE = '/admin/category';
 const ADMIN_PERSONAL_PAGE = '/admin/personal';
 const ADMIN_REPORT_PAGE = '/admin/report';
 
-const API_BASE_URL = 'http://192.168.1.2:8085';
+const API_BASE_URL = 'http://localhost:8085';
 const LOCAL_STORAGE_NAME = 'spring_edu';
 
 const ACTION_GET_USER_INFO = 'ACTION_GET_USER_INFO';

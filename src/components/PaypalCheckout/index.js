@@ -1,8 +1,17 @@
 import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { useState } from 'react';
 
-function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice, successAction = () => {} }) {
-    const description = `${username} (${email}) sent ${totalPrice} to pay for order: ${orderDataId}.`;
+function PaypalCheckout({
+    dataId,
+    classFullName,
+    username,
+    payee,
+    email,
+    phoneNumber,
+    totalPrice,
+    successAction = () => {},
+}) {
+    const description = `${username} (${email}) sends ${totalPrice} to pay for class: ${classFullName} (id: ${dataId}).`;
 
     const [paidFor, setPaidFor] = useState(false);
 
@@ -13,6 +22,7 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
         setPaidFor(true);
         successAction(orderId);
     };
+    console.log(payee);
     const [error, setError] = useState(null);
     if (error) {
         alert(error);
@@ -24,7 +34,8 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
             {totalPrice > 0 && (
                 <PayPalScriptProvider
                     options={{
-                        'client-id': 'AcHaKF7CapLkTqFZvw7ouPLY3mh_xyQxwn2OFq98--jiFh5IEJl9UyerIF5g0DIzwHwU12n2m5srgsr6',
+                        'client-id': 'AcEuHTipVMU_S1rYymaqRPkVRVI8QPF_GIK9a7UNGsUAuNyDfp_YJGfQ1qvZR1RNHt8-_6R8z4UVHSmR',
+                        intent: 'capture',
                     }}
                 >
                     <PayPalButtons
@@ -40,6 +51,7 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
                         }} //abc
                         createOrder={(data, actions) => {
                             return actions.order.create({
+                                intent: 'CAPTURE',
                                 purchase_units: [
                                     {
                                         description: description,
@@ -47,7 +59,7 @@ function PaypalCheckout({ orderDataId, username, email, phoneNumber, totalPrice,
                                             value: price,
                                         },
                                         payee: {
-                                            email_address: 'nienluanctu2023user_a@gmail.com',
+                                            email_address: payee,
                                         },
                                     },
                                 ],

@@ -1,3 +1,4 @@
+import { text } from '@fortawesome/fontawesome-svg-core';
 import { faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,16 +14,24 @@ import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
 import { categoryService } from '~/services/categoryService';
 import { classService } from '~/services/classService';
+import { validateEmail } from '~/utils';
 
 function ClassCreatePage() {
     const [nameState, setNameState] = useState();
     const [categoryList, setCategoryList] = useState([]);
     const [categoryState, setCategoryState] = useState();
-    const [visibleState, setVisibleState] = useState();
     const [textData, setTextData] = useState();
     const [avatar, setAvatar] = useState();
     const [video, setVideo] = useState();
     const [fee, setFee] = useState();
+    const [paypalAccount, setPaypalAccount] = useState('');
+
+    const [nameError, setNameError] = useState();
+    const [categoryError, setCategoryError] = useState();
+    const [visibleError, setVisibleError] = useState();
+    const [textDataError, setTextDataError] = useState();
+    const [avatarError, setAvatarError] = useState();
+    const [emailError, setemailError] = useState();
 
     const location = useLocation();
     useEffect(() => {
@@ -34,6 +43,37 @@ function ClassCreatePage() {
     }, [location]);
 
     const navigate = useNavigate();
+
+    const check = () => {
+        let valid = true;
+
+        if (!nameState) {
+            valid = false;
+            setNameError('Tên không được bỏ trống');
+        }
+
+        if (!categoryState) {
+            valid = false;
+            setCategoryError('Chưa chọn danh mục');
+        }
+
+        if (!textData) {
+            valid = false;
+            setTextDataError('Nội dung giới thiệu không được bỏ trống');
+        }
+
+        if (!avatar) {
+            valid = false;
+            setAvatarError('Chưa upload ảnh đại diện');
+        }
+
+        if (fee > 0 && !validateEmail(paypalAccount)) {
+            valid = false;
+            setemailError('Email không đúng định dạng');
+        }
+
+        return valid;
+    };
 
     const submit = () => {
         const obj = {
@@ -49,53 +89,44 @@ function ClassCreatePage() {
         };
         if (fee) {
             obj.fee = fee;
+            obj.paypalAccount = paypalAccount;
         } else {
             obj.fee = 0;
         }
 
-        classService.postClass(obj).then((data) => {
-            if (data.id) {
-                navigate('/class/' + data.id + '/setting');
-            }
-        });
-    };
-
-    const uploadFile = (e) => {
-        const files = e.target.files;
-        for (let i = 0; i < files.length; i++) {
-            let file = e.target.files[i];
-            if (file) {
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    setVideo(reader.result);
-                    console.log('UPLOAD');
-                };
-                reader.onerror = (error) => {
-                    console.log('error uploading!');
-                };
-            }
+        if (check()) {
+            classService.postClass(obj).then((data) => {
+                if (data.id) {
+                    navigate('/class/' + data.id + '/setting');
+                }
+            });
         }
     };
+
     const uploadImage = (e) => {
         const files = e.target.files;
         for (let i = 0; i < files.length; i++) {
             let file = e.target.files[i];
             if (file) {
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    setAvatar(reader.result);
-                };
-                reader.onerror = (error) => {
-                    console.log('error uploading!');
-                };
+                if (file.size <= 1024 * 1024) {
+                    let reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => {
+                        setAvatar(reader.result);
+                        setAvatarError('');
+                    };
+                    reader.onerror = (error) => {
+                        console.log('error uploading!');
+                    };
+                } else {
+                    setAvatarError('Hình ảnh phải dưới 1MB');
+                }
             }
         }
     };
 
     return (
-        <div>
+        <div className="p-4 md:p-0">
             <h1 className="font-bold text-2xl my-6">
                 <FontAwesomeIcon icon={faPlus} /> Tạo lớp
             </h1>
@@ -109,8 +140,10 @@ function ClassCreatePage() {
                             onInput={(e) => {
                                 setNameState(e.target.value);
                             }}
+                            error={nameError}
                         />
                     </div>
+                    {nameError && <div className="text-red-500">*{nameError}</div>}
                 </div>
                 <div className="my-4">
                     <h3 className="text-xl font-bold">Danh mục</h3>
@@ -118,6 +151,7 @@ function ClassCreatePage() {
                         <FormControl fullWidth>
                             <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
                             <Select
+                                error={categoryError}
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
                                 value={categoryState}
@@ -135,6 +169,7 @@ function ClassCreatePage() {
                             </Select>
                         </FormControl>
                     </Box>
+                    {categoryError && <div className="text-red-500">*{categoryError}</div>}
                 </div>
                 <div className="w-full">
                     <h3 className="text-xl font-bold">Phí tham gia (optional)</h3>
@@ -144,15 +179,41 @@ function ClassCreatePage() {
                             value={fee}
                             type={'number'}
                             onInput={(e) => {
-                                setFee(e.target.value);
+                                if (e.target.value >= 0) {
+                                    setFee(e.target.value);
+                                } else {
+                                    setPaypalAccount('');
+                                }
+                                if (!e.target.value) {
+                                    setPaypalAccount('');
+                                }
                             }}
                         />
                     </div>
                 </div>
+                {!(fee <= 0 || !fee) && (
+                    <div className="w-full mt-2">
+                        <h3 className="text-xl font-bold">Tài khoản paypal</h3>
+                        <div className="w-full">
+                            <TextField
+                                disabled={fee <= 0 || !fee}
+                                className="w-full"
+                                value={paypalAccount}
+                                type={'email'}
+                                onInput={(e) => {
+                                    setPaypalAccount(e.target.value);
+                                }}
+                                error={emailError}
+                            />
+                        </div>
+                        {emailError && <div className="text-red-500">*{emailError}</div>}
+                    </div>
+                )}
             </div>
             <div className="w-full my-6">
                 <h3 className="text-xl font-bold">Nội dung giới thiệu</h3>
                 <RichTextEditor setData={setTextData} />
+                {textDataError && <div className="text-red-500">*{textDataError}</div>}
             </div>
             <div className="my-4">
                 <h3 className="text-xl font-bold">
@@ -175,6 +236,7 @@ function ClassCreatePage() {
                         <img alt="avatar" src={avatar} />
                     </div>
                 )}
+                {avatarError && <div className="text-red-500">*{avatarError}</div>}
             </div>
             <div
                 onClick={submit}

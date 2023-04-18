@@ -33,6 +33,7 @@ import { gridColumnsTotalWidthSelector } from '@mui/x-data-grid';
 import TemporaryDrawer from '~/components/TemporaryDrawer';
 import LoadingProcess from '~/components/LoadingProcess';
 import { topicService } from '~/services/topicService';
+import ClassLessonDeleteDialog from '~/components/ClassLessonDeleteDialog';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -326,9 +327,7 @@ function ClassLessonPage() {
                 (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
                     <div className="flex flex-row items-center justify-end mt-10">
                         <div className="mr-4">
-                            <IconButton onClick={submitDelete} color="error">
-                                <FontAwesomeIcon icon={faTrash} />
-                            </IconButton>
+                            <ClassLessonDeleteDialog id={lessonId} />
                         </div>
                         <div>
                             <IconButton

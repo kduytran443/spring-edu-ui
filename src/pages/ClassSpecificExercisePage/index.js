@@ -219,14 +219,12 @@ function ClassSpecificExercisePage() {
                                 <b>Điểm</b>: {exerciseData.mark}
                             </div>
 
-                            {exerciseData.timeLimit && (
-                                <div className="mb-4">
-                                    <b>
-                                        <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
-                                    </b>
-                                    : {exerciseData.timeLimit} phút
-                                </div>
-                            )}
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                </b>
+                                : {exerciseData.timeLimit ? `${exerciseData.timeLimit} phút` : 'Không có'}
+                            </div>
                             <div className="mb-4">
                                 <b>
                                     <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:
@@ -309,14 +307,12 @@ function ClassSpecificExercisePage() {
                             <div className="mb-4">
                                 <b>Điểm</b>: {exerciseData.mark}
                             </div>
-                            {exerciseData.timeLimit && (
-                                <div className="mb-4">
-                                    <b>
-                                        <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
-                                    </b>
-                                    : {exerciseData.timeLimit} phút
-                                </div>
-                            )}
+                            <div className="mb-4">
+                                <b>
+                                    <FontAwesomeIcon icon={faClock} /> Thời gian làm bài
+                                </b>
+                                : {exerciseData.timeLimit ? `${exerciseData.timeLimit} phút` : 'Không có'}
+                            </div>
                             <div className="mb-4">
                                 <b>
                                     <FontAwesomeIcon icon={faClock} /> Thời gian bắt đầu:

@@ -1,4 +1,4 @@
-import { faMoneyBill, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyBill, faMoneyCheck, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
@@ -30,6 +30,8 @@ import { getConfig } from '~/services/config';
 import { discountService } from '~/services/discountService';
 import { weeklyClassScheduleService } from '~/services/weeklyClassScheduleService';
 import ClassDeleteDialog from './ClassDeleteDialog';
+import { renderToVND } from '~/utils';
+import RevenueTable from '~/components/RevenueTable';
 
 function ClassSettingPage() {
     const location = useLocation();
@@ -285,7 +287,37 @@ function ClassSettingPage() {
     };
     useEffect(() => {
         loadDiscounts();
+        loadAllMember();
     }, [location]);
+
+    const [allMember, setAllMember] = useState([]);
+    const [allTransaction, setAllTransaction] = useState([]);
+    const loadAllMember = () => {
+        classMemberService.getClassMemberByClassId(classId).then((data) => {
+            if (data.length > 0) {
+                setAllMember(data);
+                const arr = data
+                    .filter((item) => item.transaction)
+                    .map((item) => {
+                        return item.transaction;
+                    });
+                setAllTransaction(arr);
+            }
+        });
+    };
+
+    const loadRevenue = () => {
+        const tempRevenue = allMember.reduce((pre, cur) => {
+            return cur.transaction ? pre + cur.transaction.fee : pre;
+        }, 0);
+        setRevenue(tempRevenue);
+    };
+
+    useEffect(() => {
+        loadRevenue();
+    }, [allMember]);
+
+    const [revenue, setRevenue] = useState(0);
 
     return (
         <div className="p-2 md:p-0">
@@ -304,6 +336,12 @@ function ClassSettingPage() {
                     label="Ẩn lớp học khỏi trang chính"
                 />
             </FormGroup>
+            <div className="my-12 p-4 bg-slate-100 rounded">
+                <div className="mb-4">
+                    <FontAwesomeIcon icon={faMoneyCheck} className="mr-4" /> Doanh thu: <b>{renderToVND(revenue)}</b>
+                </div>
+                <RevenueTable data={allTransaction} />
+            </div>
             {classDataState.paypalAccount && (
                 <div className="my-4">
                     <FontAwesomeIcon className="mr-2" icon={faMoneyBill} />
@@ -383,7 +421,9 @@ function ClassSettingPage() {
                                         <TextField
                                             value={classScheduleState.startHours}
                                             onInput={(e) => {
-                                                onInputSchedule('startHours', e.target.value);
+                                                if (e.target.value >= 0 && e.target.value < 24) {
+                                                    onInputSchedule('startHours', e.target.value);
+                                                }
                                             }}
                                             className="w-full"
                                             type="number"
@@ -392,7 +432,9 @@ function ClassSettingPage() {
                                         <TextField
                                             value={classScheduleState.startMinutes}
                                             onInput={(e) => {
-                                                onInputSchedule('startMinutes', e.target.value);
+                                                if (e.target.value >= 0 && e.target.value < 60) {
+                                                    onInputSchedule('startMinutes', e.target.value);
+                                                }
                                             }}
                                             className="w-full"
                                             type="number"
@@ -403,7 +445,9 @@ function ClassSettingPage() {
                                         <TextField
                                             value={classScheduleState.endHours}
                                             onInput={(e) => {
-                                                onInputSchedule('endHours', e.target.value);
+                                                if (e.target.value >= 0 && e.target.value < 24) {
+                                                    onInputSchedule('endHours', e.target.value);
+                                                }
                                             }}
                                             className="w-full"
                                             type="number"
@@ -412,7 +456,9 @@ function ClassSettingPage() {
                                         <TextField
                                             value={classScheduleState.endMinutes}
                                             onInput={(e) => {
-                                                onInputSchedule('endMinutes', e.target.value);
+                                                if (e.target.value >= 0 && e.target.value < 60) {
+                                                    onInputSchedule('endMinutes', e.target.value);
+                                                }
                                             }}
                                             className="w-full"
                                             type="number"

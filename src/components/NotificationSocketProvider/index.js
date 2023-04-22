@@ -18,6 +18,10 @@ function NotificationSocketProvider({ children }) {
         const event = new CustomEvent('onNotificationEvent');
         return event;
     });
+    const [chatEvent, setChatEvent] = useState(() => {
+        const event = new CustomEvent('onChatEvent');
+        return event;
+    });
 
     const onConnected = () => {
         console.log('SOCKET CONNECTED!!!');
@@ -32,12 +36,16 @@ function NotificationSocketProvider({ children }) {
 
     function onMessageReceived(messagePayload) {
         const message = JSON.parse(messagePayload.body);
-        console.log('message', message, userData.id, isIn(message.receivers));
         if (message.receivers.length === 0 || isIn(message.receivers)) {
             switch (message.type) {
                 case 'NOTIFICATION': {
-                    console.log('notificationEvent', notificationEvent);
+                    console.log(notificationEvent);
                     window.dispatchEvent(notificationEvent);
+                    break;
+                }
+                case 'CHAT': {
+                    console.log(chatEvent);
+                    window.dispatchEvent(chatEvent);
                     break;
                 }
                 default: {
@@ -70,9 +78,9 @@ function NotificationSocketProvider({ children }) {
         }
     }, [userData]);
 
-    const send = (receivers = []) => {
+    const send = (receivers = [], type = 'NOTIFICATION') => {
         const chatMessage = {
-            type: 'NOTIFICATION',
+            type: type,
             receivers: receivers,
         };
         stompClient.send(`/app/notification.send`, {}, JSON.stringify(chatMessage));

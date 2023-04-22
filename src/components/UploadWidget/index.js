@@ -1,6 +1,6 @@
-import { faCheck, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTrash, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useRef } from 'react';
 import FileReview from '../FileReview';
@@ -17,12 +17,9 @@ function UploadWidget({
 }) {
     const fileRef = useRef();
 
-    console.log('multiple', multiple);
-
     const [fileListState, setFileListState] = useState(fileList);
 
     const uploadFile = (e) => {
-        console.log('Uploaded multiple');
         const files = e.target.files;
         for (let i = 0; i < files.length; i++) {
             let file = e.target.files[i];
@@ -31,7 +28,6 @@ function UploadWidget({
                 reader.readAsDataURL(file);
                 reader.onload = () => {
                     //reader.result file.size file.name
-                    console.log(reader.result);
                     if (multiple) {
                         setFileListState((pre) => [
                             ...pre,
@@ -68,8 +64,16 @@ function UploadWidget({
     useEffect(() => {
         if (fileListState.length === 0) {
             uploadFunction([]);
+        } else if (fileListState.length > 0) {
+            uploadFunction(fileListState);
         }
     }, [fileListState]);
+
+    const removeByIndex = (index) => {
+        const arr = [...fileListState];
+        arr.splice(index, 1);
+        setFileListState(arr);
+    };
 
     return (
         <div className="flex flex-col items-center w-full p-4 my-6 border border-slate-200 shadow rounded-lg">
@@ -81,7 +85,7 @@ function UploadWidget({
             <div className="flex flex-row items-start justify-center flex-wrap">
                 {fileListState.map((file, index) => {
                     return (
-                        <div>
+                        <div className="flex flex-col items-center">
                             <FileReview
                                 onCancel={onCancel}
                                 name={file.name}
@@ -90,10 +94,27 @@ function UploadWidget({
                                 size={file.size}
                                 type={file.type}
                             />
+                            <IconButton
+                                onClick={(e) => {
+                                    removeByIndex(index);
+                                }}
+                                color="error"
+                            >
+                                <FontAwesomeIcon icon={faTrash} />
+                            </IconButton>
                         </div>
                     );
                 })}
             </div>
+        </div>
+    );
+}
+
+export default UploadWidget;
+
+/*
+
+
             {fileListState.length > 0 && (
                 <div className="mt-6">
                     <Button
@@ -108,8 +129,5 @@ function UploadWidget({
                     </Button>
                 </div>
             )}
-        </div>
-    );
-}
 
-export default UploadWidget;
+*/

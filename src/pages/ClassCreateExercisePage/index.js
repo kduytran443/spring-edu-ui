@@ -162,7 +162,7 @@ function ClassCreateExercisePage() {
     const [excerciseType, setExcerciseType] = useState('');
     const [classDataState, setClassDataState] = useState({});
 
-    const [mark, setMark] = useState('');
+    const [mark, setMark] = useState(100);
     useEffect(() => {
         classService.getClassIntroById(classId).then((data) => {
             setClassDataState(data);

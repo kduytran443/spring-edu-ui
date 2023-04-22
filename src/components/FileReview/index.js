@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton } from '@mui/material';
 import { useRef } from 'react';
 import { Fragment } from 'react';
+import images from '~/assets/images';
 
 function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDelete = false, onCancel = () => {} }) {
     let fileContent = '';
@@ -15,6 +16,10 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
                 <source src={data} type={type} />
             </video>
         );
+    } else if (type.includes('compressed')) {
+        fileContent = <img className="w-full" alt="file" src={images.zip} />;
+    } else {
+        fileContent = <img className="w-full" alt="file" src={images.file} />;
     }
     const fileSize = size / 1024;
     const downloadRef = useRef();
@@ -43,8 +48,8 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
                     </IconButton>
                 </div>
             )}
-            <div className="max-w-[240px] max-h-[240px] overflow-hidden">{fileContent}</div>
-            <div className="font-bold max-w-[240px]">{name}</div>
+            <div className="max-w-[220px] select-none max-h-[220px] overflow-hidden">{fileContent}</div>
+            <div className="font-bold max-w-[220px] overflow-hidden truncate">{name}</div>
             <div className="">{type}</div>
             <div>{Math.round(fileSize)} KB</div>
         </div>

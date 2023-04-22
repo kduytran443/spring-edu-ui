@@ -119,9 +119,7 @@ function ClassLessonCreatePage() {
             });
 
             if (fileListState.length > 0) {
-                fileListState.forEach((file) => {
-                    console.log('file', file);
-                });
+                fileListState.forEach((file) => {});
             }
         }
     };

@@ -30,6 +30,7 @@ const CLASS_EDIT_PAGE_URL = '/class/:classId/setting/edit';
 const QUESTION_BANK_URL = '/question-bank';
 const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
 const SEARCH_PAGE_URL = '/search';
+const CHAT_PAGE_URL = '/chat/:classId?';
 
 //ADMIN
 const ADMIN_HOME_PAGE = '/admin/home';

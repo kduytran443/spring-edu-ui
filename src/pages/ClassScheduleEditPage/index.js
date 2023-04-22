@@ -127,17 +127,23 @@ function ClassScheduleEditPage() {
                         <TextField
                             value={classScheduleState.startHours}
                             onInput={(e) => {
-                                onInputSchedule('startHours', e.target.value);
+                                if (e.target.value >= 0 && e.target.value < 24) {
+                                    onInputSchedule('startHours', e.target.value);
+                                }
                             }}
                             className="w-full"
+                            type="number"
                             label="Giờ bắt đầu"
                         />
                         <TextField
                             value={classScheduleState.startMinutes}
                             onInput={(e) => {
-                                onInputSchedule('startMinutes', e.target.value);
+                                if (e.target.value >= 0 && e.target.value < 60) {
+                                    onInputSchedule('startMinutes', e.target.value);
+                                }
                             }}
                             className="w-full"
+                            type="number"
                             label="Phút bắt đầu"
                         />
                     </div>
@@ -145,17 +151,23 @@ function ClassScheduleEditPage() {
                         <TextField
                             value={classScheduleState.endHours}
                             onInput={(e) => {
-                                onInputSchedule('endHours', e.target.value);
+                                if (e.target.value >= 0 && e.target.value < 24) {
+                                    onInputSchedule('endHours', e.target.value);
+                                }
                             }}
                             className="w-full"
+                            type="number"
                             label="Giờ kết thúc"
                         />
                         <TextField
                             value={classScheduleState.endMinutes}
                             onInput={(e) => {
-                                onInputSchedule('endMinutes', e.target.value);
+                                if (e.target.value >= 0 && e.target.value < 60) {
+                                    onInputSchedule('endMinutes', e.target.value);
+                                }
                             }}
                             className="w-full"
+                            type="number"
                             label="Phút kết thúc"
                         />
                     </div>

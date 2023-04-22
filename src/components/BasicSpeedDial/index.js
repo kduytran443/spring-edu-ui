@@ -19,7 +19,7 @@ const actions = [
 export default function BasicSpeedDial() {
     const [open, setOpen] = useState(false);
     return (
-        <Box sx={{ position: 'fixed', height: 320, transform: 'translateZ(0px)', flexGrow: 1 }}>
+        <Box sx={{ position: 'fixed', bottom: 16, right: 16, transform: 'translateZ(0px)', flexGrow: 1 }}>
             <SpeedDial
                 open={open}
                 onClick={(e) => {
@@ -29,6 +29,14 @@ export default function BasicSpeedDial() {
                 sx={{ position: 'absolute', bottom: 16, right: 16 }}
                 icon={<SpeedDialIcon />}
             >
+                <SpeedDialAction
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                    key={'Copy'}
+                    icon={<FileCopyIcon />}
+                    tooltipTitle={'Copy'}
+                />
                 <SpeedDialAction
                     onClick={(e) => {
                         e.stopPropagation();

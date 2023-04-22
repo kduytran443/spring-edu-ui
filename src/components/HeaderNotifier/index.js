@@ -45,7 +45,6 @@ function HeaderNotifier() {
 
     useEffect(() => {
         if (notificationList.length !== previousLength) {
-            console.log('previousLength', notificationList.length, previousLength);
             //thong bao am thanh
             audioRef.current.play();
             setNotificationSnackbar(true);

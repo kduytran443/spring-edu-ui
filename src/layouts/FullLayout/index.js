@@ -1,6 +1,8 @@
 import SidebarMenu from '~/components/SidebarMenu';
 import Header from '../components/Header';
 import SimpleFooter from '../components/SimpleFooter';
+import BasicSpeedDial from '~/components/BasicSpeedDial';
+import ChatSpeedDial from '~/components/ChatSpeedDial';
 
 function FullLayout({ children }) {
     return (
@@ -14,6 +16,9 @@ function FullLayout({ children }) {
                 </div>
                 <div className="flex flex-col max-w-full flex-1 w-full md:w-[calc(100%-96px)] p-0 md:p-6">
                     {children}
+                </div>
+                <div className="z-30">
+                    <ChatSpeedDial />
                 </div>
             </div>
             <SimpleFooter />

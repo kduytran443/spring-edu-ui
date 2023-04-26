@@ -1,10 +1,19 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, IconButton, Typography } from '@mui/material';
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Button,
+    IconButton,
+    TextField,
+    Typography,
+} from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faArrowAltCircleLeft,
     faArrowAltCircleRight,
+    faArrowDown,
     faArrowLeft,
     faArrowRight,
     faBackspace,
@@ -12,6 +21,7 @@ import {
     faBackwardStep,
     faBars,
     faClock,
+    faComment,
     faPen,
     faTrash,
 } from '@fortawesome/free-solid-svg-icons';
@@ -34,6 +44,11 @@ import TemporaryDrawer from '~/components/TemporaryDrawer';
 import LoadingProcess from '~/components/LoadingProcess';
 import { topicService } from '~/services/topicService';
 import ClassLessonDeleteDialog from '~/components/ClassLessonDeleteDialog';
+import { commentService } from '~/services/commentService';
+import CommentCard from '~/components/CommentCard';
+import { useUser } from '~/stores/UserStore';
+import { useContext } from 'react';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -41,8 +56,10 @@ function ClassLessonPage() {
     const [lessonDataState, setLessonDataState] = useState({});
     const [loadingState, setLoadingState] = useState(true);
 
+    const sendContext = useContext(NotificationSocketContext);
     const [previousLessonState, setPreviousLessonState] = useState(null);
     const [nextLessonState, setNextLessonState] = useState(null);
+    const [userData, userDispatch] = useUser();
 
     const navigateToLesson = (lessonId) => {
         navigate('/class/' + classId + '/lesson/' + lessonId);
@@ -66,12 +83,13 @@ function ClassLessonPage() {
     }, [location]);
 
     useEffect(() => {
+        /*
         if (textDataRef.current) {
             textDataRef.current.style.display = 'none';
             setTimeout(() => {
                 textDataRef.current.style.display = 'block';
             }, 100);
-        }
+        }*/
     }, [lessonDataState]);
 
     useEffect(() => {
@@ -155,6 +173,20 @@ function ClassLessonPage() {
         });
     };
 
+    const [commentListState, setCommentListState] = useState([]);
+
+    const loadComment = () => {
+        commentService.getByLessonId(lessonId).then((data) => {
+            if (data.length > 0) {
+                setCommentListState(data);
+            }
+        });
+    };
+
+    useEffect(() => {
+        loadComment();
+    }, [location]);
+
     const submitDelete = () => {
         confirmAlert({
             title: 'Xác nhận xóa',
@@ -189,10 +221,35 @@ function ClassLessonPage() {
             }
         });
     };
+    const [commentContent, setCommentContent] = useState('');
+    const [commentPrivateMode, setCommentPrivateMode] = useState(0);
+    const submitComment = () => {
+        const obj = {
+            lessonId: lessonId,
+            content: commentContent,
+            privateMode: commentPrivateMode,
+        };
+        commentService.post(obj).then((data) => {
+            sendContext([], 'COMMENT');
+            setCommentContent('');
+        });
+    };
 
     useEffect(() => {
         loadTopic();
     }, [location]);
+
+    useEffect(() => {
+        const trigger = (e) => {
+            loadComment();
+        };
+        window.addEventListener('onCommentEvent', trigger);
+        return () => {
+            window.removeEventListener('onCommentEvent', trigger);
+        };
+    }, [location]);
+
+    const [commentPagination, setCommentPagination] = useState(1);
 
     return (
         <div className="w-full p-4 md:p-0 text-justify">
@@ -294,11 +351,30 @@ function ClassLessonPage() {
                 <p>
                     {lessonDataState.textData && (
                         <div ref={textDataRef}>
-                            <RichTextEditor disabled data={lessonDataState.textData} />
+                            <RichTextEditor readOnly disabled data={lessonDataState.textData} />
                         </div>
                     )}{' '}
                 </p>
             </div>
+            {classDataState &&
+                (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
+                    <div className="flex flex-row items-center justify-end mt-10">
+                        <div className="mr-4">
+                            <ClassLessonDeleteDialog id={lessonId} />
+                        </div>
+                        <div>
+                            <IconButton
+                                onClick={(e) => {
+                                    navigate(`/class/${classId}/lesson-update/${lessonId}`);
+                                }}
+                                color="primary"
+                            >
+                                <FontAwesomeIcon icon={faPen} />
+                            </IconButton>
+                        </div>
+                    </div>
+                )}
+
             {(previousLessonState || nextLessonState) && (
                 <div className="flex bg-slate-100 border border-slate-200 flex-col shadow rounded-lg p-4 md:flex-row full justify-between items-center mt-16">
                     {previousLessonState && (
@@ -323,24 +399,91 @@ function ClassLessonPage() {
                     )}
                 </div>
             )}
-            {classDataState &&
-                (classDataState.userRoleCode === 'supporter' || classDataState.userRoleCode === 'teacher') && (
-                    <div className="flex flex-row items-center justify-end mt-10">
-                        <div className="mr-4">
-                            <ClassLessonDeleteDialog id={lessonId} />
+            <div className="pt-4 border-t-2 border-slate-200">
+                <h2 className="text-xl font-bold mb-4">Bình luận</h2>
+                <ul>
+                    <div className={`w-full p-2 rounded `}>
+                        <div className="w-full">
+                            <div className="w-full">
+                                <TextField
+                                    label="Bình luận"
+                                    placeholder="Bình luận"
+                                    className="w-full bg-white"
+                                    value={commentContent}
+                                    onInput={(e) => {
+                                        setCommentContent(e.target.value);
+                                    }}
+                                    maxRows={5}
+                                    minRows={2}
+                                    multiline
+                                />
+                            </div>
                         </div>
-                        <div>
-                            <IconButton
-                                onClick={(e) => {
-                                    navigate(`/class/${classId}/lesson-update/${lessonId}`);
-                                }}
-                                color="primary"
-                            >
-                                <FontAwesomeIcon icon={faPen} />
-                            </IconButton>
+                        <div
+                            onClick={commentContent ? submitComment : () => {}}
+                            className={`w-full my-2 p-2 text-center rounded ${
+                                commentContent
+                                    ? 'hover:bg-blue-600 cursor-pointer active:bg-blue-700 bg-blue-500 shadow-blue-300'
+                                    : 'bg-gray-300 shadow-gray-200'
+                            } shadow select-none text-white font-bold`}
+                        >
+                            <FontAwesomeIcon icon={faComment} className="mr-2" /> Bình luận
                         </div>
                     </div>
-                )}
+                    {commentListState
+                        .filter((comment) => !comment.parentId)
+                        .map((comment, index) => {
+                            return index + 1 <= commentPagination * 5 ? (
+                                <li key={index}>
+                                    <CommentCard
+                                        avatar={comment.userAvatar}
+                                        comment={comment.content}
+                                        username={comment.userName}
+                                        fullname={comment.fullname}
+                                        date={comment.createdDate}
+                                        isParent
+                                        parentId={comment.id}
+                                        reload={loadComment}
+                                        id={comment.id}
+                                        owner={userData.username === comment.userName}
+                                    >
+                                        {comment.replies.map((reply, key) => {
+                                            return (
+                                                <CommentCard
+                                                    avatar={reply.userAvatar}
+                                                    comment={reply.content}
+                                                    username={reply.userName}
+                                                    fullname={reply.fullname}
+                                                    date={reply.createdDate}
+                                                    parentId={comment.id}
+                                                    reload={loadComment}
+                                                    id={reply.id}
+                                                    owner={userData.username === reply.userName}
+                                                />
+                                            );
+                                        })}
+                                    </CommentCard>
+                                </li>
+                            ) : (
+                                <></>
+                            );
+                        })}
+                </ul>
+                <div className="flex flex-col items-center justify-center">
+                    {commentListState.length > 0 &&
+                        commentListState.filter((comment) => !comment.parentId)?.length > commentPagination * 5 && (
+                            <Button
+                                onClick={(e) => {
+                                    setCommentPagination(commentPagination + 1);
+                                }}
+                                variant="outlined"
+                                startIcon={<FontAwesomeIcon icon={faArrowDown} />}
+                            >
+                                Xem thêm
+                            </Button>
+                        )}
+                </div>
+            </div>
         </div>
     );
 }

@@ -32,6 +32,7 @@ import { weeklyClassScheduleService } from '~/services/weeklyClassScheduleServic
 import ClassDeleteDialog from './ClassDeleteDialog';
 import { renderToVND } from '~/utils';
 import RevenueTable from '~/components/RevenueTable';
+import DeleteScheduleDialog from '~/components/DeleteScheduleDialog';
 
 function ClassSettingPage() {
     const location = useLocation();
@@ -63,14 +64,7 @@ function ClassSettingPage() {
                         >
                             Sửa
                         </Button>
-                        <Button
-                            color="error"
-                            onClick={(e) => {
-                                deleteItem(param.value);
-                            }}
-                        >
-                            Xóa
-                        </Button>
+                        <DeleteScheduleDialog id={param.value} reload={loadSchedule} />
                     </>
                 );
             },

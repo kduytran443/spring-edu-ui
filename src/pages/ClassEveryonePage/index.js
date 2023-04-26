@@ -105,7 +105,7 @@ function ClassEveryonePage() {
 
     return (
         <div>
-            {userRole && userRole === 'teacher' && (
+            {userRole && classDataState && userRole === 'teacher' && (
                 <>
                     <SimpleCustomAccordion name="Danh sách đang mời">
                         {invitedUserListState.map((user, index) => {

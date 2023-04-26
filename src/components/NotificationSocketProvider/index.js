@@ -22,6 +22,10 @@ function NotificationSocketProvider({ children }) {
         const event = new CustomEvent('onChatEvent');
         return event;
     });
+    const [commentEvent, setCommentEvent] = useState(() => {
+        const event = new CustomEvent('onCommentEvent');
+        return event;
+    });
 
     const onConnected = () => {
         console.log('SOCKET CONNECTED!!!');
@@ -32,11 +36,14 @@ function NotificationSocketProvider({ children }) {
         return arr.includes(userData.id);
     };
 
-    console.log('userData', userData);
-
     function onMessageReceived(messagePayload) {
         const message = JSON.parse(messagePayload.body);
-        if (message.receivers.length === 0 || isIn(message.receivers)) {
+        if (
+            message.receivers.length === 0 ||
+            isIn(message.receivers) ||
+            message.type !== 'CHAT' ||
+            message.type !== 'NOTIFICATION'
+        ) {
             switch (message.type) {
                 case 'NOTIFICATION': {
                     console.log(notificationEvent);
@@ -46,6 +53,11 @@ function NotificationSocketProvider({ children }) {
                 case 'CHAT': {
                     console.log(chatEvent);
                     window.dispatchEvent(chatEvent);
+                    break;
+                }
+                case 'COMMENT': {
+                    console.log(commentEvent);
+                    window.dispatchEvent(commentEvent);
                     break;
                 }
                 default: {

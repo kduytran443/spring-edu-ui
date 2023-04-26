@@ -1,4 +1,12 @@
-import { faArrowDown, faArrowLeft, faFile, faPaperPlane, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowDown,
+    faArrowLeft,
+    faArrowUp,
+    faDownLong,
+    faFile,
+    faPaperPlane,
+    faSortDown,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, IconButton, TextField } from '@mui/material';
 import { useState } from 'react';
@@ -23,6 +31,7 @@ function ChatSelectBoard() {
             }
         });
     }, [location]);
+    const [filterclassListState, setFilterClassListState] = useState([]);
 
     const sendContext = useContext(NotificationSocketContext);
     const [selectedClassId, setSelectedClassId] = useState();
@@ -68,6 +77,11 @@ function ChatSelectBoard() {
             if (data.id) {
                 sendContext(classMembers, 'CHAT');
                 setChatText('');
+                setTimeout(() => {
+                    scrollRef.current.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                }, 100);
             }
         });
     };
@@ -84,6 +98,13 @@ function ChatSelectBoard() {
 
     useEffect(() => {
         setRead(1);
+        if (selectedClassId) {
+            setTimeout(() => {
+                scrollRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                });
+            }, 100);
+        }
     }, [selectedClassId]);
 
     const fileRef = useRef();
@@ -106,11 +127,33 @@ function ChatSelectBoard() {
         }
     };
 
+    const [searchClass, setSearchClass] = useState('');
+
+    useEffect(() => {
+        const arr = [...classListState];
+        const filterArr = arr.filter((item) => item.name.toLowerCase().includes(searchClass.toLowerCase().trim()));
+        setFilterClassListState(filterArr);
+    }, [searchClass, classListState]);
+
+    const scrollRef = useRef();
+    const readRef = useRef();
+
     return (
         <div className="w-[320px] h-[480px] md:w-[480px] md:h-[520px] bg-white rounded shadow-lg outline outline-slate-200 p-2 flex flex-col overflow-y-auto">
             {!selectedClassId ? (
                 <div className="w-full flex flex-col">
-                    {classListState.map((classItem, index) => {
+                    <div className="w-full">
+                        <TextField
+                            value={searchClass}
+                            onInput={(e) => {
+                                setSearchClass(e.target.value);
+                            }}
+                            className="w-full"
+                            size="small"
+                            placeholder="Tên lớp"
+                        />
+                    </div>
+                    {filterclassListState.map((classItem, index) => {
                         return (
                             <div
                                 className="my-2 flex flex-row items-center select-none cursor-pointer hover:bg-blue-500 hover:shadow hover:shadow-blue-400 hover:text-white p-4"
@@ -151,6 +194,7 @@ function ChatSelectBoard() {
                         </div>
                     </div>
                     <div className="w-full flex flex-col items-center flex-1 max-h-[calc(480px-100px)] md:max-h-[calc(520px-100px)] overflow-y-auto">
+                        <div ref={scrollRef}></div>
                         <div className="w-full flex flex-col items-start flex-1">
                             {chatMessageList.map((item, index) => {
                                 return index + 1 < read * 10 ? (
@@ -161,14 +205,14 @@ function ChatSelectBoard() {
                             })}
                         </div>
                         {read * 10 < chatMessageList.length && (
-                            <div>
+                            <div ref={readRef}>
                                 <IconButton
                                     color="primary"
                                     onClick={(e) => {
                                         setRead(read + 1);
                                     }}
                                 >
-                                    <FontAwesomeIcon icon={faSortDown} />
+                                    <FontAwesomeIcon icon={faDownLong} />
                                 </IconButton>
                             </div>
                         )}

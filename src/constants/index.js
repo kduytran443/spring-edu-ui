@@ -31,6 +31,7 @@ const QUESTION_BANK_URL = '/question-bank';
 const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
 const SEARCH_PAGE_URL = '/search';
 const CHAT_PAGE_URL = '/chat/:classId?';
+const CERTIFICATE_PAGE_URL = '/certificate/:certificateId?';
 
 //ADMIN
 const ADMIN_HOME_PAGE = '/admin/home';
@@ -91,4 +92,5 @@ export {
     ADMIN_REPORT_PAGE,
     ADMIN_USER_PAGE,
     ADMIN_CATEGORY_PAGE,
+    CERTIFICATE_PAGE_URL,
 };

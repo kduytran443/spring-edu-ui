@@ -25,6 +25,7 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
     const downloadRef = useRef();
 
     const download = () => {
+        console.log('DOWNLOAD');
         downloadRef.current.click();
     };
 

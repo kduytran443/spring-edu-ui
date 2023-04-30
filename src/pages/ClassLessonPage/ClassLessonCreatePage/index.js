@@ -9,6 +9,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertFailDialog from '~/components/AlertFailDialog';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import CloudinaryUploadWidget from '~/components/CloudinaryUploadWidget';
+import NewUploadWidget from '~/components/NewUploadWidget';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
@@ -178,7 +179,7 @@ function ClassLessonCreatePage() {
                 </div>
                 <div></div>
                 <div className="w-full">
-                    <UploadWidget multiple uploadFunction={uploadFileList} />
+                    <NewUploadWidget multiple uploadFunction={uploadFileList} />
                 </div>
                 <div
                     onClick={postLesson}

@@ -25,6 +25,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime, showScore } from '~/utils';
 import { exerciseService } from '~/services/exerciseService';
+import LinearWithValueLabel from '../LinearWithValueLabel';
+import { certificationService } from '~/services/certificationService';
 
 const columns = [
     { field: 'name', headerName: 'Bài', width: 130 },
@@ -72,7 +74,7 @@ const columns = [
     },
 ];
 
-export default function CertificationDialog({ id, reload = () => {} }) {
+export default function CertificationDialog({ id, username, fullname, userId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
     const [userState, dispatchUserState] = useUser();
     const { classId } = useParams();
@@ -82,7 +84,7 @@ export default function CertificationDialog({ id, reload = () => {} }) {
     const [exercises, setExercises] = useState([]);
 
     const loadData = () => {
-        submittedExerciseService.getSubmittedExercisesByUserAndClass(classId).then((data) => {
+        submittedExerciseService.getSubmittedExercisesByUserIdAndClassId(userId, classId).then((data) => {
             if (data.length >= 0) {
                 const arr = data.map((item) => {
                     const obj = {
@@ -125,9 +127,29 @@ export default function CertificationDialog({ id, reload = () => {} }) {
     };
     useEffect(() => {
         loadData();
+        loadExercises();
         loadCertification();
     }, [open]);
-    const handleAgree = () => {};
+
+    const handleAgree = () => {
+        const obj = {
+            avg: avargeEffectiveMark,
+            comment: teacherComment,
+            classDTO: {
+                id: classId,
+            },
+            userId: userId,
+        };
+
+        certificationService.post(obj).then((data) => {
+            setAlert(true);
+            reload();
+            setTimeout(() => {
+                setAlert(false);
+                handleClose();
+            }, 1500);
+        });
+    };
 
     const avargeEffectiveExerciseMark = useMemo(() => {
         if (exercises) {
@@ -139,12 +161,41 @@ export default function CertificationDialog({ id, reload = () => {} }) {
         }
     }, [exercises]);
 
+    const avargeEffectiveMark = useMemo(() => {
+        if (exercises) {
+            return submittedExercises
+                .filter((item) => item.effective)
+                .reduce((pre, cur) => {
+                    return cur.mark.mark ? pre + cur.mark.mark : pre;
+                }, 0);
+        } else {
+            return 0;
+        }
+    }, [submittedExercises]);
+
+    const avargeMark = useMemo(() => {
+        if (exercises) {
+            return submittedExercises.reduce((pre, cur) => {
+                return cur.mark.mark ? pre + cur.mark.mark : pre;
+            }, 0);
+        } else {
+            return 0;
+        }
+    }, [submittedExercises]);
+    const avargeExerciseMark = useMemo(() => {
+        if (exercises) {
+            return exercises.reduce((pre, cur) => {
+                return pre + cur.mark;
+            }, 0);
+        } else {
+            return 0;
+        }
+    }, [exercises]);
+
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <Button startIcon={<FontAwesomeIcon icon={faPlus} />}>
-                    <FontAwesomeIcon icon={faCertificate} /> Cấp chứng nhận
-                </Button>
+                <Button startIcon={<FontAwesomeIcon icon={faCertificate} />}>Cấp chứng nhận</Button>
             </div>
             <Dialog
                 open={open}
@@ -156,10 +207,13 @@ export default function CertificationDialog({ id, reload = () => {} }) {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         <AlertSuccessDialog open={alert} />
-                        <div className="mt-4 md:w-[300px] flex flex-col">
-                            <div className="flex flex-row items-center">
+                        <div className="mt-4 md:w-[500px] flex flex-col">
+                            <div className="mb-2">
+                                Học viên: <b>{fullname}</b> ({username})
+                            </div>
+                            <div className="flex flex-col items-center">
                                 <>
-                                    <div style={{ height: 400, width: '100%' }}>
+                                    <div style={{ height: 300, width: '100%' }}>
                                         <DataGrid
                                             rows={submittedExercises}
                                             columns={columns}
@@ -167,7 +221,7 @@ export default function CertificationDialog({ id, reload = () => {} }) {
                                             rowsPerPageOptions={[5]}
                                         />
                                     </div>
-                                    <div className="w-full mt-6 flex items-center justify-end md:flex-row flex-col">
+                                    <div className="w-full mt-6 flex items-center justify-end flex-col">
                                         {!!avargeEffectiveExerciseMark && (
                                             <div className="w-full p-2">
                                                 <LinearWithValueLabel
@@ -178,7 +232,7 @@ export default function CertificationDialog({ id, reload = () => {} }) {
                                                 />
                                             </div>
                                         )}
-                                        <div className="p-6  border-slate-300 shadow border rounded text-sm w-full md:w-auto">
+                                        <div className="p-6  border-slate-300 shadow border rounded text-sm w-full w-full">
                                             <div className="mb-2">
                                                 Điểm trung bình: {showScore(avargeMark)} / {avargeExerciseMark} (
                                                 {showScore((avargeMark / avargeExerciseMark) * 100, 1)}%)
@@ -206,9 +260,9 @@ export default function CertificationDialog({ id, reload = () => {} }) {
                                         setTeacherComment(e.target.value);
                                     }}
                                     multiline
-                                    maxRows={3}
-                                    label="Lời phê (optional)"
-                                    variant="standard"
+                                    minRows={2}
+                                    maxRows={4}
+                                    label="Nhận xét (optional)"
                                 />
                             </div>
                         </div>

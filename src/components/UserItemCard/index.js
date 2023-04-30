@@ -1,7 +1,6 @@
 import { Avatar } from '@mui/material';
 
 function UserItemCard({ avatar, name, size = '48px', mark, maxMark, submitTime }) {
-    console.log('user', mark, maxMark);
     return (
         <div className="flex flex-row items-center justify-between w-full p-2 select-none cursor-pointer duration-100">
             <div className="flex flex-row items-center">

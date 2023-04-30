@@ -20,7 +20,7 @@ export default function UserAccordion({ userInfo, children }) {
     };
 
     return (
-        <div className="my-2">
+        <div className="my-2 w-full">
             <Accordion expanded={openState}>
                 <AccordionSummary
                     onClick={(e) => {
@@ -30,7 +30,7 @@ export default function UserAccordion({ userInfo, children }) {
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
-                    <Typography>{userInfo}</Typography>
+                    <Typography className="w-full">{userInfo}</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Typography>

@@ -49,6 +49,7 @@ import CommentCard from '~/components/CommentCard';
 import { useUser } from '~/stores/UserStore';
 import { useContext } from 'react';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
+import { uploadService } from '~/services/uploadService';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -251,9 +252,26 @@ function ClassLessonPage() {
 
     const [commentPagination, setCommentPagination] = useState(1);
 
+    const fileRef = useRef();
+    const uploadFile = (e) => {
+        e.preventDefault();
+        const files = e.target.files;
+        const formData = new FormData();
+        formData.append('file', files[0]);
+        uploadService.post(formData).then((res) => {
+            if (res.ok) {
+                console.log(res.data);
+                alert('File uploaded successfully.');
+            }
+        });
+    };
+
     return (
         <div className="w-full p-4 md:p-0 text-justify">
             {loadingState && <LoadingPageProcess />}
+            <div className="w-full">
+                <input ref={fileRef} type="file" name="file" onChange={uploadFile} />
+            </div>
             <div className="flex flex-row items-start justify-between">
                 <Button
                     onClick={(e) => {

@@ -14,6 +14,15 @@ import InvitedClassMember from '~/components/InvitedClassMember';
 import RequestClassMember from '~/components/RequestClassMember';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import { classService } from '~/services/classService';
+import { notificationService } from '~/services/notificationService';
+import { useContext } from 'react';
+import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faTrash } from '@fortawesome/free-solid-svg-icons';
+import ClassMemberItemCard from '~/components/ClassMemberItemCard';
+import images from '~/assets/images';
+import CertificationDialog from '~/components/CertificationDialog';
+import DeleteMemberDialog from '~/components/DeleteMemberDialog';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -102,6 +111,25 @@ function ClassEveryonePage() {
             } else setClassDataState(data);
         });
     }, [classId]);
+
+    const sendContext = useContext(NotificationSocketContext);
+
+    const deleteMember = (userId) => {
+        classMemberService.deleteClassMember({ userId: userId, classId: classId }).then((data) => {
+            loadData();
+            const obj = {
+                content: 'Bạn đã bị xóa khỏi lớp: ' + classDataState.name,
+                redirectUrl: '/class/' + classId + '/intro',
+                receiverIds: [userId],
+            };
+
+            notificationService.post(obj).then((data) => {
+                setTimeout(() => {
+                    sendContext([userId]);
+                }, 3000);
+            });
+        });
+    };
 
     return (
         <div>
@@ -199,6 +227,21 @@ function ClassEveryonePage() {
                                         </b>{' '}
                                         {people.email}
                                     </p>
+                                    {userRole && userRole === 'teacher' && (
+                                        <div className="mt-4">
+                                            <Button
+                                                size="small"
+                                                onClick={(e) => {
+                                                    deleteMember(people.userId);
+                                                }}
+                                                disabled={people.transaction}
+                                                color="error"
+                                                startIcon={<FontAwesomeIcon icon={faTrash} />}
+                                            >
+                                                Xóa khỏi lớp
+                                            </Button>
+                                        </div>
+                                    )}
                                 </UserAccordion>
                             </li>
                         );
@@ -224,7 +267,13 @@ function ClassEveryonePage() {
                         return (
                             <li key={people.userId} className="my-2">
                                 <UserAccordion
-                                    userInfo={<UserItemCard avatar={people.avatar} name={people.fullname} />}
+                                    userInfo={
+                                        <ClassMemberItemCard
+                                            certification={!!(people.certification && people.certification.id)}
+                                            avatar={people.avatar}
+                                            name={people.fullname}
+                                        />
+                                    }
                                 >
                                     <p>
                                         <b>
@@ -239,15 +288,35 @@ function ClassEveryonePage() {
                                         {people.email}
                                     </p>
                                     {userRole && userRole === 'teacher' && (
-                                        <div>
-                                            <Button
-                                                onClick={(e) => {
-                                                    sendToWaitingList(people.userId);
-                                                }}
-                                                disabled={people.fee > 0}
-                                            >
-                                                Đưa vào danh sách chờ
-                                            </Button>
+                                        <div className="w-full justify-between flex flex-row items-center mt-4">
+                                            <div className="flex flex-row items-center">
+                                                <div>
+                                                    <CertificationDialog
+                                                        fullname={people.fullname}
+                                                        username={people.username}
+                                                        userId={people.userId}
+                                                        reload={loadData}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Button
+                                                        onClick={(e) => {
+                                                            navigate('/certificate/' + people.certification.id);
+                                                        }}
+                                                        startIcon={<FontAwesomeIcon icon={faEye} />}
+                                                    >
+                                                        Xem chứng nhận
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                            <div className="">
+                                                <DeleteMemberDialog
+                                                    transaction={people.transaction}
+                                                    userId={people.userId}
+                                                    classDataState={classDataState}
+                                                    reload={loadData}
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                 </UserAccordion>

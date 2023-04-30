@@ -35,6 +35,7 @@ import {
     ADMIN_CLASS_PAGE,
     ADMIN_REPORT_PAGE,
     ADMIN_CATEGORY_PAGE,
+    CERTIFICATE_PAGE_URL,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -47,6 +48,7 @@ import AdminReportPage from '~/pages/Admin/AdminReportPage';
 import AdminUserPage from '~/pages/Admin/AdminUserPage';
 import CalendarPage from '~/pages/CalendarPage';
 import CategoryPage from '~/pages/CategoryPage';
+import CertificatePage from '~/pages/CertificatePage';
 import ClassCreateExercisePage from '~/pages/ClassCreateExercisePage';
 import ClassCreatePage from '~/pages/ClassCreatePage';
 import ClassEditExercisePage from '~/pages/ClassEditExercisePage';
@@ -240,6 +242,11 @@ const privateRoutes = [
         path: `${CLASS_RESULT_EXERCISE_PAGE_URL}`,
         component: ExerciseResultPage,
         layout: ClassLayout,
+    },
+    {
+        path: `${CERTIFICATE_PAGE_URL}`,
+        component: CertificatePage,
+        layout: FullLayout,
     },
 ];
 

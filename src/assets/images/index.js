@@ -7,6 +7,8 @@ const images = {
     springBootLogo: require('./spring-logo.png'),
     certificationBackground: require('./certification-bg.jpg'),
     signature: require('./signature.png'),
+    folder: require('./folder.png'),
+    note: require('./note.png'),
 };
 
 export default images;

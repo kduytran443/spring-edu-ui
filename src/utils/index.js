@@ -34,3 +34,8 @@ export const isValidTime = (startTime, endTime) => {
     const date = new Date();
     return date.getTime() >= startTime && date.getTime() <= endTime;
 };
+
+export const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+};

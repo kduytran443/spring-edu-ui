@@ -36,6 +36,7 @@ import {
     ADMIN_REPORT_PAGE,
     ADMIN_CATEGORY_PAGE,
     CERTIFICATE_PAGE_URL,
+    NOTE_PAGE_URL,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -72,6 +73,7 @@ import HomePage from '~/pages/HomePage';
 import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
 import LoginPage from '~/pages/LoginPage';
+import NotePage from '~/pages/NotePage';
 import PersonalPage from '~/pages/PersonalPage';
 import PersonalEditPage from '~/pages/PersonalPage/PersonalEditPage';
 import QuestionBankDetailsPage from '~/pages/QuestionBankDetailsPage';
@@ -246,6 +248,11 @@ const privateRoutes = [
     {
         path: `${CERTIFICATE_PAGE_URL}`,
         component: CertificatePage,
+        layout: FullLayout,
+    },
+    {
+        path: `${NOTE_PAGE_URL}`,
+        component: NotePage,
         layout: FullLayout,
     },
 ];

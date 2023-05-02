@@ -23,6 +23,7 @@ import ClassMemberItemCard from '~/components/ClassMemberItemCard';
 import images from '~/assets/images';
 import CertificationDialog from '~/components/CertificationDialog';
 import DeleteMemberDialog from '~/components/DeleteMemberDialog';
+import { openInNewTab } from '~/utils';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -301,7 +302,8 @@ function ClassEveryonePage() {
                                                 <div>
                                                     <Button
                                                         onClick={(e) => {
-                                                            navigate('/certificate/' + people.certification.id);
+                                                            openInNewTab('/certificate/' + people.certification.id);
+                                                            //navigate('/certificate/' + people.certification.id);
                                                         }}
                                                         startIcon={<FontAwesomeIcon icon={faEye} />}
                                                     >

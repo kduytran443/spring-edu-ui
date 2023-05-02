@@ -3,6 +3,8 @@ import Header from '../components/Header';
 import SimpleFooter from '../components/SimpleFooter';
 import BasicSpeedDial from '~/components/BasicSpeedDial';
 import ChatSpeedDial from '~/components/ChatSpeedDial';
+import NoteSpeedDial from '~/components/NoteSpeedDial';
+import Draggable from 'react-draggable';
 
 function FullLayout({ children }) {
     return (
@@ -19,6 +21,7 @@ function FullLayout({ children }) {
                 </div>
                 <div className="z-30">
                     <ChatSpeedDial />
+                    <NoteSpeedDial />
                 </div>
             </div>
             <SimpleFooter />

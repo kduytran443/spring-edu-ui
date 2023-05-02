@@ -18,7 +18,6 @@ function RichTextEditor({ data, readOnly, setData = (e) => {}, disabled = false 
     const checkOnLoad = () => {
         if (disabled) {
             const toolbar = editorRef.current.getElementsByClassName('ck-editor__top')[0];
-            console.log(toolbar);
             if (toolbar) {
                 toolbar.style.display = 'none';
             }
@@ -97,7 +96,7 @@ function RichTextEditor({ data, readOnly, setData = (e) => {}, disabled = false 
         <div ref={editorRef}>
             <CKEditor
                 editor={Editor}
-                disabled={disabled}
+                disabled={disabled || readOnly}
                 data={dataState}
                 onReady={(editor) => {
                     checkOnLoad();

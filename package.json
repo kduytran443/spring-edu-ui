@@ -44,6 +44,7 @@
     "react-countdown": "^2.3.5",
     "react-datetime-picker": "^4.2.0",
     "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
     "react-photo-view": "^1.2.3",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.6.2",

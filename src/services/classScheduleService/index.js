@@ -4,10 +4,10 @@ import { API_BASE_URL } from '~/constants';
 export const classScheduleService = {
     api: 'api/class-schedule',
 
-    async getClassSchedules(id) {
-        //classLessonId
+    async getClassSchedules(classId) {
+        //classLessonclassId
         const config = getConfig();
-        const response = await fetch(`${API_BASE_URL}/public/${this.api}/class/${id}`, config);
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}/class/${classId}`, config);
         return response.json();
     },
     async getClassSchedulesByUser() {

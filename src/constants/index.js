@@ -27,12 +27,14 @@ const CLASS_MESSAGE_PAGE_URL = '/class/:classId/message';
 const CLASS_SCHEDULE_EDIT_PAGE_URL = '/class/:classId/schedule-edit/:scheduleId';
 const CLASS_CREATE_PAGE_URL = '/create-class';
 const CLASS_EDIT_PAGE_URL = '/class/:classId/setting/edit';
+const CLASS_HISTORY_PAGE_URL = '/class/:classId/history';
 const QUESTION_BANK_URL = '/question-bank';
 const QUESTION_BANK_DETAILS_URL = '/question-bank/:questionBankId';
 const SEARCH_PAGE_URL = '/search';
 const CHAT_PAGE_URL = '/chat/:classId?';
 const CERTIFICATE_PAGE_URL = '/certificate/:certificateId?';
 const NOTE_PAGE_URL = '/note/:noteId';
+const WORK_PAGE_URL = '/work';
 
 //ADMIN
 const ADMIN_HOME_PAGE = '/admin/home';
@@ -95,4 +97,6 @@ export {
     ADMIN_CATEGORY_PAGE,
     CERTIFICATE_PAGE_URL,
     NOTE_PAGE_URL,
+    WORK_PAGE_URL,
+    CLASS_HISTORY_PAGE_URL,
 };

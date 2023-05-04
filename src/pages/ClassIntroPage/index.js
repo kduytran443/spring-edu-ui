@@ -114,6 +114,7 @@ function ClassIntroPage() {
         loadReviews();
     }, [location]);
 
+    /*
     useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/comment/${classId}`)
             .then((res) => res.json())
@@ -122,6 +123,7 @@ function ClassIntroPage() {
             });
     }, [location]);
 
+    */
     useEffect(() => {
         const config = getConfig();
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)

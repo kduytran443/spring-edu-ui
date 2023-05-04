@@ -1,6 +1,7 @@
 import { faFacebook, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconButton, Tooltip } from '@mui/material';
+import images from '~/assets/images';
 import Logo from '~/components/Logo';
 
 function SimpleFooter() {
@@ -21,24 +22,29 @@ function SimpleFooter() {
                     </p>
                 </div>
             </div>
-            <div className="flex mt-6 sm:mt-0 flex-col sm:flex-row items-center justify-center">
-                <span>Theo dõi chúng tôi qua</span>
-                <div className="ml-0 sm:ml-8">
-                    <Tooltip title="Facebook">
-                        <IconButton color="inherit">
-                            <FontAwesomeIcon icon={faFacebook} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Youtube">
-                        <IconButton color="error">
-                            <FontAwesomeIcon icon={faYoutube} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Twitter">
-                        <IconButton color="primary">
-                            <FontAwesomeIcon icon={faTwitter} />
-                        </IconButton>
-                    </Tooltip>
+            <div className="flex flex-col items-center">
+                <div className="flex mt-6 sm:mt-0 flex-col sm:flex-row items-center justify-center">
+                    <span>Theo dõi chúng tôi qua</span>
+                    <div className="ml-0 sm:ml-8">
+                        <Tooltip title="Facebook">
+                            <IconButton color="inherit">
+                                <FontAwesomeIcon icon={faFacebook} />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Youtube">
+                            <IconButton color="error">
+                                <FontAwesomeIcon icon={faYoutube} />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Twitter">
+                            <IconButton color="primary">
+                                <FontAwesomeIcon icon={faTwitter} />
+                            </IconButton>
+                        </Tooltip>
+                    </div>
+                </div>
+                <div className="p-4 cursor-pointer">
+                    <img alt="" src={images.aboutUs} className="w-[160px]" />
                 </div>
             </div>
         </div>

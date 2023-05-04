@@ -27,6 +27,7 @@ import EditTopicDialog from '~/components/EditTopicDialog';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import DeleteTopicDialog from '~/components/DeleteTopicDialog';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import { useRef } from 'react';
 
 function ClassPage() {
     const [loadingState, setLoadingState] = useState(true);
@@ -136,6 +137,13 @@ function ClassPage() {
             }
         });
     };
+
+    useEffect(() => {
+        console.log('mount');
+        return () => {
+            console.log('Unmount');
+        };
+    }, [location]);
 
     return (
         <>

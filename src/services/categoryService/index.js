@@ -14,6 +14,11 @@ export const categoryService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
+    async getCategoryMemberByCode(code) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}/size/${code}`, config);
+        return response.json();
+    },
     async getCategoryByCode(code) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${code}`, config);

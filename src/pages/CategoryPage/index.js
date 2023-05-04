@@ -1,12 +1,14 @@
 import { faHome, faReply, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination, Skeleton } from '@mui/material';
+import { type } from '@testing-library/user-event/dist/type';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ClassListIntro from '~/components/ClassListIntro';
 import LoadingProcess from '~/components/LoadingProcess';
 import NoClassFound from '~/components/NoClassFound';
 import { API_BASE_URL, HOME_PAGE_URL } from '~/constants';
+import { categoryService } from '~/services/categoryService';
 
 function CategoryPage() {
     const { categoryCode } = useParams();
@@ -16,7 +18,17 @@ function CategoryPage() {
     const [classListState, setClassListState] = useState(null);
 
     const [quantityState, setQuantityState] = useState(0);
+    const [memberQuantityState, setMemberQuantityState] = useState(0);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const loadMember = () => {
+        categoryService.getCategoryMemberByCode(categoryCode).then((data) => {
+            if (typeof data == 'number') {
+                setMemberQuantityState(data);
+            }
+        });
+    };
 
     useEffect(() => {
         if (classListState) setQuantityState(classListState.length);
@@ -28,7 +40,7 @@ function CategoryPage() {
             .then((data) => {
                 setCategoryDataState(data);
             });
-    }, []);
+    }, [location]);
 
     useEffect(() => {
         fetch(`${API_BASE_URL}/public/api/class-review/${categoryCode}`)
@@ -36,9 +48,13 @@ function CategoryPage() {
             .then((data) => {
                 setClassListState(data);
             });
-    }, []);
+    }, [location]);
 
     const [loadMore, setLoadMore] = useState(1);
+
+    useEffect(() => {
+        loadMember();
+    }, [location]);
 
     return (
         <div className="flex flex-col p-4">
@@ -92,7 +108,7 @@ function CategoryPage() {
                 <p className="py-4">
                     <span>
                         <FontAwesomeIcon icon={faUser} className="mr-2" />
-                        <b>276.368+</b> người khác đã học
+                        <b>{memberQuantityState}+</b> người khác đã tham gia
                     </span>
                 </p>
             </div>

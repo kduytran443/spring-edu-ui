@@ -19,6 +19,16 @@ export const submittedExerciseService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/class/user/${classId}`, config);
         return response.json();
     },
+    async getSubmittedExercisesForTeacher() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/teacher`, config);
+        return response.json();
+    },
+    async getSubmittedExercisesByUserId(userId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/user/${userId}`, config);
+        return response.json();
+    },
     async getSubmittedExerciseById(id) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);

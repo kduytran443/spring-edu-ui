@@ -37,6 +37,8 @@ import {
     ADMIN_CATEGORY_PAGE,
     CERTIFICATE_PAGE_URL,
     NOTE_PAGE_URL,
+    WORK_PAGE_URL,
+    CLASS_HISTORY_PAGE_URL,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -56,6 +58,7 @@ import ClassEditExercisePage from '~/pages/ClassEditExercisePage';
 import ClassEditPage from '~/pages/ClassEditPage';
 import ClassEveryonePage from '~/pages/ClassEveryonePage';
 import ClassExercisePage from '~/pages/ClassExercisePage';
+import ClassHistoryPage from '~/pages/ClassHistoryPage';
 import ClassIntroPage from '~/pages/ClassIntroPage';
 import ClassLessonPage from '~/pages/ClassLessonPage';
 import ClassLessonCreatePage from '~/pages/ClassLessonPage/ClassLessonCreatePage';
@@ -80,6 +83,7 @@ import QuestionBankDetailsPage from '~/pages/QuestionBankDetailsPage';
 import QuestionBankPage from '~/pages/QuestionBankPage';
 import SearchPage from '~/pages/SearchPage';
 import SignUpPage from '~/pages/SignUpPage';
+import WorkPage from '~/pages/WorkPage';
 
 const publicRoutes = [
     {
@@ -211,6 +215,11 @@ const privateRoutes = [
         layout: ClassLayout,
     },
     {
+        path: `${CLASS_HISTORY_PAGE_URL}`,
+        component: ClassHistoryPage,
+        layout: ClassLayout,
+    },
+    {
         path: `${QUESTION_BANK_URL}`,
         component: QuestionBankPage,
         layout: FullLayout,
@@ -253,6 +262,11 @@ const privateRoutes = [
     {
         path: `${NOTE_PAGE_URL}`,
         component: NotePage,
+        layout: FullLayout,
+    },
+    {
+        path: `${WORK_PAGE_URL}`,
+        component: WorkPage,
         layout: FullLayout,
     },
 ];

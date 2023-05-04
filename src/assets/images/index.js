@@ -9,6 +9,7 @@ const images = {
     signature: require('./signature.png'),
     folder: require('./folder.png'),
     note: require('./note.png'),
+    aboutUs: require('./about-us.png'),
 };
 
 export default images;

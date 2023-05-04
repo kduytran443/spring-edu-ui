@@ -1,4 +1,4 @@
-import { faPlus, faReply, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faGraduationCap, faPlus, faReply, faUniversity, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Pagination } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -23,10 +23,15 @@ function JoinedClassPage() {
     useEffect(() => {
         classService.getClassReviewCardByUserId().then((data) => {
             if (data.length >= 0) {
+                console.log('datadatadata', data);
                 setClassListState(data);
             }
         });
     }, [location]);
+
+    const ownerList = classListState.filter((item) => item.role === 'teacher');
+    const supportList = classListState.filter((item) => item.role === 'supporter');
+    const studyList = classListState.filter((item) => item.role === 'student');
 
     return (
         <div className="flex flex-col p-4">
@@ -56,15 +61,60 @@ function JoinedClassPage() {
             {classListState === null ? (
                 <LoadingProcess />
             ) : (
-                <div className="w-full mt-6">
-                    <ClassListIntro
-                        listItem={classListState}
-                        hiddenHeader
-                        scroll={false}
-                        title="Lập trình"
-                        icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
-                    />
-                </div>
+                <>
+                    {ownerList.length > 0 && (
+                        <>
+                            <h2 className="mt-8 text-xl font-bold">
+                                <FontAwesomeIcon icon={faGraduationCap} className="mr-4" />
+                                Lớp sở hữu ({ownerList.length})
+                            </h2>
+                            <div className="w-full mt-6">
+                                <ClassListIntro
+                                    listItem={ownerList}
+                                    hiddenHeader
+                                    scroll={false}
+                                    title="Lập trình"
+                                    icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                                />
+                            </div>
+                        </>
+                    )}
+                    {supportList.length > 0 && (
+                        <>
+                            <h2 className="mt-10 text-xl font-bold">
+                                <FontAwesomeIcon icon={faGraduationCap} className="mr-4" />
+                                Lớp đang hỗ trợ dạy ({supportList.length})
+                            </h2>
+                            <div className="w-full mt-6">
+                                <ClassListIntro
+                                    listItem={supportList}
+                                    hiddenHeader
+                                    scroll={false}
+                                    title="Lập trình"
+                                    icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                                />
+                            </div>
+                        </>
+                    )}
+
+                    {studyList.length > 0 && (
+                        <>
+                            <h2 className="mt-10 text-xl font-bold">
+                                <FontAwesomeIcon icon={faGraduationCap} className="mr-4" />
+                                Lớp đang học ({studyList.length})
+                            </h2>
+                            <div className="w-full mt-6">
+                                <ClassListIntro
+                                    listItem={studyList}
+                                    hiddenHeader
+                                    scroll={false}
+                                    title="Lập trình"
+                                    icon="https://st2.depositphotos.com/2904097/5667/v/950/depositphotos_56670849-stock-illustration-vector-coding-icon.jpg"
+                                />
+                            </div>
+                        </>
+                    )}
+                </>
             )}
             {classListState !== null && classListState.length === 0 && (
                 <NoClassFound message="Chưa hoạt động trong bất kỳ lớp học nào" />

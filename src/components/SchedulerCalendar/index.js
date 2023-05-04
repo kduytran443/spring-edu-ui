@@ -169,7 +169,49 @@ function SchedulerCalendar() {
 
     return (
         <div className="flex flex-col w-full items-start">
-            {visibleAddingNewEventState ? (
+            <div className="w-full flex-1 flex-wrap items-stretch justify-stretch flex flex-row">
+                <div className={`w-full md:w-[70%] ${!selectedEventState && 'md:w-[100%]'}`}>
+                    <Calendar
+                        onSelectEvent={(e) => {
+                            console.log(e.title, e.id);
+                            setSelectedEventState({
+                                title: e.title,
+                                description: e.description,
+                                start: e.start,
+                                end: e.end,
+                                img: e.img,
+                                id: e.id,
+                                classId: e.classId,
+                            });
+                        }}
+                        localizer={localizer}
+                        events={allEventsState}
+                        startAccessor="start"
+                        endAccessor="end"
+                        style={{ height: 500 }}
+                    />
+                </div>
+                {selectedEventState && (
+                    <div className="flex-1">
+                        <CalendarItem
+                            data={selectedEventState}
+                            setData={setSelectedEventState}
+                            onRemove={removeEvent}
+                            onUpdate={updateEvent}
+                            close={closeItem}
+                        />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default SchedulerCalendar;
+
+/*
+
+{visibleAddingNewEventState ? (
                 <div className="relative flex flex-row justify-center items-center flex-wrap border-[1px] border-slate-200 rounded-lg shadow-md w-full p-8 mb-4">
                     <div className="absolute top-0 right-0">
                         <IconButton onClick={closeVisibleAddingNewEventState}>
@@ -231,42 +273,5 @@ function SchedulerCalendar() {
                     </Button>
                 </div>
             )}
-            <div className="w-full flex-1 flex-wrap items-stretch justify-stretch flex flex-row">
-                <div className={`w-full md:w-[70%] ${!selectedEventState && 'md:w-[100%]'}`}>
-                    <Calendar
-                        onSelectEvent={(e) => {
-                            console.log(e.title, e.id);
-                            setSelectedEventState({
-                                title: e.title,
-                                description: e.description,
-                                start: e.start,
-                                end: e.end,
-                                img: e.img,
-                                id: e.id,
-                                classId: e.classId,
-                            });
-                        }}
-                        localizer={localizer}
-                        events={allEventsState}
-                        startAccessor="start"
-                        endAccessor="end"
-                        style={{ height: 500 }}
-                    />
-                </div>
-                {selectedEventState && (
-                    <div className="flex-1">
-                        <CalendarItem
-                            data={selectedEventState}
-                            setData={setSelectedEventState}
-                            onRemove={removeEvent}
-                            onUpdate={updateEvent}
-                            close={closeItem}
-                        />
-                    </div>
-                )}
-            </div>
-        </div>
-    );
-}
 
-export default SchedulerCalendar;
+*/

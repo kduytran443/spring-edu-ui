@@ -1,10 +1,11 @@
 import { JitsiMeeting } from '@jitsi/react-sdk';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Meeting from '~/components/Meeting';
 import { API_BASE_URL } from '~/constants';
 import { getConfig } from '~/services/config';
+import { meetingActionService } from '~/services/meetingActionService';
 import { getUserJWT } from '~/services/userService';
 import { useUser } from '~/stores/UserStore';
 
@@ -55,6 +56,8 @@ function ClassLivePage() {
     const [meetingDataState, setMeetingDataState] = useState(null);
     const [userState, dispatchUserState] = useUser();
     const { classId } = useParams();
+    const location = useLocation();
+    const [userData, userDispatch] = useUser();
 
     const [userInfoState, setUserInfoState] = useState({
         email: userState.email,
@@ -71,7 +74,39 @@ function ClassLivePage() {
                 console.log(data);
                 setMeetingDataState(data);
             });
-    }, []);
+    }, [location]);
+
+    const postData = (action = 'join') => {
+        const obj = {
+            classId: classId,
+            action: action,
+        };
+        meetingActionService.post(obj).then((data) => {});
+    };
+
+    useEffect(() => {
+        if (userData && meetingDataState && userData.id && meetingDataState.id) {
+            postData();
+        }
+    }, [userData, meetingDataState]);
+
+    useEffect(() => {
+        const alertUser = (e) => {
+            e.preventDefault();
+            postData('leave');
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', alertUser);
+        return () => {
+            window.removeEventListener('beforeunload', alertUser);
+        };
+    }, [meetingDataState]);
+
+    useEffect(() => {
+        return () => {
+            postData('leave');
+        };
+    }, [location]);
 
     return (
         <div>

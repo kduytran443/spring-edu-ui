@@ -48,8 +48,8 @@ function ClassLayout({ children }) {
         },
         {
             id: 6,
-            name: 'Nhắn tin',
-            path: '/message',
+            name: 'Lịch sử',
+            path: '/history',
         },
         {
             id: 7,

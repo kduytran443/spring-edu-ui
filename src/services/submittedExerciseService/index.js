@@ -29,6 +29,16 @@ export const submittedExerciseService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/user/${userId}`, config);
         return response.json();
     },
+    async getFiles(id) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${id}`, config);
+        return response.json();
+    },
+    async deleteFile(submittedExerciseId, fileId) {
+        const config = deleteConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${submittedExerciseId}/${fileId}`, config);
+        return response.json();
+    },
     async getSubmittedExerciseById(id) {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);

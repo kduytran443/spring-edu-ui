@@ -26,4 +26,10 @@ export const fileService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}?classLessonId=${classLessonId}`, config);
         return response.json();
     },
+
+    async get(id) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/${id}`, config);
+        return response.json();
+    },
 };

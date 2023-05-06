@@ -8,7 +8,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import ChoiceQuestionDetails from '~/components/ChoiceQuestionDetails';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
+import NewUploadWidget from '~/components/NewUploadWidget';
 import RichTextEditor from '~/components/RichTextEditor';
+import SubmittedExerciseUploadWidget from '~/components/SubmittedExerciseUploadWidget';
 import { choiceAnswerSerivce } from '~/services/choiceAnswerSerivce';
 import { constructedResponseTestService } from '~/services/constructedResponseTestService';
 import { drawQuizService } from '~/services/drawQuizService';
@@ -22,11 +24,21 @@ function DoExercisePage() {
     const location = useLocation();
     const [loadingState, setLoadingState] = useState(true);
 
+    const [fileList, setFileList] = useState([]);
+
     const [exerciseData, setExerciseData] = useState({});
     const loadData = () => {
         exerciseService.getExerciseById(exerciseId).then((data) => {
             if (data.id) {
                 setExerciseData(data);
+            }
+        });
+    };
+
+    const loadFiles = () => {
+        submittedExerciseService.getFiles(submittedExerciseId).then((data) => {
+            if (data.length >= 0) {
+                setFileList(data);
             }
         });
     };
@@ -44,6 +56,7 @@ function DoExercisePage() {
     useEffect(() => {
         loadData();
         loadSubmittedExercise();
+        loadFiles();
     }, [location]);
 
     const [timeLeft, setTimeLeft] = useState(null);
@@ -247,6 +260,7 @@ function DoExercisePage() {
                                     <RichTextEditor setData={setTextData} data={submittedExercise.content} />
                                 )}
                             </div>
+                            <SubmittedExerciseUploadWidget fileList={fileList} multiple />
                         </>
                     )}
                     <div className="mt-8">

@@ -22,6 +22,7 @@ import GradeDialog from '~/components/GradeDialog';
 import { quizService } from '~/services/quizService';
 import ClassExerciseDeleteDialog from './ClassExerciseDeleteDialog';
 import images from '~/assets/images';
+import FileListViewDialog from '~/components/FileListViewDialog';
 
 function ClassSpecificExercisePage() {
     const navigate = useNavigate();
@@ -364,6 +365,9 @@ function ClassSpecificExercisePage() {
                                                         <div>
                                                             <h3 className="text-xl font-bold">Bài làm:</h3>
                                                             <RichTextEditor disabled data={submittedItem.content} />
+                                                            <FileListViewDialog
+                                                                submittedExerciseId={submittedItem.id}
+                                                            />
                                                         </div>
                                                         {submittedItem.teacherComment && (
                                                             <div className="my-4">

@@ -11,6 +11,9 @@ const images = {
     note: require('./note.png'),
     aboutUs: require('./about-us.png'),
     loading: require('./loading.gif'),
+    imageIcon: require('./image-icon.png'),
+    videoIcon: require('./video-icon.png'),
+    audioIcon: require('./audio-file.jpg'),
 };
 
 export default images;

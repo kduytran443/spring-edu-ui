@@ -8,10 +8,13 @@ import { Box } from '@mui/system';
 import axios from 'axios';
 import { getUserJWT } from '~/services/userService';
 import { API_BASE_URL } from '~/constants';
+import { useParams } from 'react-router-dom';
 import LinearProcessBar from '../LinearProcessBar';
-import LinearWithValueLabel from '../LinearWithValueLabel';
+import { submittedExerciseService } from '~/services/submittedExerciseService';
+import DeleteFileDialog from '../DeleteFileDialog';
+import SubmittedExerciseFileReview from '../SubmittedExerciseFileReview';
 
-function NewUploadWidget({
+function SubmittedExerciseUploadWidget({
     uploadButton = (
         <Button variant="outlined" startIcon={<FontAwesomeIcon icon={faUpload} />}>
             Upload
@@ -20,22 +23,25 @@ function NewUploadWidget({
     uploadFunction = () => {},
     fileList = [],
     multiple = false,
+    disable,
 }) {
     const fileRef = useRef();
-
+    const { submittedExerciseId } = useParams();
     const [fileListState, setFileListState] = useState(fileList);
     const [uploadStatusState, setUploadStatusState] = useState(0); //0: chua upload, 1: dang upload, 2: upload xong
+
+    useEffect(() => {
+        setFileListState(fileList);
+    }, [fileList]);
 
     const uploadFile = (e) => {
         e.preventDefault();
         const files = e.target.files;
         const formData = new FormData();
         formData.append('file', files[0]);
-        const api = 'api/upload';
+        const api = `api/submitted-exercise/file/${submittedExerciseId}`;
         const jwt = getUserJWT();
-
         setUploadStatusState(1);
-
         axios
             .post(`${API_BASE_URL}/${api}`, formData, {
                 onUploadProgress: (progressEvent) => {
@@ -53,63 +59,25 @@ function NewUploadWidget({
                 },
             })
             .then((res) => {
-                /*
-                this.setState({ avatar: res.data.url, uploadPercentage: 100 }, () => {
-                    setTimeout(() => {
-                        this.setState({ uploadPercentage: 0 });
-                    }, 1000);
-                });
-                */
                 const file = res.data;
+                console.log('file', file);
                 if (multiple) {
                     setFileListState((pre) => [
                         ...pre,
-                        { name: file.name, data: file.data, size: file.size, type: file.type },
+                        { id: file.id, name: file.name, data: file.data, size: file.size, type: file.type },
                     ]);
                     setUploadStatusState(0);
                     setUploadFileLoading(0);
                 } else {
-                    setFileListState([{ name: file.name, data: file.data, size: file.size, type: file.type }]);
+                    setFileListState([
+                        { id: file.id, name: file.name, data: file.data, size: file.size, type: file.type },
+                    ]);
                     setUploadStatusState(0);
                     setUploadFileLoading(0);
                 }
                 fileRef.current.value = '';
             });
-        /*
-        if (multiple) {
-            setFileListState((pre) => [...pre, formData]);
-        } else {
-            setFileListState([formData]);
-        }
-        */
-        fileRef.current.value = '';
     };
-    /*
-    const uploadFile = (e) => {
-        const files = e.target.files;
-        for (let i = 0; i < files.length; i++) {
-            let file = e.target.files[i];
-            if (file) {
-                let reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    //reader.result file.size file.name
-                    if (multiple) {
-                        setFileListState((pre) => [
-                            ...pre,
-                            { name: file.name, data: reader.result, size: file.size, type: file.type },
-                        ]);
-                    } else {
-                        setFileListState([{ name: file.name, data: reader.result, size: file.size, type: file.type }]);
-                    }
-                    fileRef.current.value = '';
-                };
-                reader.onerror = (error) => {
-                    console.log('error uploading!');
-                };
-            }
-        }
-    };*/
 
     const uploadOnClick = () => {
         fileRef.current.click();
@@ -141,6 +109,10 @@ function NewUploadWidget({
         setFileListState(arr);
     };
 
+    const reloadFileDelete = (index) => {
+        removeByIndex(index);
+    };
+
     const [uploadFileLoading, setUploadFileLoading] = useState(0);
 
     return (
@@ -156,7 +128,7 @@ function NewUploadWidget({
             <div className="w-full flex flex-col items-center justify-center">
                 {uploadStatusState === 1 && <LinearProcessBar progress={uploadFileLoading} />}
             </div>
-            {uploadStatusState === 0 && (
+            {!disable && (
                 <div className="my-4" onClick={uploadOnClick}>
                     {uploadButton}
                 </div>
@@ -166,22 +138,30 @@ function NewUploadWidget({
                 {fileListState.map((file, index) => {
                     return (
                         <div className="flex flex-col items-center">
-                            <FileReview
+                            <SubmittedExerciseFileReview
                                 onCancel={onCancel}
                                 name={file.name}
                                 data={`data:${file.type};base64,${file.data}`}
                                 key={index}
+                                id={file.id}
                                 size={file.size}
                                 type={file.type}
                             />
-                            <IconButton
-                                onClick={(e) => {
-                                    removeByIndex(index);
-                                }}
-                                color="error"
-                            >
-                                <FontAwesomeIcon icon={faTrash} />
-                            </IconButton>
+                            {!disable && (
+                                <DeleteFileDialog
+                                    button={
+                                        <IconButton color="error">
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </IconButton>
+                                    }
+                                    fileId={file.id}
+                                    fileName={file.name}
+                                    submittedExerciseId={submittedExerciseId}
+                                    reload={() => {
+                                        reloadFileDelete(index);
+                                    }}
+                                />
+                            )}
                         </div>
                     );
                 })}
@@ -190,7 +170,7 @@ function NewUploadWidget({
     );
 }
 
-export default NewUploadWidget;
+export default SubmittedExerciseUploadWidget;
 
 /*
 

@@ -4,18 +4,26 @@ import { IconButton } from '@mui/material';
 import { useRef } from 'react';
 import { Fragment } from 'react';
 import images from '~/assets/images';
+import { openInNewTab } from '~/utils';
 
-function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDelete = false, onCancel = () => {} }) {
+function SubmittedExerciseFileReview({
+    name = 'Tên',
+    size = 1,
+    type = '',
+    data = '',
+    index,
+    id,
+    noDelete = false,
+    onCancel = () => {},
+}) {
     let fileContent = '';
 
     if (type.includes('image/')) {
-        fileContent = <img className="w-full max-w-[140px]" alt="file" src={data} />;
+        fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.imageIcon} />;
     } else if (type.includes('video/')) {
-        fileContent = (
-            <video controls className="w-full">
-                <source src={data} type={type} />
-            </video>
-        );
+        fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.videoIcon} />;
+    } else if (type.includes('audio/')) {
+        fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.audioIcon} />;
     } else if (type.includes('compressed')) {
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.zip} />;
     } else {
@@ -25,8 +33,7 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
     const downloadRef = useRef();
 
     const download = () => {
-        console.log('DOWNLOAD');
-        //downloadRef.current.click();
+        openInNewTab('/file/' + id);
     };
 
     return (
@@ -59,4 +66,4 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
     );
 }
 
-export default FileReview;
+export default SubmittedExerciseFileReview;

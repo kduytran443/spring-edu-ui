@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import RichTextEditor from '~/components/RichTextEditor';
+import SubmittedExerciseUploadWidget from '~/components/SubmittedExerciseUploadWidget';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime, showScore } from '~/utils';
@@ -23,6 +24,14 @@ function ExerciseResultPage() {
             }
         });
     };
+    const [fileList, setFileList] = useState([]);
+    const loadFiles = () => {
+        submittedExerciseService.getFiles(submittedExerciseId).then((data) => {
+            if (data.length >= 0) {
+                setFileList(data);
+            }
+        });
+    };
     const [exerciseData, setExerciseData] = useState({});
     const loadData = () => {
         exerciseService.getExerciseById(exerciseId).then((data) => {
@@ -35,6 +44,7 @@ function ExerciseResultPage() {
     useEffect(() => {
         loadData();
         loadSubmittedExercise();
+        loadFiles();
     }, [location]);
 
     return (
@@ -89,6 +99,7 @@ function ExerciseResultPage() {
             {submittedExercise && submittedExercise.content && (
                 <RichTextEditor disabled data={submittedExercise.content} />
             )}
+            <SubmittedExerciseUploadWidget disable fileList={fileList} multiple />
         </div>
     );
 }

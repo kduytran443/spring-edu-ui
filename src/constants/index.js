@@ -35,6 +35,7 @@ const CHAT_PAGE_URL = '/chat/:classId?';
 const CERTIFICATE_PAGE_URL = '/certificate/:certificateId?';
 const NOTE_PAGE_URL = '/note/:noteId';
 const WORK_PAGE_URL = '/work';
+const FILE_PAGE_URL = '/file/:fileId';
 
 //ADMIN
 const ADMIN_HOME_PAGE = '/admin/home';
@@ -99,4 +100,5 @@ export {
     NOTE_PAGE_URL,
     WORK_PAGE_URL,
     CLASS_HISTORY_PAGE_URL,
+    FILE_PAGE_URL,
 };

@@ -39,6 +39,7 @@ import {
     NOTE_PAGE_URL,
     WORK_PAGE_URL,
     CLASS_HISTORY_PAGE_URL,
+    FILE_PAGE_URL,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -72,6 +73,7 @@ import ClassSettingPage from '~/pages/ClassSettingPage';
 import ClassSpecificExercisePage from '~/pages/ClassSpecificExercisePage';
 import DoExercisePage from '~/pages/DoExercisePage';
 import ExerciseResultPage from '~/pages/ExerciseResultPage';
+import FilePage from '~/pages/FilePage';
 import HomePage from '~/pages/HomePage';
 import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
@@ -267,6 +269,11 @@ const privateRoutes = [
     {
         path: `${WORK_PAGE_URL}`,
         component: WorkPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${FILE_PAGE_URL}`,
+        component: FilePage,
         layout: FullLayout,
     },
 ];

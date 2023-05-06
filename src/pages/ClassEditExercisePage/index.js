@@ -290,8 +290,6 @@ function ClassEditExercisePage() {
         return valid;
     };
 
-    console.log('isEffective', isEffective);
-
     return (
         <div className="p-2">
             <Button

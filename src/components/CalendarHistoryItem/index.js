@@ -73,11 +73,8 @@ export default function CalendarHistoryItem({
 
     const getMemberByUsername = (username) => {
         const arr = [...memberList];
-        console.log('getMemberByUsername', arr);
-        console.log('usernameee', username);
 
         let index = arr.map((item) => item.username).indexOf(username);
-        console.log('usernameee - index', index);
         return arr[index];
     };
 

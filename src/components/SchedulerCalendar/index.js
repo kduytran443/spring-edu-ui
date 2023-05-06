@@ -58,7 +58,6 @@ function SchedulerCalendar() {
 
     const addNewEvent = () => {
         if (newEventState.title && newEventState.start.getTime() < newEventState.end.getTime()) {
-            console.log(newEventState);
             setAllEventsState((pre) => [...pre, newEventState]);
             setNewEventErrorState('');
             setNewEventState({ title: '', start: new Date(), end: new Date(), img: '' });
@@ -69,7 +68,6 @@ function SchedulerCalendar() {
 
     const removeEvent = (e) => {
         const selectedEvents = allEventsState.filter((event) => {
-            console.log(event.id, selectedEventState.id);
             return event.id !== selectedEventState.id;
         });
         console.log(selectedEvents);
@@ -167,13 +165,32 @@ function SchedulerCalendar() {
         setSelectedEventState();
     };
 
+    const [currentSchedules, setCurrentSchedules] = useState([]);
+
+    useEffect(() => {
+        const date = new Date();
+        const arr = [...allEventsState];
+        for (let i = 0; i < arr.length; i++) {
+            const item = arr[i];
+            if (date.getTime() >= item.start.getTime() && date.getTime() <= item.end.getTime()) {
+                setCurrentSchedules((pre) => {
+                    return [...pre, item];
+                });
+            }
+        }
+    }, [allEventsState]);
+
     return (
         <div className="flex flex-col w-full items-start">
+            <div className="w-full flex flex-row items-center flex-wrap">
+                {currentSchedules.map((item) => {
+                    return <CalendarItem data={item} disableImg />;
+                })}
+            </div>
             <div className="w-full flex-1 flex-wrap items-stretch justify-stretch flex flex-row">
                 <div className={`w-full md:w-[70%] ${!selectedEventState && 'md:w-[100%]'}`}>
                     <Calendar
                         onSelectEvent={(e) => {
-                            console.log(e.title, e.id);
                             setSelectedEventState({
                                 title: e.title,
                                 description: e.description,

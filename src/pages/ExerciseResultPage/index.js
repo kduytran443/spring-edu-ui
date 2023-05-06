@@ -28,7 +28,6 @@ function ExerciseResultPage() {
         exerciseService.getExerciseById(exerciseId).then((data) => {
             if (data.id) {
                 setExerciseData(data);
-                console.log(data);
             }
         });
     };

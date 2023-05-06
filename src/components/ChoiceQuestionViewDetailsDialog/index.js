@@ -31,7 +31,7 @@ import RichTextEditor from '../RichTextEditor';
 import ShowTextData from '../ShowTextData';
 import CustomFilePreview from '../CustomFilePreview';
 
-export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, reload = () => {} }) {
+export default function ChoiceQuestionViewDetailsDialog({ choiceQuestionId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
     const location = useLocation();
     const [loadingState, setLoadingState] = useState(true);
@@ -50,12 +50,12 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
     const [newQuestionName, setNewQuestionName] = useState('');
     const [newQuestionContent, setNewQuestionContent] = useState('');
     const [newQuestionFile, setNewQuestionFile] = useState();
-    const [newQuestionImportant, setNewQuestionImportant] = useState(0);
     const [questionId, setQuestionId] = useState();
 
     const [questionNameError, setQuestionNameError] = useState('');
     const [questionAnswerError, setQuestionAnswerError] = useState('');
     const [deletedChoiceAnswerId, setDeletedChoiceAnswerId] = useState([]);
+    const [newQuestionImportant, setNewQuestionImportant] = useState(0);
 
     const setData = (data) => {
         setNewQuestionContent(data);
@@ -70,7 +70,6 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                 setNewQuestionName(data.name);
                 setNewQuestionContent(data.content);
                 setNewQuestionImportant(data.important);
-
                 if (data.file) setNewQuestionFile(data.file);
                 setTimeout(() => {
                     setLoadingState(false);
@@ -109,10 +108,6 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                 id: questionId,
                 important: newQuestionImportant,
             };
-            if (newQuestionFile) {
-                choiceQuestionObj.file = newQuestionFile;
-            }
-            setLoadingState(true);
 
             choiceQuestionSerivce.putChoiceQuestion(choiceQuestionObj).then((data) => {
                 if (data.id) {
@@ -136,9 +131,8 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                         choiceAnswerSerivce.deleteChoiceAnswer({ id: id }).then((data) => {});
                     });
                     if (result) {
-                        setLoadingState(false);
                         setAlert(1);
-                        reload();
+                        loadQuestion();
                         handleClose();
                     } else {
                         setAlert(0);
@@ -252,28 +246,6 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
         loadAnswer();
     }, [open]);
 
-    const uploadFileQuestion = (e) => {
-        const files = e.target.files;
-        const file = files[0];
-        if (file) {
-            let reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => {
-                const obj = {
-                    type: file.type,
-                    size: file.size,
-                    name: file.name,
-                    data: reader.result,
-                };
-
-                setNewQuestionFile(obj);
-            };
-            reader.onerror = (error) => {
-                console.log('error uploading!');
-            };
-        }
-    };
-
     const handleChangeImportant = (e) => {
         if (e.target.checked) {
             setNewQuestionImportant(1);
@@ -285,7 +257,7 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <Button startIcon={<FontAwesomeIcon icon={faPen} />}>Sửa</Button>
+                <Button startIcon={<FontAwesomeIcon icon={faEye} />}>Xem</Button>
             </div>
             <Dialog
                 open={open}
@@ -305,6 +277,7 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                         clear();
                                         setNewQuestionName(e.target.value);
                                     }}
+                                    disabled
                                     value={newQuestionName}
                                     size="small"
                                     className="w-full"
@@ -315,12 +288,9 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                             <AlertFailDialog open={alert === -1} />
                             <div className="w-full mt-4">
                                 <div className="font-bold">Nội dung</div>
-                                {<RichTextEditor data={newQuestionContent} setData={setData} />}
+                                {<RichTextEditor data={newQuestionContent} disabled readOnly setData={setData} />}
                             </div>
-                            <div className="w-full mt-4 mb-2">
-                                <input className="w-full" onChange={uploadFileQuestion} type="file" />
-                                {newQuestionFile && <CustomFilePreview fileData={newQuestionFile} />}
-                            </div>
+                            {newQuestionFile && <CustomFilePreview fileData={newQuestionFile} />}
                             <div>
                                 <FormControlLabel
                                     control={
@@ -329,6 +299,7 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                             checked={newQuestionImportant === 1}
                                         />
                                     }
+                                    disabled
                                     label="Quan trọng"
                                 />
                             </div>
@@ -339,6 +310,7 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                             <div className="flex flex-col w-full">
                                                 {choiceAnswer.type === 'text' && (
                                                     <TextField
+                                                        disabled
                                                         className="w-full"
                                                         id="standard-basic"
                                                         label={'Đáp án ' + (index + 1)}
@@ -393,6 +365,7 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                             <FormControl fullWidth>
                                                 <InputLabel id="select-label-gender-signup">Loại</InputLabel>
                                                 <Select
+                                                    disabled
                                                     size="small"
                                                     labelId="select-label-gender-signup"
                                                     id="select-gender-signup"
@@ -406,8 +379,9 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                                 </Select>
                                             </FormControl>
                                         </div>
-                                        <div className="w-full flex mt-4 flex-row items-center justify-between">
+                                        <div className="w-full flex mt-4 flex-row items-center justify-start">
                                             <FormControlLabel
+                                                disabled
                                                 control={
                                                     <Checkbox
                                                         onChange={(e) => {
@@ -418,20 +392,6 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                                                 }
                                                 label="Đúng"
                                             />
-                                            <div className="ml-8">
-                                                <IconButton
-                                                    size="small"
-                                                    color="error"
-                                                    onClick={(e) => {
-                                                        deleteByIndex(index, e);
-                                                        setDeletedChoiceAnswerId((pre) => {
-                                                            return [...pre, choiceAnswer.id];
-                                                        });
-                                                    }}
-                                                >
-                                                    <FontAwesomeIcon icon={faTrash} />
-                                                </IconButton>
-                                            </div>
                                         </div>
                                     </div>
                                 );
@@ -443,11 +403,6 @@ export default function ChoiceQuestionEditDetailsDialog({ choiceQuestionId, relo
                 <DialogActions>
                     <div className="select-none cursor-pointer" onClick={handleClose}>
                         <Button color="inherit">Đóng</Button>
-                    </div>
-                    <div className="select-none cursor-pointer" onClick={submitNewQuestion}>
-                        <Button color="primary" variant="contained" endIcon={<FontAwesomeIcon icon={faPen} />}>
-                            Sửa
-                        </Button>
                     </div>
                 </DialogActions>
             </Dialog>

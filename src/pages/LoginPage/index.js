@@ -40,7 +40,6 @@ function LoginPage() {
             .then((data) => {
                 if (data.id) {
                     dispatchUserState(setUserInfo(data));
-                    console.log('data');
                     if (data.role === 'ADMIN') {
                         navigate(ADMIN_HOME_PAGE);
                     } else {
@@ -70,8 +69,6 @@ function LoginPage() {
         }
 
         if (validForm) {
-            console.log(usernameState, passwordState);
-
             //fetch-api
             await login({ username: usernameState, password: passwordState });
         }

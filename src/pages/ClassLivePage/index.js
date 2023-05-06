@@ -71,7 +71,6 @@ function ClassLivePage() {
         fetch(`${API_BASE_URL}/api/meeting?classId=${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 setMeetingDataState(data);
             });
     }, [location]);

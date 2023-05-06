@@ -10,6 +10,7 @@ const images = {
     folder: require('./folder.png'),
     note: require('./note.png'),
     aboutUs: require('./about-us.png'),
+    loading: require('./loading.gif'),
 };
 
 export default images;

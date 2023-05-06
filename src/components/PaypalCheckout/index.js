@@ -22,7 +22,6 @@ function PaypalCheckout({
         setPaidFor(true);
         successAction(orderId);
     };
-    console.log(payee);
     const [error, setError] = useState(null);
     if (error) {
         alert(error);

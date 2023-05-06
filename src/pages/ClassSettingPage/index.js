@@ -245,7 +245,6 @@ function ClassSettingPage() {
     const [userRole, setUserRole] = useState();
     const loadUserData = () => {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
-            console.log(data);
             if (isValidRole(data.classRole)) {
                 setUserRole(data.classRole);
             } else {

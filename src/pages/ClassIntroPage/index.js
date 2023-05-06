@@ -168,7 +168,6 @@ function ClassIntroPage() {
         });
     };
     const paySuccessfully = (transactionId) => {
-        console.log('transactionId', transactionId);
         const classMember = {
             classId: classId,
             classRole: 'student',
@@ -215,6 +214,7 @@ function ClassIntroPage() {
         }, 0);
     if (discount > 100) discount = 100;
     const [clicked, setClicked] = useState(false);
+
     const buyClass = () => {
         if (totalFee > 0) {
             setClicked(true);
@@ -253,7 +253,6 @@ function ClassIntroPage() {
         const timeNow = new Date().getTime();
         if (timeNow >= classDataState.discount.startDate && timeNow <= classDataState.discount.endDate) {
             discount = classDataState.discount.discountPercent;
-            console.log(classDataState.fee, classDataState.discountPercent);
         }
     }
 
@@ -300,7 +299,6 @@ function ClassIntroPage() {
             classId: classId,
             comment: reviewRatingState.comment,
         };
-        console.log(review);
         setAlertState('Đã gửi thành công');
 
         reviewService.postReview(review).then((data) => {
@@ -331,6 +329,40 @@ function ClassIntroPage() {
     useEffect(() => {
         loadMemberState();
     }, [location]);
+
+    const acceptBuyClass = () => {
+        if (totalFee > 0) {
+            setClicked(true);
+        } else {
+            const classMember = {
+                classId: classId,
+                classRole: 'student',
+                memberAccepted: 1,
+                classAccepted: 1,
+                discount: memberState.discount,
+            };
+
+            classMemberService.putClassMember(classMember).then((data) => {
+                if (data.status !== 500) {
+                    setAlertSuccess(1);
+                    const obj = {
+                        content: userState.username + ' đã tham gia: ' + classDataState.name,
+                        redirectUrl: `/class/${classId}/everyone`,
+                        receiverIds: [classDataState.userId],
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        setTimeout(() => {
+                            sendContext([classDataState.userId]);
+                            loadMemberState();
+                            setAlertSuccess(0);
+                            navigate('/class/' + classId);
+                        }, 2000);
+                    });
+                }
+            });
+        }
+    };
 
     const acceptJoinClass = () => {
         const classMember = {
@@ -369,7 +401,6 @@ function ClassIntroPage() {
     }, [location]);
 
     const [commentPagination, setCommentPagination] = useState(1);
-
     const paypalRef = useRef();
 
     const cal = () => {
@@ -379,6 +410,10 @@ function ClassIntroPage() {
             fee -= classDataState.fee * (totalDiscount / 100);
         }
         if (fee < 0) fee = 0;
+
+        if (memberState.discount) {
+            fee = classDataState.fee - classDataState.fee * (memberState.discount / 100);
+        }
 
         return fee;
     };
@@ -512,85 +547,46 @@ function ClassIntroPage() {
                         )}
                     </div>
                     <div className="mt-2 w-full">
-                        <Box sx={{ width: '100%', typography: 'body1' }}>
-                            <TabContext value={value}>
-                                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                                    <TabList onChange={handleChange} aria-label="lab API tabs example">
-                                        {allTabsState.map((tab) => {
-                                            return <Tab label={tab.name} value={tab.type} key={tab.id} />;
-                                        })}
-                                    </TabList>
-                                </Box>
-                            </TabContext>
-                        </Box>
-                        {value === 'review' ? (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
-                                {reviewListState === null ? (
-                                    <LoadingProcess />
-                                ) : (
-                                    <>
-                                        {reviewListState.length > 0 ? (
-                                            <>
-                                                {reviewListState
-                                                    .filter((review, index) => {
-                                                        return index + 1 <= commentPagination * 5;
-                                                    })
-                                                    .map((review, index) => {
-                                                        return (
-                                                            <li key={index}>
-                                                                <ReviewCard
-                                                                    avatar={review.userAvatar}
-                                                                    comment={review.comment}
-                                                                    stars={review.stars}
-                                                                    username={review.userName}
-                                                                />
-                                                                {index < reviewListState.length - 1 && <Line />}
-                                                            </li>
-                                                        );
-                                                    })}
-                                                {reviewListState.length > commentPagination * 5 && (
-                                                    <Button
-                                                        onClick={(e) => {
-                                                            setCommentPagination((pre) => pre + 1);
-                                                        }}
-                                                    >
-                                                        Xem thêm
-                                                    </Button>
-                                                )}
-                                            </>
-                                        ) : (
-                                            <div className="p-6">Chưa có đánh giá nào</div>
-                                        )}
-                                    </>
-                                )}
-                            </ul>
-                        ) : (
-                            <ul className="border border-slate-200 rounded-lg shadow ease-in">
-                                {commentListState === null ? (
-                                    <LoadingProcess />
-                                ) : (
-                                    <>
-                                        {commentListState.length > 0 ? (
-                                            commentListState.map((review, index) => {
-                                                return (
-                                                    <li key={index}>
-                                                        <CommentCard
-                                                            avatar={review.userAvatar}
-                                                            comment={review.comment}
-                                                            username={review.userName}
-                                                            fullname={review.fullname}
-                                                            date={review.createdDate}
-                                                        />
-                                                    </li>
-                                                );
-                                            })
-                                        ) : (
-                                            <div className="p-6">Chưa có bình luận nào</div>
-                                        )}
-                                    </>
-                                )}
-                            </ul>
-                        )}
+                        <ul className="border border-slate-200 rounded-lg shadow ease-in">
+                            {reviewListState === null ? (
+                                <LoadingProcess />
+                            ) : (
+                                <>
+                                    {reviewListState.length > 0 ? (
+                                        <>
+                                            {reviewListState
+                                                .filter((review, index) => {
+                                                    return index + 1 <= commentPagination * 5;
+                                                })
+                                                .map((review, index) => {
+                                                    return (
+                                                        <li key={index}>
+                                                            <ReviewCard
+                                                                avatar={review.userAvatar}
+                                                                comment={review.comment}
+                                                                stars={review.stars}
+                                                                username={review.userName}
+                                                            />
+                                                            {index < reviewListState.length - 1 && <Line />}
+                                                        </li>
+                                                    );
+                                                })}
+                                            {reviewListState.length > commentPagination * 5 && (
+                                                <Button
+                                                    onClick={(e) => {
+                                                        setCommentPagination((pre) => pre + 1);
+                                                    }}
+                                                >
+                                                    Xem thêm
+                                                </Button>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="p-6">Chưa có đánh giá nào</div>
+                                    )}
+                                </>
+                            )}
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -618,15 +614,9 @@ function ClassIntroPage() {
                                 allowfullscreen
                             ></iframe>
                         ) : (
-                            <iframe
-                                width="100%"
-                                height="360"
-                                src="https://www.youtube.com/embed/HndV87XpkWg"
-                                title="What&#39;s Education For?"
-                                frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowfullscreen
-                            ></iframe>
+                            <div className="w-full shadow rounded overflow-hidden">
+                                <img alt="" className="w-full" src={classDataState.avatar} />
+                            </div>
                         )}
                     </div>
                     <div className="flex flex-col items-center mt-4 sm:mt-0">
@@ -669,7 +659,7 @@ function ClassIntroPage() {
                                                     <FontAwesomeIcon className="ml-2" icon={faCartShopping} />
                                                 </Button>
                                             }
-                                            agreeAction={classDataState.fee > 0 ? buyClass : enrollClass}
+                                            agreeAction={totalFee > 0 ? buyClass : enrollClass}
                                             title={'Đăng ký học'}
                                             visibleButton={
                                                 !(successfulEnrollmentState === 1 || successfulEnrollmentState === -1)
@@ -711,9 +701,20 @@ function ClassIntroPage() {
                                     )}
                                     {memberState.memberAccepted === 0 && memberState.classAccepted === 1 && (
                                         <div>
-                                            <Button onClick={acceptJoinClass} variant="contained">
-                                                Chấp nhận
-                                            </Button>
+                                            {memberState.classRole === 'student' ? (
+                                                <Button
+                                                    onClick={totalFee > 0 ? acceptBuyClass : acceptJoinClass}
+                                                    variant="contained"
+                                                >
+                                                    {totalFee > 0
+                                                        ? 'Chấp nhận tham gia trả phí'
+                                                        : 'Chấp nhận tham gia miễn phí'}
+                                                </Button>
+                                            ) : (
+                                                <Button onClick={acceptJoinClass} variant="contained">
+                                                    Chấp nhận
+                                                </Button>
+                                            )}
                                         </div>
                                     )}
                                 </>

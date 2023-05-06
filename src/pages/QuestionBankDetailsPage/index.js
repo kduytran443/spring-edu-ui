@@ -30,6 +30,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import ChoiceQuestionDetailsDeleteDialog from '~/components/ChoiceQuestionDetailsDeleteDialog';
 import ChoiceQuestionDetailsDialog from '~/components/ChoiceQuestionDetailsDialog';
 import ChoiceQuestionEditDetailsDialog from '~/components/ChoiceQuestionEditDetailsDialog';
+import ChoiceQuestionViewDetailsDialog from '~/components/ChoiceQuestionViewDetailsDialog';
+import CustomFilePreview from '~/components/CustomFilePreview';
 import QuestionBankCreateDialog from '~/components/QuestionBankCreateDialog';
 import QuestionBankDeleteDialog from '~/components/QuestionBankDeleteDialog';
 import QuestionBankEditDialog from '~/components/QuestionBankEditDialog';
@@ -64,9 +66,11 @@ function QuestionBankDetailsPage() {
     };
 
     useEffect(() => {
-        loadData();
-        loadQuestion();
-    }, [location]);
+        if (userState.id) {
+            loadData();
+            loadQuestion();
+        }
+    }, [location, userState]);
 
     const loadQuestion = () => {
         choiceQuestionSerivce.getChoiceQuestionsByQuestionBankId(questionBankId).then((data) => {
@@ -78,6 +82,8 @@ function QuestionBankDetailsPage() {
 
     const [newQuestionName, setNewQuestionName] = useState('');
     const [newQuestionContent, setNewQuestionContent] = useState('');
+    const [newQuestionImportant, setNewQuestionImportant] = useState(0);
+    const [newQuestionFile, setNewQuestionFile] = useState();
 
     const setData = (data) => {
         setNewQuestionContent(data);
@@ -98,6 +104,14 @@ function QuestionBankDetailsPage() {
         });
         setChoiceAnswerController(arr);
         clear();
+    };
+
+    const handleChangeImportant = (e) => {
+        if (e.target.checked) {
+            setNewQuestionImportant(1);
+        } else {
+            setNewQuestionImportant(0);
+        }
     };
 
     const handleChangeCorrect = (index, e) => {
@@ -193,7 +207,13 @@ function QuestionBankDetailsPage() {
                 questionBank: questionBankId,
                 name: newQuestionName.trim(),
                 content: newQuestionContent,
+                important: newQuestionImportant,
             };
+
+            if (newQuestionFile) {
+                choiceQuestionObj.file = newQuestionFile;
+            }
+
             choiceQuestionSerivce.postChoiceQuestion(choiceQuestionObj).then((data) => {
                 if (data.id) {
                     const choiceQuestionId = data.id;
@@ -233,14 +253,25 @@ function QuestionBankDetailsPage() {
                 },
             },
             {
+                field: 'important',
+                headerName: 'Quan trọng',
+                width: 120,
+                renderCell: (param) => {
+                    return <div>{param.value === 1 ? 'Có' : 'Không'}</div>;
+                },
+            },
+            {
                 field: 'id',
                 headerName: 'Thao tác',
-                width: 220,
+                width: 300,
                 renderCell: (param) => {
                     return (
                         <>
                             <div className="mr-4">
-                                <ChoiceQuestionEditDetailsDialog choiceQuestionId={param.value} />
+                                <ChoiceQuestionViewDetailsDialog choiceQuestionId={param.value} />
+                            </div>
+                            <div className="mr-4">
+                                <ChoiceQuestionEditDetailsDialog reload={loadQuestion} choiceQuestionId={param.value} />
                             </div>
                             <div>
                                 <ChoiceQuestionDetailsDeleteDialog
@@ -254,6 +285,28 @@ function QuestionBankDetailsPage() {
             },
         ];
     }, []);
+
+    const uploadFileQuestion = (e) => {
+        const files = e.target.files;
+        const file = files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                const obj = {
+                    type: file.type,
+                    size: file.size,
+                    name: file.name,
+                    data: reader.result,
+                };
+
+                setNewQuestionFile(obj);
+            };
+            reader.onerror = (error) => {
+                console.log('error uploading!');
+            };
+        }
+    };
 
     return (
         <div className="p-4">
@@ -298,6 +351,16 @@ function QuestionBankDetailsPage() {
                     <div className="w-full mt-4">
                         <div>Nội dung</div>
                         <RichTextEditor data={newQuestionContent} setData={setData} />
+                    </div>
+                    <div className="w-full mt-4 mb-2">
+                        <input className="w-full" onChange={uploadFileQuestion} type="file" />
+                        {newQuestionFile && <CustomFilePreview fileData={newQuestionFile} />}
+                    </div>
+                    <div>
+                        <FormControlLabel
+                            control={<Checkbox onChange={handleChangeImportant} checked={newQuestionImportant === 1} />}
+                            label="Quan trọng"
+                        />
                     </div>
                     {choiceAnswerController.map((choiceAnswer, index) => {
                         return (

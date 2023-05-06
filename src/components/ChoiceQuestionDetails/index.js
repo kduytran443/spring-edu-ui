@@ -44,6 +44,7 @@ export default function ChoiceQuestionDetails({
 
     const [newQuestionName, setNewQuestionName] = useState('');
     const [newQuestionContent, setNewQuestionContent] = useState('');
+    const [newQuestionImportant, setNewQuestionImportant] = useState(0);
 
     const setData = (data) => {
         setNewQuestionContent(data);
@@ -56,7 +57,7 @@ export default function ChoiceQuestionDetails({
             if (data.id) {
                 setNewQuestionName(data.name);
                 setNewQuestionContent(data.content);
-                console.log('data.content', data.content);
+                setNewQuestionImportant(data.important);
             }
         });
     };
@@ -132,7 +133,8 @@ export default function ChoiceQuestionDetails({
             <div className="mt-4 w-full">
                 <div className="w-full">
                     <div className="font-bold">
-                        Tên câu hỏi: {newQuestionName} ({numberOfRightAnswer} đáp án đúng)
+                        {!!newQuestionImportant && <div className="text-red-500">(Câu điểm liệt)</div>} Tên câu hỏi:{' '}
+                        {newQuestionName} ({numberOfRightAnswer} đáp án đúng)
                     </div>
                 </div>
                 {newQuestionContent && (

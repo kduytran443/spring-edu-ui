@@ -139,12 +139,10 @@ function ClassHistoryPage() {
     };
 
     useEffect(() => {
-        console.log('selectedEventState', selectedEventState);
         if (selectedEventState) {
             meetingActionService
                 .getAllByClassIdAndRange(classId, selectedEventState.start.getTime(), selectedEventState.end.getTime())
                 .then((data) => {
-                    console.log('history nè', data);
                     if (data.length >= 0) {
                         setHistoryList(data);
                     }
@@ -158,7 +156,6 @@ function ClassHistoryPage() {
                 <div className={`w-full ${!selectedEventState && 'xl:w-[100%]'}`}>
                     <Calendar
                         onSelectEvent={(e) => {
-                            console.log(e.title, e.id);
                             setSelectedEventState({
                                 title: e.title,
                                 description: e.description,

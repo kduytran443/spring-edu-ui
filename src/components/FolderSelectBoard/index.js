@@ -31,6 +31,7 @@ import RichTextEditor from '../RichTextEditor';
 import { renderToTime } from '~/utils';
 import { openInNewTab } from '~/utils';
 import NoteFolderEditDialog from '../NoteFolderEditDialog';
+import DeleteFolderDialog from '../DeleteFolderDialog';
 
 function FolderSelectBoard() {
     const [noteFolders, setNoteFolders] = useState([]);
@@ -67,7 +68,6 @@ function FolderSelectBoard() {
     const loadFolder = () => {
         noteFolderService.getById(selectedNoteFolderId).then((data) => {
             if (data.id) {
-                console.log(data);
                 setSelectedFolder(data);
             }
         });
@@ -92,6 +92,13 @@ function FolderSelectBoard() {
         }
     }, [selectedNoteId]);
 
+    const loadAfterDeleteFolder = () => {
+        setSelectedFolder();
+        setSelectedNoteFolderId();
+        loadNoteData();
+        loadFolder();
+    };
+
     const navigate = useNavigate();
 
     return (
@@ -99,8 +106,8 @@ function FolderSelectBoard() {
             <>
                 {!selectedNoteFolderId ? (
                     <>
-                        <NoteFolderCreateDialog reload={loadData} />
-                        <div className="flex flex-col flex-wrap items-start md:flex-row">
+                        {noteFolders.length > 0 && <NoteFolderCreateDialog reload={loadData} />}
+                        <div className="flex flex-col flex-wrap items-start md:flex-row text-gray-500">
                             {noteFolders.map((noteFolder, index) => {
                                 return (
                                     <div key={index} className="p-4 max-w-full">
@@ -111,11 +118,7 @@ function FolderSelectBoard() {
                                             className="p-4 hover:bg-slate-100 max-w-full duration-200 cursor-pointer rounded"
                                         >
                                             <div>
-                                                <Avatar
-                                                    variant="square"
-                                                    src={images.folder}
-                                                    sx={{ width: '64px', height: '64px' }}
-                                                />
+                                                <FontAwesomeIcon icon={faFolder} className="text-5xl" />
                                             </div>
                                             <div className="max-w-[200px] overflow-hidden truncate">
                                                 {noteFolder.name}
@@ -124,6 +127,14 @@ function FolderSelectBoard() {
                                     </div>
                                 );
                             })}
+                            {noteFolders.length === 0 && (
+                                <div className="flex flex-col items-center min-h-full h-full justify-center w-full">
+                                    <div>Chưa có thư mục nào, hãy tạo</div>
+                                    <div>
+                                        <NoteFolderCreateDialog reload={loadData} />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </>
                 ) : (
@@ -153,6 +164,13 @@ function FolderSelectBoard() {
                                 reload={loadFolder}
                             />
                             <NoteCreateDialog reload={loadNoteData} noteFolderId={selectedNoteFolderId} />
+                            {selectedFolder && (
+                                <DeleteFolderDialog
+                                    folderId={selectedNoteFolderId}
+                                    folderName={selectedFolder.name}
+                                    reload={loadAfterDeleteFolder}
+                                />
+                            )}
                         </div>
                         <div className="flex flex-col flex-wrap items-start md:flex-row">
                             {noteList.map((note, index) => {
@@ -165,10 +183,9 @@ function FolderSelectBoard() {
                                             className="p-4 hover:bg-slate-100 max-w-full duration-200 cursor-pointer rounded"
                                         >
                                             <div>
-                                                <Avatar
-                                                    variant="square"
-                                                    src={images.note}
-                                                    sx={{ width: '64px', height: '64px' }}
+                                                <FontAwesomeIcon
+                                                    icon={faFile}
+                                                    className="mr-2 text-blue-500 text-5xl"
                                                 />
                                             </div>
                                             <div className="max-w-[200px] overflow-hidden truncate">{note.name}</div>

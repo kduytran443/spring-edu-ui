@@ -155,7 +155,6 @@ export default function AdminCreateUserDialog({ loadData = () => {} }) {
 
         var emailRegex = /^[0-9a-zA-Z]+(@gmail.com)$/;
         if (newAdminDataState.email.length === 0 || !newAdminDataState.email.match(emailRegex)) {
-            console.log('EMAIL error', newAdminDataState.email);
             setEmailError('Email không hợp lệ');
             valid = false;
         } else {

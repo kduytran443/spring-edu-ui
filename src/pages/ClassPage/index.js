@@ -138,13 +138,6 @@ function ClassPage() {
         });
     };
 
-    useEffect(() => {
-        console.log('mount');
-        return () => {
-            console.log('Unmount');
-        };
-    }, [location]);
-
     return (
         <>
             <div className="mb-6">

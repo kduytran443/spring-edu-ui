@@ -22,7 +22,6 @@ function GradeTestPage() {
     const loadData = () => {
         exerciseService.getExerciseById(exerciseId).then((data) => {
             if (data.id) {
-                console.log('data', data);
                 setExerciseData(data);
                 setTimeout(() => {
                     setLoadingState(false);

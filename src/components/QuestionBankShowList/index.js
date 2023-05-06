@@ -47,7 +47,9 @@ function QuestionBankShowList() {
                                                 sx={{ width: '64px', height: '64px' }}
                                             />
                                         </div>
-                                        <div>{questionBank.name}</div>
+                                        <div className="max-w-[180px] overflow-hidden truncate">
+                                            {questionBank.name}
+                                        </div>
                                     </div>
                                 }
                             />

@@ -72,6 +72,7 @@ function ClassLessonPage() {
         classLessonService.getClassLessonServiceById(lessonId).then((data) => {
             if (data.status !== 500) {
                 setLessonDataState(data);
+                setLoadingState(false);
             } else {
                 navigate('/class/' + classId);
             }
@@ -85,18 +86,10 @@ function ClassLessonPage() {
 
     useEffect(() => {
         /*
-        if (textDataRef.current) {
-            textDataRef.current.style.display = 'none';
-            setTimeout(() => {
-                textDataRef.current.style.display = 'block';
-            }, 100);
-        }*/
-    }, [lessonDataState]);
-
-    useEffect(() => {
         const timeout = setTimeout(() => {
             setLoadingState(false);
         }, 2000);
+        */
     }, [location]);
 
     /*PRIVATE*/
@@ -121,7 +114,6 @@ function ClassLessonPage() {
         fetch(`${API_BASE_URL}/api/class-lesson-review/${lessonId}?move=previous`, config)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 if (data.status === 500) {
                     setPreviousLessonState(null);
                 } else {
@@ -153,7 +145,6 @@ function ClassLessonPage() {
     const loadFile = () => {
         fileService.getFilesOnClassLessonId(lessonId).then((data) => {
             if (data.status !== 500) {
-                console.log('setFileListState ', data);
                 setFileListState(data);
             }
         });
@@ -168,7 +159,6 @@ function ClassLessonPage() {
     const deleteLesson = () => {
         classLessonService.deleteClassLesson({ id: lessonId }).then((data) => {
             if (data.status !== 500) {
-                console.log("navigate('/class/' + classId);", data);
                 navigate('/class/' + classId);
             }
         });
@@ -260,7 +250,6 @@ function ClassLessonPage() {
         formData.append('file', files[0]);
         uploadService.post(formData).then((res) => {
             if (res.ok) {
-                console.log(res.data);
                 alert('File uploaded successfully.');
             }
         });
@@ -269,9 +258,6 @@ function ClassLessonPage() {
     return (
         <div className="w-full p-4 md:p-0 text-justify">
             {loadingState && <LoadingPageProcess />}
-            <div className="w-full">
-                <input ref={fileRef} type="file" name="file" onChange={uploadFile} />
-            </div>
             <div className="flex flex-row items-start justify-between">
                 <Button
                     onClick={(e) => {

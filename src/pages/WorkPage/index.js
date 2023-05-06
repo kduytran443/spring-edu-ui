@@ -71,7 +71,6 @@ function WorkPage() {
 
                     return obj;
                 });
-                console.log('Teacher ', arr);
                 setSubmittedExercisesOfTeacher(arr);
             }
         });
@@ -124,7 +123,6 @@ function WorkPage() {
                             const colorAvatar = {};
                             const resultStatus = checkStatus(classExercise.id);
                             const isAvailable = date.getTime() < classExercise.endTime && resultStatus !== 1;
-                            console.log('resultStatus', resultStatus);
                             if (isAvailable) {
                                 colorAvatar.bgcolor = blue[500];
                             } else {

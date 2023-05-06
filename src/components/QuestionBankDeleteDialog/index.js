@@ -27,9 +27,7 @@ export default function QuestionBankDeleteDialog({ questionBankId, reload = () =
     };
 
     const handleAgree = () => {
-        console.log('okok');
         questionBankService.deleteQuestionBank({ id: questionBankId }).then((data) => {
-            console.log('okok');
             navigate('/question-bank');
         });
     };

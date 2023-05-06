@@ -31,6 +31,7 @@ function ClassEveryonePage() {
 
     const [invitedUserListState, setInvitedUserListState] = useState([]);
     const [requestUserListState, setRequestUserListState] = useState([]);
+    const [discountPercent, setDiscountPercent] = useState(0);
 
     const loadInvitedUser = () => {
         classMemberService.getInvitedClassMemberByClassId(classId).then((data) => {
@@ -201,10 +202,15 @@ function ClassEveryonePage() {
                 <Divider />
             </div>
             <div className="flex flex-row items-center justify-between">
-                <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Giáo viên được mời</h1>
+                <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Trợ giảng</h1>
                 {userRole && userRole === 'teacher' && (
                     <div>
-                        <DialogAddNewMember role="supporter" currentList={peopleListState} classId={classId} />
+                        <DialogAddNewMember
+                            role="supporter"
+                            reload={loadData}
+                            currentList={peopleListState}
+                            classId={classId}
+                        />
                     </div>
                 )}
             </div>
@@ -258,7 +264,12 @@ function ClassEveryonePage() {
                 <h1 className="font-black text-2xl my-4 pl-2 md:pl-0">Học viên</h1>
                 {userRole && userRole === 'teacher' && (
                     <div>
-                        <DialogAddNewMember role="student" currentList={peopleListState} classId={classId} />
+                        <DialogAddNewMember
+                            role="student"
+                            reload={loadData}
+                            currentList={peopleListState}
+                            classId={classId}
+                        />
                     </div>
                 )}
             </div>

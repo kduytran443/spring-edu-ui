@@ -298,14 +298,12 @@ function ClassCreateExercisePage() {
                             content: textData,
                             classExcerciseId: data.id,
                         };
-                        console.log('Tạo thành công', data, constructedResponse);
                         constructedResponseTestService.post(constructedResponse).then((test) => {
                             const obj = {
                                 content: classDataState.name + ' vừa có bài tự luận mới: ' + data.name,
                                 redirectUrl: '/class/' + classId + '/exercise/' + data.id,
                                 receiverIds: classMemberIds,
                             };
-                            console.log('Tạo bài tự luận ok');
                             notificationService.post(obj).then((notification) => {
                                 setTimeout(() => {
                                     sendContext(classMemberIds);

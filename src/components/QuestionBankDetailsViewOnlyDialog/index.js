@@ -67,6 +67,14 @@ export default function QuestionBankDetailsViewOnlyDialog({ button, questionBank
             },
         },
         {
+            field: 'important',
+            headerName: 'Quan trọng',
+            width: 120,
+            renderCell: (param) => {
+                return <div>{param.value === 1 ? 'Có' : 'Không'}</div>;
+            },
+        },
+        {
             field: 'id',
             headerName: 'Thao tác',
             width: 220,

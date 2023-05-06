@@ -36,13 +36,11 @@ export default function ReportClassDialog({ classId, reload = () => {} }) {
     const [alertSuccess, setAlertSuccess] = useState(0);
     const [reportTextData, setReportTextData] = useState('');
     const report = () => {
-        console.log(reportTextData);
         if (reportTextData) {
             const obj = {
                 classId: classId,
                 content: reportTextData,
             };
-            console.log('obj', obj);
             reportService.postReport(obj).then((data) => {
                 if (data.id) {
                     setAlertSuccess(1);

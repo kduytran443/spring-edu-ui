@@ -38,6 +38,7 @@ function CategoryPage() {
         fetch(`${API_BASE_URL}/public/api/category/${categoryCode}`)
             .then((res) => res.json())
             .then((data) => {
+                console.log('data', data);
                 setCategoryDataState(data);
             });
     }, [location]);

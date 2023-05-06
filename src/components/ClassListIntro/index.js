@@ -58,8 +58,6 @@ function ClassListIntro({
             <ul className={`flex flex-row flex-wrap w-full`}>
                 {listItem.length >= 0 &&
                     listItem.map((item, index) => {
-                        console.log(item.registed);
-
                         let nav = '/intro';
 
                         return (

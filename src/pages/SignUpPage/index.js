@@ -116,8 +116,6 @@ function SignUpPage() {
         }
 
         if (validForm) {
-            console.log(usernameState, passwordState);
-
             //fetch-api
             const obj = {
                 username: usernameState,

@@ -27,6 +27,7 @@ import DialogProcessLoading from '../DialogProcessLoading';
 import LoadingPageProcess from '../LoadingPageProcess';
 import RichTextEditor from '../RichTextEditor';
 import ShowTextData from '../ShowTextData';
+import CustomFilePreview from '../CustomFilePreview';
 
 export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload = () => {} }) {
     const [open, setOpen] = useState(false);
@@ -44,6 +45,8 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
 
     const [newQuestionName, setNewQuestionName] = useState('');
     const [newQuestionContent, setNewQuestionContent] = useState('');
+    const [newQuestionFile, setNewQuestionFile] = useState();
+    const [newQuestionImportant, setNewQuestionImportant] = useState(0);
 
     const setData = (data) => {
         setNewQuestionContent(data);
@@ -56,6 +59,8 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
             if (data.id) {
                 setNewQuestionName(data.name);
                 setNewQuestionContent(data.content);
+                setNewQuestionImportant(data.important);
+                if (data.file) setNewQuestionFile(data.file);
                 setTimeout(() => {
                     setLoadingState(false);
                 }, 500);
@@ -115,6 +120,16 @@ export default function ChoiceQuestionDetailsDialog({ choiceQuestionId, reload =
                             <div className="w-full mt-4">
                                 <div className="font-bold">Nội dung</div>
                                 {<RichTextEditor disabled data={newQuestionContent} />}
+                            </div>
+                            <div className="w-full mt-4 mb-2">
+                                {newQuestionFile && <CustomFilePreview fileData={newQuestionFile} />}
+                            </div>
+                            <div>
+                                <FormControlLabel
+                                    control={<Checkbox checked={newQuestionImportant === 1} />}
+                                    disabled
+                                    label="Quan trọng"
+                                />
                             </div>
                             {choiceAnswerController.map((choiceAnswer, index) => {
                                 return (

@@ -25,6 +25,7 @@ export default function CalendarItem({
     onUpdate = () => {},
     setData = () => {},
     close = () => {},
+    disableImg = false,
 }) {
     const [enableEditingState, setEnableEditingState] = useState(false);
     const [removeAlertState, setRemoveAlertState] = useState(false);
@@ -74,13 +75,15 @@ export default function CalendarItem({
                     <FontAwesomeIcon icon={faXmarkCircle} />
                 </IconButton>
             </div>
-            <CardMedia
-                className="max-h-[245px]"
-                component="img"
-                alt="green iguana"
-                height="140"
-                image={dataState.img}
-            />
+            {!disableImg && (
+                <CardMedia
+                    className="max-h-[245px]"
+                    component="img"
+                    alt="green iguana"
+                    height="140"
+                    image={dataState.img}
+                />
+            )}
             <CardContent className="flex-1">
                 <Typography gutterBottom variant="h5" component="div">
                     {enableEditingState ? (

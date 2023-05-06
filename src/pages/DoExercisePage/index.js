@@ -48,7 +48,7 @@ function DoExercisePage() {
 
     const [timeLeft, setTimeLeft] = useState(null);
     useEffect(() => {
-        if (submittedExercise && submittedExercise.timeLimit) {
+        if (submittedExercise && submittedExercise.classExcercise && submittedExercise.classExcercise.timeLimit) {
             const date = new Date();
             let left = date.getTime() - submittedExercise.startTime;
             left = exerciseData.timeLimit * 60000 - left;

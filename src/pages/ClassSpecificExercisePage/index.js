@@ -32,7 +32,6 @@ function ClassSpecificExercisePage() {
     const loadData = () => {
         exerciseService.getExerciseById(exerciseId).then((data) => {
             if (data.id) {
-                console.log('data', data);
                 setExerciseData(data);
                 setTimeout(() => {
                     setLoadingState(false);
@@ -120,16 +119,6 @@ function ClassSpecificExercisePage() {
         loadData();
         loadRole();
     }, [location]);
-
-    useEffect(() => {
-        console.log('submittedExercise', submittedExercise);
-        console.log(
-            exerciseData.endTime,
-            date.getTime(),
-            date.getTime() >= exerciseData.endTime,
-            !submittedExercise || !submittedExercise.submitTime,
-        );
-    }, [submittedExercise]);
 
     useEffect(() => {
         if (classRole === 'teacher' || classRole === 'supporter') {

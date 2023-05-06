@@ -28,7 +28,6 @@ function ClassLessonUpdatePage() {
     const loadTopic = () => {
         topicService.getTopicByClassId(classId).then((data) => {
             if (data.status !== 500) {
-                console.log(data);
                 setTopicListState(data);
             }
         });
@@ -130,7 +129,6 @@ function ClassLessonUpdatePage() {
             if (data.id) {
                 setTextData(data.textData);
                 setNameState(data.name);
-                console.log('datadata', data.textData);
                 setTopicIdState(data.topicId);
                 setFileListState(data.files);
             }

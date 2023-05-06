@@ -101,7 +101,6 @@ function ClassLayout({ children }) {
     const [userRole, setUserRole] = useState();
     const loadUserData = () => {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
-            console.log(data);
             if (isValidRole(data.classRole) && data.memberAccepted === 1 && data.classAccepted === 1) {
                 setUserRole(data.classRole);
             } else {

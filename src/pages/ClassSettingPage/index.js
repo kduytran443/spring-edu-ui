@@ -33,6 +33,7 @@ import ClassDeleteDialog from './ClassDeleteDialog';
 import { renderToVND } from '~/utils';
 import RevenueTable from '~/components/RevenueTable';
 import DeleteScheduleDialog from '~/components/DeleteScheduleDialog';
+import UpdatePercentDialog from '~/components/UpdatePercentDialog';
 
 function ClassSettingPage() {
     const location = useLocation();
@@ -77,7 +78,11 @@ function ClassSettingPage() {
             .then((data) => {
                 if (data.status === 500) {
                     navigate('/class/' + classId);
-                } else setClassDataState(data);
+                } else {
+                    console.log('data.minimumCompletionRate', data, data.minimumCompletionRate);
+                    setClassDataState(data);
+                    setMinimumCompletionRate(data.minimumCompletionRate);
+                }
             });
     };
 
@@ -312,6 +317,8 @@ function ClassSettingPage() {
 
     const [revenue, setRevenue] = useState(0);
 
+    const [minimumCompletionRate, setMinimumCompletionRate] = useState();
+
     return (
         <div className="p-2 md:p-0">
             <h1 className="font-bold text-xl my-2">Cài đặt</h1>
@@ -329,6 +336,21 @@ function ClassSettingPage() {
                     label="Ẩn lớp học khỏi trang chính"
                 />
             </FormGroup>
+            <div className="mt-8 mb-16 w-full">
+                <div>Tỉ lệ hoàn thành tối thiểu cấp chứng nhận</div>
+                <TextField
+                    className="w-full"
+                    type="number"
+                    value={minimumCompletionRate}
+                    onInput={(e) => {
+                        if (e.target.value >= 0 && e.target.value <= 100) {
+                            setMinimumCompletionRate(e.target.value);
+                        }
+                    }}
+                    disabled
+                />
+                <UpdatePercentDialog percent={minimumCompletionRate} setData={setMinimumCompletionRate} />
+            </div>
             <div className="my-12 p-4 bg-slate-100 rounded">
                 <div className="mb-4">
                     <FontAwesomeIcon icon={faMoneyCheck} className="mr-4" /> Doanh thu: <b>{renderToVND(revenue)}</b>

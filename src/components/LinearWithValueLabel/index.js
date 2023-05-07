@@ -12,11 +12,11 @@ function LinearProgressWithLabel(props) {
                     <LinearProgress
                         sx={{ minHeight: 32 }}
                         variant="determinate"
-                        color={props.value >= 50 ? 'primary' : 'error'}
+                        color={props.value >= props.minimumCompletionRate ? 'primary' : 'error'}
                         {...props}
                     />
                     <div className="absolute text-white font-semibold text-lg drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
-                        {props.value >= 50 ? 'Đạt' : 'Không đạt'}
+                        {props.value >= props.minimumCompletionRate ? 'Đạt' : 'Không đạt'}
                     </div>
                 </div>
             </Box>
@@ -31,10 +31,10 @@ LinearProgressWithLabel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-export default function LinearWithValueLabel({ progress = 50 }) {
+export default function LinearWithValueLabel({ progress = 50, minimumCompletionRate = 50 }) {
     return (
         <Box sx={{ width: '100%' }}>
-            <LinearProgressWithLabel value={progress} />
+            <LinearProgressWithLabel minimumCompletionRate={minimumCompletionRate} value={progress} />
         </Box>
     );
 }

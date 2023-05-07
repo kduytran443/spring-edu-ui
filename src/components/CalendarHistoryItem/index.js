@@ -10,12 +10,13 @@ import DateTimePicker from 'react-datetime-picker';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import AlertDialogSlide from '../AlertDialogSlide';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { renderToTime } from '~/utils';
 import LinearWithValueLabel from '../LinearWithValueLabel';
 import HistoryLinearWithValueLabel from '../HistoryLinearWithValueLabel';
 import { TextFields } from '@mui/icons-material';
 import CalendarHistoryDialog from '../CalendarHistoryDialog';
+import { classMemberService } from '~/services/classMemberService';
 
 export default function CalendarHistoryItem({
     data = {
@@ -36,6 +37,7 @@ export default function CalendarHistoryItem({
     const [enableEditingState, setEnableEditingState] = useState(false);
     const [removeAlertState, setRemoveAlertState] = useState(false);
     const [dataState, setDataState] = useState(data);
+    const { classId } = useParams();
 
     const [calendarObj, setCalendarObj] = useState({});
 
@@ -79,8 +81,6 @@ export default function CalendarHistoryItem({
     };
 
     useEffect(() => {
-        console.log('historyList', historyList);
-
         const obj = historyList.reduce((x, y) => {
             (x[y.username] = x[y.username] || []).push(y);
             return x;
@@ -129,6 +129,28 @@ export default function CalendarHistoryItem({
         }
         return result;
     };
+
+    const location = useLocation();
+
+    const [classMemberState, setClassMemberState] = useState({});
+    const loadUserData = () => {
+        classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
+            if (isValidRole(data.classRole) && data.memberAccepted === 1 && data.classAccepted === 1) {
+                setClassMemberState(data);
+            }
+        });
+    };
+
+    const isValidRole = (role) => {
+        if (role === 'teacher' || role === 'supporter' || role === 'student') {
+            return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, [location]);
 
     return (
         <Card className="relative w-full h-full flex flex-col">
@@ -191,6 +213,11 @@ export default function CalendarHistoryItem({
                             if (!search(key)) {
                                 return <></>;
                             }
+
+                            if (classMemberState.classRole === 'student' && classMemberState.username !== key) {
+                                return <></>;
+                            }
+
                             return (
                                 <li
                                     className="w-full my-6 flex flex-col rounded-lg bg-slate-50 shadow border border-slate-200 p-4"

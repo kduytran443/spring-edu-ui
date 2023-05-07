@@ -74,4 +74,9 @@ export const classMemberService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
+    async deleteCertification(classMember) {
+        const config = deleteConfig(classMember);
+        const response = await fetch(`${API_BASE_URL}/${this.api}/certification`, config);
+        return response.json();
+    },
 };

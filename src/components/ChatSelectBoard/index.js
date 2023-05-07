@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Avatar, Button, IconButton, TextField } from '@mui/material';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { classService } from '~/services/classService';
 import { messageService } from '~/services/messageService';
 import ChatMessage from '../ChatMessage';
@@ -20,6 +20,7 @@ import { NotificationSocketContext } from '../NotificationSocketProvider';
 import { useContext } from 'react';
 import { useRef } from 'react';
 import { useUser } from '~/stores/UserStore';
+import LoadingProcess from '../LoadingProcess';
 
 function ChatSelectBoard() {
     const [classListState, setClassListState] = useState([]);
@@ -137,6 +138,8 @@ function ChatSelectBoard() {
 
     const scrollRef = useRef();
     const readRef = useRef();
+    const navigate = useNavigate();
+    const boxRef = useRef();
 
     return (
         <div className="w-[320px] h-[480px] md:w-[480px] md:h-[520px] bg-white rounded shadow-lg outline outline-slate-200 p-2 flex flex-col overflow-y-auto">
@@ -188,14 +191,35 @@ function ChatSelectBoard() {
                             <div className="mr-2 hidden md:block">
                                 <Avatar variant="square" src={classData.avatar} />
                             </div>
-                            <div className="max-w-[210px] md:max-w-[260px] flex-1 overflow-hidden truncate">
+                            <div
+                                onClick={(e) => {
+                                    navigate('/class/' + classData.id);
+                                }}
+                                className="max-w-[210px] select-none cursor-pointer hover:text-blue-500 md:max-w-[260px] flex-1 overflow-hidden truncate"
+                            >
                                 {classData.name}
                             </div>
                         </div>
                     </div>
-                    <div className="w-full flex flex-col items-center flex-1 max-h-[calc(480px-100px)] md:max-h-[calc(520px-100px)] overflow-y-auto">
-                        <div ref={scrollRef}></div>
-                        <div className="w-full flex flex-col items-start flex-1">
+                    <div
+                        ref={boxRef}
+                        onScroll={(e) => {
+                            let element = e.target;
+                            if (element.scrollTop === 0 && read * 10 < chatMessageList.length) {
+                                const height = boxRef.current.offsetHeight;
+                                setRead(read + 1);
+                                boxRef.current.scrollTop = height;
+                            }
+                        }}
+                        className="w-full flex flex-col items-center flex-1 min-h-[calc(480px-100px)] md:min-h-[calc(520px-100px)] max-h-[calc(480px-100px)] md:max-h-[calc(520px-100px)] overflow-y-auto"
+                    >
+                        {read * 10 < chatMessageList.length && (
+                            <div ref={readRef}>
+                                <LoadingProcess />
+                            </div>
+                        )}
+                        <div className="w-full flex flex-col-reverse items-start flex-1">
+                            <div ref={scrollRef}></div>
                             {chatMessageList.map((item, index) => {
                                 return index + 1 < read * 10 ? (
                                     <ChatMessage owner={userState.username === item?.user.username} message={item} />
@@ -204,18 +228,6 @@ function ChatSelectBoard() {
                                 );
                             })}
                         </div>
-                        {read * 10 < chatMessageList.length && (
-                            <div ref={readRef}>
-                                <IconButton
-                                    color="primary"
-                                    onClick={(e) => {
-                                        setRead(read + 1);
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={faDownLong} />
-                                </IconButton>
-                            </div>
-                        )}
                     </div>
                     <div className="w-full relative">
                         <div className="flex flex-row items-center">
@@ -235,6 +247,11 @@ function ChatSelectBoard() {
                                     value={chatText}
                                     onInput={(e) => {
                                         setChatText(e.target.value);
+                                    }}
+                                    onKeyUp={(e) => {
+                                        if (e.key === 'Enter' && chatText.trim()) {
+                                            sendMessage('text', chatText);
+                                        }
                                     }}
                                     placeholder="Message"
                                 />

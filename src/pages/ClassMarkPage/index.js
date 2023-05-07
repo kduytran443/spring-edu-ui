@@ -1,4 +1,4 @@
-import { faPercent } from '@fortawesome/free-solid-svg-icons';
+import { faCertificate, faPercent } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Autocomplete,
@@ -17,16 +17,17 @@ import { useLocation, useParams } from 'react-router-dom';
 import LinearWithValueLabel from '~/components/LinearWithValueLabel';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
 import { classMemberService } from '~/services/classMemberService';
+import { classService } from '~/services/classService';
 import { exerciseService } from '~/services/exerciseService';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import { renderToTime, showScore } from '~/utils';
 
 const columns = [
-    { field: 'name', headerName: 'Bài', width: 130 },
+    { field: 'name', headerName: 'Bài', width: 260 },
     {
         field: 'isQuizTest',
         headerName: 'Hình thức',
-        width: 150,
+        width: 100,
         renderCell: (param) => {
             return <>{param.value ? 'Trắc nghiệm' : 'Tự luận'}</>;
         },
@@ -42,7 +43,7 @@ const columns = [
     {
         field: 'mark',
         headerName: 'Điểm',
-        width: 160,
+        width: 128,
         renderCell: (param) => {
             return (
                 <>
@@ -60,7 +61,7 @@ const columns = [
     {
         field: 'effective',
         headerName: 'Tính điểm',
-        width: 120,
+        width: 100,
         renderCell: (param) => {
             return <>{param.value === 1 ? 'Có' : 'Không'}</>;
         },
@@ -158,6 +159,15 @@ function ClassMarkPage() {
                 });
         });
     };
+    const [classDataState, setClassDataState] = useState(null);
+
+    useEffect(() => {
+        classService.getClassIntroById(classId).then((data) => {
+            if (data.id) {
+                setClassDataState(data);
+            }
+        });
+    }, [classId]);
 
     useEffect(() => {
         loadRole();
@@ -266,6 +276,12 @@ function ClassMarkPage() {
     return (
         <div className="p-4 md:p-0">
             {loadingState && <LoadingPageProcess />}
+            {classDataState && (
+                <div className="text-lg text-blue-500 my-4">
+                    <FontAwesomeIcon icon={faCertificate} className="mr-2" /> Tỉ lệ tối thiểu đạt chứng nhận:{' '}
+                    <b>{classDataState.minimumCompletionRate}%</b>
+                </div>
+            )}
             {!isTeacherRole() ? (
                 <>
                     <div style={{ height: 400, width: '100%' }}>
@@ -275,6 +291,7 @@ function ClassMarkPage() {
                         {!!avargeEffectiveExerciseMark && (
                             <div className="w-full p-2">
                                 <LinearWithValueLabel
+                                    minimumCompletionRate={classDataState.minimumCompletionRate}
                                     progress={showScore((avargeEffectiveMark / avargeEffectiveExerciseMark) * 100, 1)}
                                 />
                             </div>
@@ -368,6 +385,7 @@ function ClassMarkPage() {
                                         {!!avargeEffectiveExerciseMark && (
                                             <div className="w-full p-2">
                                                 <LinearWithValueLabel
+                                                    minimumCompletionRate={classDataState.minimumCompletionRate}
                                                     progress={showScore(
                                                         (avargeEffective / avargeEffectiveExerciseMark) * 100,
                                                         1,

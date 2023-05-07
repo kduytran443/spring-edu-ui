@@ -1,4 +1,4 @@
-import { faCertificate, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faCertificate, faPlus, faRemove } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     Button,
@@ -27,6 +27,7 @@ import { renderToTime, showScore } from '~/utils';
 import { exerciseService } from '~/services/exerciseService';
 import LinearWithValueLabel from '../LinearWithValueLabel';
 import { certificationService } from '~/services/certificationService';
+import { classMemberService } from '~/services/classMemberService';
 
 const columns = [
     { field: 'name', headerName: 'Bài', width: 130 },
@@ -74,7 +75,7 @@ const columns = [
     },
 ];
 
-export default function CertificationDialog({
+export default function DeleteCertificationDialog({
     id,
     minimumCompletionRate,
     username,
@@ -140,15 +141,11 @@ export default function CertificationDialog({
 
     const handleAgree = () => {
         const obj = {
-            avg: avargeEffectiveMark,
-            comment: teacherComment,
-            classDTO: {
-                id: classId,
-            },
+            classId: classId,
             userId: userId,
         };
 
-        certificationService.post(obj).then((data) => {
+        classMemberService.deleteCertification(obj).then((data) => {
             setAlert(true);
             reload();
             setTimeout(() => {
@@ -202,7 +199,9 @@ export default function CertificationDialog({
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <Button startIcon={<FontAwesomeIcon icon={faCertificate} />}>Cấp chứng nhận</Button>
+                <Button color="error" startIcon={<FontAwesomeIcon icon={faRemove} />}>
+                    Thu hồi chứng nhận
+                </Button>
             </div>
             <Dialog
                 open={open}
@@ -259,19 +258,6 @@ export default function CertificationDialog({
                                     </div>
                                 </>
                             </div>
-                            <div className="w-full mt-4">
-                                <TextField
-                                    className="w-full"
-                                    value={teacherComment}
-                                    onInput={(e) => {
-                                        setTeacherComment(e.target.value);
-                                    }}
-                                    multiline
-                                    minRows={2}
-                                    maxRows={4}
-                                    label="Nhận xét (optional)"
-                                />
-                            </div>
                         </div>
                     </DialogContentText>
                 </DialogContent>
@@ -280,15 +266,9 @@ export default function CertificationDialog({
                         <Button color="inherit">Hủy</Button>
                     </div>
                     <div className="select-none cursor-pointer" autoFocus>
-                        {(avargeEffectiveMark / avargeEffectiveExerciseMark) * 100 >= minimumCompletionRate ? (
-                            <Button color="primary" onClick={handleAgree} variant="contained">
-                                Cấp chứng nhận
-                            </Button>
-                        ) : (
-                            <Button color="error" variant="contained">
-                                Không đủ điều kiện cấp chứng nhận
-                            </Button>
-                        )}
+                        <Button color="error" onClick={handleAgree} variant="contained">
+                            Thu hồi
+                        </Button>
                     </div>
                 </DialogActions>
             </Dialog>

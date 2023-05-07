@@ -44,7 +44,7 @@ function Certificate({ certificate = {} }) {
                 <div className="mb-4">
                     {certificateState.avg >= 50 ? 'Đạt' : 'Không đạt'}: {certificateState.avg} / 100
                 </div>
-                <div className="mb-4">Nhận xét: {certificateState.comment}</div>
+                {certificateState.comment && <div className="mb-4">Nhận xét: {certificateState.comment}</div>}
                 <div className="w-[120px] bg-white h-[120px] mt-16 rounded-full overflow-hidden">
                     <img className="h-full" alt="certification" src={images.miniFinishSeal} />
                 </div>

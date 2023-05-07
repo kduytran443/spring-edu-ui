@@ -348,7 +348,7 @@ function ClassSpecificExercisePage() {
                                 <ExerciseUploadWidget disable fileList={fileList} multiple />
                             </div>
                         )}
-                        <div className="flex flex-row items-center">
+                        <div className="flex flex-row items-center mt-[128px]">
                             <div className="text-lg font-bold">
                                 Số học viên đã làm bài: {submittedExercises.length} / {classMembers.length}
                             </div>
@@ -375,7 +375,7 @@ function ClassSpecificExercisePage() {
                                             >
                                                 {submittedItem.submitTime && (
                                                     <>
-                                                        <div>
+                                                        <div className="mb-8">
                                                             <h3 className="text-xl font-bold">Bài làm:</h3>
                                                             <RichTextEditor disabled data={submittedItem.content} />
                                                             <FileListViewDialog
@@ -433,7 +433,7 @@ function ClassSpecificExercisePage() {
                                 })}
                             </ul>
                         )}
-                        <div className="flex flex-row items-center justify-end mt-8">
+                        <div className="flex flex-row items-center justify-end mt-[64px]">
                             <div className="flex flex-row items-center">
                                 <Button
                                     onClick={(e) => {

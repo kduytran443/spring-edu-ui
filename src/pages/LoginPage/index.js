@@ -46,7 +46,11 @@ function LoginPage() {
                         navigate('/joined-class');
                     }
                 } else {
-                    setError(data.message);
+                    if (data.message == 'Access Denied') {
+                        setError('Tên tài khoản hoặc mật khẩu không chính xác');
+                    } else {
+                        setError(data.message);
+                    }
                 }
             })
             .catch((error) => {

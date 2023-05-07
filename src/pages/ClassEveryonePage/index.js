@@ -24,6 +24,7 @@ import images from '~/assets/images';
 import CertificationDialog from '~/components/CertificationDialog';
 import DeleteMemberDialog from '~/components/DeleteMemberDialog';
 import { openInNewTab } from '~/utils';
+import DeleteCertificationDialog from '~/components/DeleteCertificationDialog';
 
 function ClassEveryonePage() {
     const { classId } = useParams();
@@ -104,7 +105,7 @@ function ClassEveryonePage() {
         });
     };
 
-    const [classDataState, setClassDataState] = useState(null);
+    const [classDataState, setClassDataState] = useState({});
 
     useEffect(() => {
         classService.getClassIntroById(classId).then((data) => {
@@ -276,6 +277,7 @@ function ClassEveryonePage() {
             <ul>
                 {peopleListState.map((people) => {
                     if (people.classRole === 'student') {
+                        console.log('student', people);
                         return (
                             <li key={people.userId} className="my-2">
                                 <UserAccordion
@@ -303,24 +305,37 @@ function ClassEveryonePage() {
                                         <div className="w-full justify-between flex flex-row items-center mt-4">
                                             <div className="flex flex-row items-center">
                                                 <div>
-                                                    <CertificationDialog
-                                                        fullname={people.fullname}
-                                                        username={people.username}
-                                                        userId={people.userId}
-                                                        reload={loadData}
-                                                    />
+                                                    {people.certification ? (
+                                                        <DeleteCertificationDialog
+                                                            fullname={people.fullname}
+                                                            username={people.username}
+                                                            userId={people.userId}
+                                                            reload={loadData}
+                                                            minimumCompletionRate={classDataState.minimumCompletionRate}
+                                                        />
+                                                    ) : (
+                                                        <CertificationDialog
+                                                            fullname={people.fullname}
+                                                            username={people.username}
+                                                            userId={people.userId}
+                                                            reload={loadData}
+                                                            minimumCompletionRate={classDataState.minimumCompletionRate}
+                                                        />
+                                                    )}
                                                 </div>
-                                                <div>
-                                                    <Button
-                                                        onClick={(e) => {
-                                                            openInNewTab('/certificate/' + people.certification.id);
-                                                            //navigate('/certificate/' + people.certification.id);
-                                                        }}
-                                                        startIcon={<FontAwesomeIcon icon={faEye} />}
-                                                    >
-                                                        Xem chứng nhận
-                                                    </Button>
-                                                </div>
+                                                {people.certification && (
+                                                    <div>
+                                                        <Button
+                                                            onClick={(e) => {
+                                                                openInNewTab('/certificate/' + people.certification.id);
+                                                                //navigate('/certificate/' + people.certification.id);
+                                                            }}
+                                                            startIcon={<FontAwesomeIcon icon={faEye} />}
+                                                        >
+                                                            Xem chứng nhận
+                                                        </Button>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="">
                                                 <DeleteMemberDialog

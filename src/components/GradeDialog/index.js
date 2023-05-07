@@ -69,7 +69,9 @@ export default function GradeDialog({ button, maxMark, submittedExerciseId, relo
     return (
         <div>
             <div onClick={handleClickOpen}>
-                <Button startIcon={<FontAwesomeIcon icon={faPen} />}>Chấm điểm</Button>
+                <Button variant="contained" startIcon={<FontAwesomeIcon icon={faPen} />}>
+                    Chấm điểm
+                </Button>
             </div>
             <Dialog
                 open={open}

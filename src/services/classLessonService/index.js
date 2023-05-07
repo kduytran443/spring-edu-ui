@@ -28,4 +28,15 @@ export const classLessonService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
         return response.json();
     },
+
+    async getFiles(id) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${id}`, config);
+        return response.json();
+    },
+    async deleteFile(id, fileId) {
+        const config = deleteConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${id}/${fileId}`, config);
+        return response.json();
+    },
 };

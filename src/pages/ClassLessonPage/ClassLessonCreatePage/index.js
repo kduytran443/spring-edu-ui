@@ -9,6 +9,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertFailDialog from '~/components/AlertFailDialog';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import CloudinaryUploadWidget from '~/components/CloudinaryUploadWidget';
+import CreateLessonUploadWidget from '~/components/CreateLessonUploadWidget';
 import NewUploadWidget from '~/components/NewUploadWidget';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import RichTextEditor from '~/components/RichTextEditor';
@@ -80,6 +81,7 @@ function ClassLessonCreatePage() {
     };
     const sendContext = useContext(NotificationSocketContext);
 
+    const [fileIds, setFileIds] = useState([]);
     const [success, setSuccess] = useState(0);
     const postLesson = () => {
         if (nameState && topicIdState && textDataState) {
@@ -88,6 +90,10 @@ function ClassLessonCreatePage() {
                 topicId: topicIdState,
                 textData: textDataState,
             };
+
+            if (fileIds.length > 0) {
+                obj.fileIds = fileIds;
+            }
 
             classLessonService.postClassLesson(obj).then((data) => {
                 if (data.id) {
@@ -179,7 +185,7 @@ function ClassLessonCreatePage() {
                 </div>
                 <div></div>
                 <div className="w-full">
-                    <NewUploadWidget multiple uploadFunction={uploadFileList} />
+                    <CreateLessonUploadWidget multiple setFileIds={setFileIds} />
                 </div>
                 <div
                     onClick={postLesson}

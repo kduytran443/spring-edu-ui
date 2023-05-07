@@ -7,6 +7,7 @@ import Countdown from 'react-countdown';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
 import ChoiceQuestionDetails from '~/components/ChoiceQuestionDetails';
+import ExerciseUploadWidget from '~/components/ExerciseUploadWidget';
 import LoadingPageProcess from '~/components/LoadingPageProcess';
 import NewUploadWidget from '~/components/NewUploadWidget';
 import RichTextEditor from '~/components/RichTextEditor';
@@ -53,10 +54,21 @@ function DoExercisePage() {
             }
         });
     };
+
+    const [fileExerciseList, setFileExerciseList] = useState([]);
+    const loadExerciseFiles = () => {
+        exerciseService.getFiles(exerciseId).then((data) => {
+            if (data.length >= 0) {
+                setFileExerciseList(data);
+            }
+        });
+    };
+
     useEffect(() => {
         loadData();
         loadSubmittedExercise();
         loadFiles();
+        loadExerciseFiles();
     }, [location]);
 
     const [timeLeft, setTimeLeft] = useState(null);
@@ -253,6 +265,7 @@ function DoExercisePage() {
                                 {constructedResponse.content && (
                                     <RichTextEditor disabled data={constructedResponse.content} />
                                 )}
+                                <ExerciseUploadWidget disable fileList={fileExerciseList} multiple />
                             </div>
                             <div className="w-full">
                                 <h3 className="font-bold text-xl mt-10 mb-2">Bài làm của bạn</h3>

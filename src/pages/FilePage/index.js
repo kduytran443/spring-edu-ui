@@ -25,6 +25,10 @@ function FilePage() {
                     <source src={fileState.data} type={fileState.type} />
                 </video>
             );
+        } else if (fileState.type.includes('audio/')) {
+            fileContent = (
+                <audio className="w-full" style={{ width: '100%', height: '48px' }} controls src={fileState.data} />
+            );
         } else if (fileState.type.includes('compressed')) {
             fileContent = <img className="w-full max-h-[220px] max-w-[140px]" alt="file" src={images.zip} />;
         } else {
@@ -49,7 +53,7 @@ function FilePage() {
     }, [location]);
 
     return (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full flex flex-col items-center min-h-full justify-center">
             {!fileState ? (
                 <LoadingPageProcess />
             ) : (
@@ -65,7 +69,7 @@ function FilePage() {
                         </a>
                     )}
                     <div className="flex flex-col w-full items-center">
-                        <div className="select-none overflow-hidden">{fileContent}</div>
+                        <div className="select-none w-full">{fileContent}</div>
                     </div>
                     <div className="font-bold max-w-full overflow-hidden truncate text-xl my-4">{fileState.name}</div>
                     <div className="font-bold max-w-full overflow-hidden truncate">{fileState.type}</div>

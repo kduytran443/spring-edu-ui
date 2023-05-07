@@ -43,3 +43,10 @@ export const openInNewTab = (url) => {
     const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
     if (newWindow) newWindow.opener = null;
 };
+
+export const isValidFileSize = (fileSize) => {
+    if (fileSize > 26214400) {
+        return false;
+    }
+    return true;
+};

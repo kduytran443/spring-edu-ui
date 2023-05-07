@@ -50,6 +50,8 @@ import { useUser } from '~/stores/UserStore';
 import { useContext } from 'react';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import { uploadService } from '~/services/uploadService';
+import CreateLessonUploadWidget from '~/components/CreateLessonUploadWidget';
+import ExerciseUploadWidget from '~/components/ExerciseUploadWidget';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -225,9 +227,18 @@ function ClassLessonPage() {
             setCommentContent('');
         });
     };
+    const [fileList, setFileList] = useState([]);
+    const loadFiles = () => {
+        classLessonService.getFiles(lessonId).then((data) => {
+            if (data.length >= 0) {
+                setFileList(data);
+            }
+        });
+    };
 
     useEffect(() => {
         loadTopic();
+        loadFiles();
     }, [location]);
 
     useEffect(() => {
@@ -327,28 +338,7 @@ function ClassLessonPage() {
                     <p className="mr-2">{time}</p>
                 </div>
             )}
-            {fileListState.length > 0 && (
-                <div>
-                    <SimpleCustomAccordion name={`Tập tin đính kèm (${fileListState.length})`}>
-                        <div className="flex flex-row items-start justify-center flex-wrap">
-                            {fileListState.map((file, index) => {
-                                return (
-                                    <div>
-                                        <FileReview
-                                            name={file.name}
-                                            data={file.data}
-                                            key={index}
-                                            size={file.size}
-                                            type={file.type}
-                                            noDelete={false}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    </SimpleCustomAccordion>
-                </div>
-            )}
+            <ExerciseUploadWidget fileList={fileList} multiple disable />
 
             <div className="mt-8">
                 <h2 className="text-xl font-bold my-2">Nội dung bài học:</h2>

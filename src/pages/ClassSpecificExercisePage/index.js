@@ -23,6 +23,7 @@ import { quizService } from '~/services/quizService';
 import ClassExerciseDeleteDialog from './ClassExerciseDeleteDialog';
 import images from '~/assets/images';
 import FileListViewDialog from '~/components/FileListViewDialog';
+import ExerciseUploadWidget from '~/components/ExerciseUploadWidget';
 
 function ClassSpecificExercisePage() {
     const navigate = useNavigate();
@@ -116,9 +117,19 @@ function ClassSpecificExercisePage() {
         });
     };
 
+    const [fileList, setFileList] = useState([]);
+    const loadFiles = () => {
+        exerciseService.getFiles(exerciseId).then((data) => {
+            if (data.length >= 0) {
+                setFileList(data);
+            }
+        });
+    };
+
     useEffect(() => {
         loadData();
         loadRole();
+        loadFiles();
     }, [location]);
 
     useEffect(() => {
@@ -181,6 +192,7 @@ function ClassSpecificExercisePage() {
 
         return result;
     };
+
     const gradeTest = () => {};
 
     return (
@@ -333,6 +345,7 @@ function ClassSpecificExercisePage() {
                             <div className="my-4">
                                 <div className="text-lg font-bold">Đề bài:</div>
                                 <RichTextEditor disabled readOnly data={constructedResponseTest.content} />
+                                <ExerciseUploadWidget disable fileList={fileList} multiple />
                             </div>
                         )}
                         <div className="flex flex-row items-center">

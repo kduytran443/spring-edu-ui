@@ -13,9 +13,9 @@ import LinearProcessBar from '../LinearProcessBar';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import DeleteFileDialog from '../DeleteFileDialog';
 import SubmittedExerciseFileReview from '../SubmittedExerciseFileReview';
-import { isValidFileSize } from '~/utils';
+import DeleteExerciseFileDialog from '../DeleteExerciseFileDialog';
 
-function SubmittedExerciseUploadWidget({
+function ExerciseUploadWidget({
     uploadButton = (
         <Button variant="outlined" startIcon={<FontAwesomeIcon icon={faUpload} />}>
             Upload
@@ -27,7 +27,7 @@ function SubmittedExerciseUploadWidget({
     disable,
 }) {
     const fileRef = useRef();
-    const { submittedExerciseId } = useParams();
+    const { exerciseId } = useParams();
     const [fileListState, setFileListState] = useState(fileList);
     const [uploadStatusState, setUploadStatusState] = useState(0); //0: chua upload, 1: dang upload, 2: upload xong
 
@@ -39,14 +39,8 @@ function SubmittedExerciseUploadWidget({
         e.preventDefault();
         const files = e.target.files;
         const formData = new FormData();
-
-        if (!isValidFileSize(files[0].size)) {
-            //fileSizeError
-            return;
-        }
-
         formData.append('file', files[0]);
-        const api = `api/submitted-exercise/file/${submittedExerciseId}`;
+        const api = `api/class-exercise/file/${exerciseId}`;
         const jwt = getUserJWT();
         setUploadStatusState(1);
         axios
@@ -67,7 +61,6 @@ function SubmittedExerciseUploadWidget({
             })
             .then((res) => {
                 const file = res.data;
-                console.log('file', file);
                 if (multiple) {
                     setFileListState((pre) => [
                         ...pre,
@@ -155,7 +148,7 @@ function SubmittedExerciseUploadWidget({
                                 type={file.type}
                             />
                             {!disable && (
-                                <DeleteFileDialog
+                                <DeleteExerciseFileDialog
                                     button={
                                         <IconButton color="error">
                                             <FontAwesomeIcon icon={faTrash} />
@@ -163,7 +156,7 @@ function SubmittedExerciseUploadWidget({
                                     }
                                     fileId={file.id}
                                     fileName={file.name}
-                                    submittedExerciseId={submittedExerciseId}
+                                    id={exerciseId}
                                     reload={() => {
                                         reloadFileDelete(index);
                                     }}
@@ -177,7 +170,7 @@ function SubmittedExerciseUploadWidget({
     );
 }
 
-export default SubmittedExerciseUploadWidget;
+export default ExerciseUploadWidget;
 
 /*
 

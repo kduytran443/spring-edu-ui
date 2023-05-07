@@ -24,6 +24,7 @@ import DateTimePicker from 'react-datetime-picker';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertFailDialog from '~/components/AlertFailDialog';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import CreateExerciseUploadWidget from '~/components/CreateExerciseUploadWidget';
 import { NotificationSocketContext } from '~/components/NotificationSocketProvider';
 import RichTextEditor from '~/components/RichTextEditor';
 import UploadWidget from '~/components/UploadWidget';
@@ -245,6 +246,8 @@ function ClassCreateExercisePage() {
     const sendContext = useContext(NotificationSocketContext);
     const [alertSuccess, setAlertSuccess] = useState(0);
 
+    const [fileIds, setFileIds] = useState([]);
+
     const submit = () => {
         if (check()) {
             const obj = {
@@ -255,6 +258,10 @@ function ClassCreateExercisePage() {
                 mark: mark,
                 requiredMark: requiredMark || 0,
             };
+
+            if (fileIds.length > 0) {
+                obj.fileIds = fileIds;
+            }
 
             if (isEffective) {
                 obj.effective = 1;
@@ -280,7 +287,7 @@ function ClassCreateExercisePage() {
                         };
                         quizService.postQuiz(quizObj).then((quiz) => {
                             const obj = {
-                                content: classDataState.name + ' vừa có bài trắc nghiệm mới: ' + data.name,
+                                content: classDataState.name + ' vừa có bài tập mới: ' + data.name,
                                 redirectUrl: '/class/' + classId + '/exercise/' + data.id,
                                 receiverIds: classMemberIds,
                             };
@@ -390,6 +397,10 @@ function ClassCreateExercisePage() {
                         <h3 className="text-xl font-bold">Nội dung bài tự luận</h3>
                         <RichTextEditor setData={setTextData} />
                         {textDataError && <div className="text-red-500">*{textDataError}</div>}
+
+                        <div className="mt-4">
+                            <CreateExerciseUploadWidget multiple setFileIds={setFileIds} />
+                        </div>
                     </div>
                 )}
                 {isQuizTest && (

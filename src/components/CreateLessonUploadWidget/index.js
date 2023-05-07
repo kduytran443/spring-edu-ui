@@ -13,9 +13,9 @@ import LinearProcessBar from '../LinearProcessBar';
 import { submittedExerciseService } from '~/services/submittedExerciseService';
 import DeleteFileDialog from '../DeleteFileDialog';
 import SubmittedExerciseFileReview from '../SubmittedExerciseFileReview';
-import { isValidFileSize } from '~/utils';
+import DeleteExerciseFileDialog from '../DeleteExerciseFileDialog';
 
-function SubmittedExerciseUploadWidget({
+function CreateLessonUploadWidget({
     uploadButton = (
         <Button variant="outlined" startIcon={<FontAwesomeIcon icon={faUpload} />}>
             Upload
@@ -25,28 +25,19 @@ function SubmittedExerciseUploadWidget({
     fileList = [],
     multiple = false,
     disable,
+    setFileIds = () => {},
 }) {
     const fileRef = useRef();
-    const { submittedExerciseId } = useParams();
+    const { exerciseId } = useParams();
     const [fileListState, setFileListState] = useState(fileList);
     const [uploadStatusState, setUploadStatusState] = useState(0); //0: chua upload, 1: dang upload, 2: upload xong
-
-    useEffect(() => {
-        setFileListState(fileList);
-    }, [fileList]);
 
     const uploadFile = (e) => {
         e.preventDefault();
         const files = e.target.files;
         const formData = new FormData();
-
-        if (!isValidFileSize(files[0].size)) {
-            //fileSizeError
-            return;
-        }
-
         formData.append('file', files[0]);
-        const api = `api/submitted-exercise/file/${submittedExerciseId}`;
+        const api = `api/class-lesson/file/0`;
         const jwt = getUserJWT();
         setUploadStatusState(1);
         axios
@@ -67,18 +58,23 @@ function SubmittedExerciseUploadWidget({
             })
             .then((res) => {
                 const file = res.data;
-                console.log('file', file);
                 if (multiple) {
                     setFileListState((pre) => [
                         ...pre,
                         { id: file.id, name: file.name, data: file.data, size: file.size, type: file.type },
                     ]);
+                    setFileIds((pre) => {
+                        return [...pre, file.id];
+                    });
                     setUploadStatusState(0);
                     setUploadFileLoading(0);
                 } else {
                     setFileListState([
                         { id: file.id, name: file.name, data: file.data, size: file.size, type: file.type },
                     ]);
+                    setFileIds((pre) => {
+                        return [...pre, file.id];
+                    });
                     setUploadStatusState(0);
                     setUploadFileLoading(0);
                 }
@@ -120,6 +116,14 @@ function SubmittedExerciseUploadWidget({
         removeByIndex(index);
     };
 
+    const deleteFile = (id) => {
+        setFileIds((pre) => {
+            const arr = [...pre];
+            const newArr = arr.filter((item) => item !== id);
+            return newArr;
+        });
+    };
+
     const [uploadFileLoading, setUploadFileLoading] = useState(0);
 
     return (
@@ -136,9 +140,13 @@ function SubmittedExerciseUploadWidget({
                 {uploadStatusState === 1 && <LinearProcessBar progress={uploadFileLoading} />}
             </div>
             {!disable && (
-                <div className="my-4" onClick={uploadOnClick}>
-                    {uploadButton}
-                </div>
+                <>
+                    {uploadFileLoading === 0 && (
+                        <div className="my-4" onClick={uploadOnClick}>
+                            {uploadButton}
+                        </div>
+                    )}
+                </>
             )}
             <input onChange={uploadFile} type="file" style={{ display: 'none' }} ref={fileRef} {...multipleProps} />
             <div className="flex flex-row items-start justify-center flex-wrap">
@@ -155,7 +163,7 @@ function SubmittedExerciseUploadWidget({
                                 type={file.type}
                             />
                             {!disable && (
-                                <DeleteFileDialog
+                                <DeleteExerciseFileDialog
                                     button={
                                         <IconButton color="error">
                                             <FontAwesomeIcon icon={faTrash} />
@@ -163,8 +171,9 @@ function SubmittedExerciseUploadWidget({
                                     }
                                     fileId={file.id}
                                     fileName={file.name}
-                                    submittedExerciseId={submittedExerciseId}
+                                    id={0}
                                     reload={() => {
+                                        deleteFile(file.id);
                                         reloadFileDelete(index);
                                     }}
                                 />
@@ -177,24 +186,4 @@ function SubmittedExerciseUploadWidget({
     );
 }
 
-export default SubmittedExerciseUploadWidget;
-
-/*
-
-
-            {fileListState.length > 0 && (
-                <div className="mt-6">
-                    <Button
-                        onClick={(e) => {
-                            uploadFunction(fileListState);
-                        }}
-                        variant="contained"
-                        color="success"
-                        startIcon={<FontAwesomeIcon icon={faCheck} />}
-                    >
-                        Hoàn tất
-                    </Button>
-                </div>
-            )}
-
-*/
+export default CreateLessonUploadWidget;

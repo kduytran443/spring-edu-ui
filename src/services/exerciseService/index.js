@@ -42,4 +42,15 @@ export const exerciseService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/class/${classId}`, config);
         return response.json();
     },
+
+    async getFiles(id) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${id}`, config);
+        return response.json();
+    },
+    async deleteFile(exerciseId, fileId) {
+        const config = deleteConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/file/${exerciseId}/${fileId}`, config);
+        return response.json();
+    },
 };

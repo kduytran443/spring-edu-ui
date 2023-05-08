@@ -40,7 +40,7 @@ function ExerciseUploadWidget({
         const files = e.target.files;
         const formData = new FormData();
         formData.append('file', files[0]);
-        const api = `api/class-excercise/file/${exerciseId}`;
+        const api = `api/class-exercise/file/${exerciseId}`;
         const jwt = getUserJWT();
         setUploadStatusState(1);
         axios

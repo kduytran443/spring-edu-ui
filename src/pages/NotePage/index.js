@@ -14,6 +14,7 @@ import { Avatar, Button, IconButton } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import AlertSuccessDialog from '~/components/AlertSuccessDialog';
+import DeleteNoteDialog from '~/components/DeleteNoteDialog';
 import NoteEditDialog from '~/components/NoteEditDialog';
 import NoteFolderEditDialog from '~/components/NoteFolderEditDialog';
 import RichTextEditor from '~/components/RichTextEditor';
@@ -72,6 +73,7 @@ function NotePage() {
     }, [location]);
 
     const isOwner = () => {
+        console.log('userData.id === note.userId', userData.id === note.userId, userData.id, note.userId);
         return userData.id === note.userId;
     };
 
@@ -216,14 +218,16 @@ function NotePage() {
                             )}
                         </div>
                     </div>
-                    {note.id && (
-                        <RichTextEditor
-                            disabled={!isOwner()}
-                            readOnly={!enableEdit}
-                            data={content || ''}
-                            setData={setContent}
+                    {note.id && <RichTextEditor readOnly={!enableEdit} data={content || ''} setData={setContent} />}
+                    <div className="mt-8">
+                        <DeleteNoteDialog
+                            id={note.id}
+                            noteName={note.name}
+                            reload={() => {
+                                navigate('/home');
+                            }}
                         />
-                    )}
+                    </div>
                 </div>
             )}
         </div>
@@ -242,4 +246,42 @@ export default NotePage;
                             {note.noteFolder && note.noteFolder.name}
                         </div>
                     </div>
+*/
+
+
+/*
+
+
+
+Mở chặn lớp học
+Chặn lớp học
+Xem danh sách lớp
+Xem thống kê website
+Xem báo cáo vi phạm
+Xem thông báo
+Xóa tài khoản
+Quản lý lịch học
+Tham gia buổi học trực tuyến
+Xem đánh giá lớp học
+Xem doanh thu lớp học
+Quản lý giảm giá
+Xem thông tin người dùng
+Quản lý bình luận.
+Nhắn tin nhóm.
+Quản lý thư mục ghi chú.
+Quản lý ghi chú.
+Xem lịch sử học trực tuyến.
+Quản lý chứng nhận.
+Xem lịch dạy.
+Tìm kiếm lớp học
+Đăng ký lớp học
+Xem lịch học
+Báo cáo lớp học vi phạm
+Xem điểm số
+Quản lý đánh giá
+Thêm lớp học yêu thích
+Xem thành tích
+Xem thông tin lớp học
+
+
 */

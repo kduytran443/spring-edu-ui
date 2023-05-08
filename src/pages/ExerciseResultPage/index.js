@@ -78,8 +78,7 @@ function ExerciseResultPage() {
                             {renderToTime(submittedExercise.submitTime)}
                         </div>
                         <div className="my-2">
-                            <FontAwesomeIcon icon={faMarker} /> Tính điểm:{' '}
-                            {submittedExercise.effective ? 'Có' : 'Không'}
+                            <FontAwesomeIcon icon={faMarker} /> Tính điểm: {exerciseData.effective ? 'Có' : 'Không'}
                         </div>
                         <div className="my-2">
                             <FontAwesomeIcon icon={faWpforms} /> Hình thức:{' '}
@@ -99,7 +98,7 @@ function ExerciseResultPage() {
             {submittedExercise && submittedExercise.content && (
                 <RichTextEditor disabled data={submittedExercise.content} />
             )}
-            <SubmittedExerciseUploadWidget disable fileList={fileList} multiple />
+            {fileList.length > 0 && <SubmittedExerciseUploadWidget disable fileList={fileList} multiple />}
         </div>
     );
 }

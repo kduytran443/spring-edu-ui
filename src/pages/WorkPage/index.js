@@ -117,7 +117,7 @@ function WorkPage() {
             </h1>
             <div className="w-full">
                 <h2 className="font-bold text-xl">Bài cần làm</h2>
-                <div className="my-16">
+                <div className="my-8">
                     {classExerciseList &&
                         classExerciseList.map((classExercise) => {
                             const colorAvatar = {};

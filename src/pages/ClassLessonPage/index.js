@@ -52,6 +52,7 @@ import { NotificationSocketContext } from '~/components/NotificationSocketProvid
 import { uploadService } from '~/services/uploadService';
 import CreateLessonUploadWidget from '~/components/CreateLessonUploadWidget';
 import ExerciseUploadWidget from '~/components/ExerciseUploadWidget';
+import LessonUploadWidget from '~/components/LessonUploadWidget';
 
 function ClassLessonPage() {
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ function ClassLessonPage() {
 
     const loadData = () => {
         classLessonService.getClassLessonServiceById(lessonId).then((data) => {
-            if (data.status !== 500) {
+            if (data.id) {
                 setLessonDataState(data);
                 setLoadingState(false);
             } else {
@@ -92,40 +93,6 @@ function ClassLessonPage() {
             setLoadingState(false);
         }, 2000);
         */
-    }, [location]);
-
-    /*PRIVATE*/
-    useEffect(() => {
-        const config = getConfig();
-        fetch(`${API_BASE_URL}/api/class-lesson-review/${lessonId}?move=next`, config)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data);
-                if (data.status === 500) {
-                    setNextLessonState(null);
-                } else setNextLessonState(data);
-            })
-            .catch((error) => {
-                setNextLessonState(null);
-                console.log('error', error);
-            });
-    }, [location]);
-    /*PRIVATE*/
-    useEffect(() => {
-        const config = getConfig();
-        fetch(`${API_BASE_URL}/api/class-lesson-review/${lessonId}?move=previous`, config)
-            .then((res) => res.json())
-            .then((data) => {
-                if (data.status === 500) {
-                    setPreviousLessonState(null);
-                } else {
-                    setPreviousLessonState(data);
-                }
-            })
-            .catch((error) => {
-                setPreviousLessonState(null);
-                console.log('error', error);
-            });
     }, [location]);
 
     const [fileListState, setFileListState] = useState([]);
@@ -338,7 +305,13 @@ function ClassLessonPage() {
                     <p className="mr-2">{time}</p>
                 </div>
             )}
-            <ExerciseUploadWidget fileList={fileList} multiple disable />
+            {(!(classDataState && classDataState.userRoleCode === 'student') || fileList.length > 0) && (
+                <LessonUploadWidget
+                    fileList={fileList}
+                    multiple
+                    disable={classDataState && classDataState.userRoleCode === 'student'}
+                />
+            )}
 
             <div className="mt-8">
                 <h2 className="text-xl font-bold my-2">Nội dung bài học:</h2>
@@ -369,30 +342,6 @@ function ClassLessonPage() {
                     </div>
                 )}
 
-            {(previousLessonState || nextLessonState) && (
-                <div className="flex bg-slate-100 border border-slate-200 flex-col shadow rounded-lg p-4 md:flex-row full justify-between items-center mt-16">
-                    {previousLessonState && (
-                        <Link to={'/class/' + classId + '/lesson/' + previousLessonState.id}>
-                            <div>
-                                <b>
-                                    <FontAwesomeIcon icon={faArrowLeft} /> Previous:
-                                </b>{' '}
-                                {previousLessonState.name}
-                            </div>
-                        </Link>
-                    )}
-                    {nextLessonState && (
-                        <Link to={'/class/' + classId + '/lesson/' + nextLessonState.id}>
-                            <div>
-                                <b>
-                                    <FontAwesomeIcon icon={faArrowRight} /> Next:
-                                </b>{' '}
-                                {nextLessonState.name}
-                            </div>
-                        </Link>
-                    )}
-                </div>
-            )}
             <div className="pt-4 border-t-2 border-slate-200">
                 <h2 className="text-xl font-bold mb-4">Bình luận</h2>
                 <ul>

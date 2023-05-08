@@ -14,8 +14,9 @@ import { submittedExerciseService } from '~/services/submittedExerciseService';
 import DeleteFileDialog from '../DeleteFileDialog';
 import SubmittedExerciseFileReview from '../SubmittedExerciseFileReview';
 import DeleteExerciseFileDialog from '../DeleteExerciseFileDialog';
+import DeleteLessonFileDialog from '../DeleteLessonFileDialog';
 
-function ExerciseUploadWidget({
+function LessonUploadWidget({
     uploadButton = (
         <Button variant="outlined" startIcon={<FontAwesomeIcon icon={faUpload} />}>
             Upload
@@ -27,7 +28,7 @@ function ExerciseUploadWidget({
     disable,
 }) {
     const fileRef = useRef();
-    const { exerciseId } = useParams();
+    const { lessonId } = useParams();
     const [fileListState, setFileListState] = useState(fileList);
     const [uploadStatusState, setUploadStatusState] = useState(0); //0: chua upload, 1: dang upload, 2: upload xong
 
@@ -40,7 +41,7 @@ function ExerciseUploadWidget({
         const files = e.target.files;
         const formData = new FormData();
         formData.append('file', files[0]);
-        const api = `api/class-excercise/file/${exerciseId}`;
+        const api = `api/class-lesson/file/${lessonId}`;
         const jwt = getUserJWT();
         setUploadStatusState(1);
         axios
@@ -148,7 +149,7 @@ function ExerciseUploadWidget({
                                 type={file.type}
                             />
                             {!disable && (
-                                <DeleteExerciseFileDialog
+                                <DeleteLessonFileDialog
                                     button={
                                         <IconButton color="error">
                                             <FontAwesomeIcon icon={faTrash} />
@@ -156,7 +157,7 @@ function ExerciseUploadWidget({
                                     }
                                     fileId={file.id}
                                     fileName={file.name}
-                                    id={exerciseId}
+                                    id={lessonId}
                                     reload={() => {
                                         reloadFileDelete(index);
                                     }}
@@ -170,7 +171,7 @@ function ExerciseUploadWidget({
     );
 }
 
-export default ExerciseUploadWidget;
+export default LessonUploadWidget;
 
 /*
 

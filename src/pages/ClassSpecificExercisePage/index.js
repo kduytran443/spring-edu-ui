@@ -345,7 +345,13 @@ function ClassSpecificExercisePage() {
                             <div className="my-4">
                                 <div className="text-lg font-bold">Đề bài:</div>
                                 <RichTextEditor disabled readOnly data={constructedResponseTest.content} />
-                                <ExerciseUploadWidget disable fileList={fileList} multiple />
+                                {(!(classRole === 'student') || fileList.length > 0) && (
+                                    <ExerciseUploadWidget
+                                        fileList={fileList}
+                                        multiple
+                                        disable={classRole === 'student'}
+                                    />
+                                )}
                             </div>
                         )}
                         <div className="flex flex-row items-center mt-[128px]">

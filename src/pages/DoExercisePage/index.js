@@ -265,7 +265,9 @@ function DoExercisePage() {
                                 {constructedResponse.content && (
                                     <RichTextEditor disabled data={constructedResponse.content} />
                                 )}
-                                <ExerciseUploadWidget disable fileList={fileExerciseList} multiple />
+                                {fileExerciseList.length > 0 && (
+                                    <ExerciseUploadWidget disable fileList={fileExerciseList} multiple />
+                                )}
                             </div>
                             <div className="w-full">
                                 <h3 className="font-bold text-xl mt-10 mb-2">Bài làm của bạn</h3>

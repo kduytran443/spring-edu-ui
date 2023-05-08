@@ -179,9 +179,6 @@ function ClassLessonUpdatePage() {
                     <h2>Nội dung bài học</h2>
                     <RichTextEditor data={textDataState} setData={setTextData} />
                 </div>
-                <div className="w-full">
-                    <UploadWidget multiple fileList={fileListState} uploadFunction={uploadFileList} />
-                </div>
                 <div
                     onClick={updateLesson}
                     className="w-full mt-16 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"

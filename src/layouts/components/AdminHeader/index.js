@@ -58,11 +58,11 @@ function AdminHeader() {
                         <div className="mr-2">
                             <Button
                                 onClick={(e) => {
-                                    navigate('/create-class');
+                                    navigate('/admin');
                                 }}
-                                startIcon={<FontAwesomeIcon icon={faPlus} />}
+                                startIcon={<FontAwesomeIcon icon={faUser} />}
                             >
-                                Tạo lớp
+                                Admin
                             </Button>
                         </div>
                         <div className="p-[10px] mr-4">

@@ -101,11 +101,7 @@ function ClassLessonPage() {
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
-                if (data.userRoleCode) {
-                    setClassDataState(data);
-                } else {
-                    navigate('/page-not-found');
-                }
+                setClassDataState(data);
             });
     }, [location]);
 

@@ -49,7 +49,7 @@ function AdminReportPage() {
             </div>
             <h3 className="text-2xl font-bold my-4">Quản lý báo cáo</h3>
             <div className="bg-white rounded">
-                <h1 className="text-xl font-bold mt-8 p-2">Lớp học ({reportListState.length})</h1>
+                <h1 className="text-xl font-bold mt-8 p-2">Báo cáo ({reportListState.length})</h1>
                 {reportListState && <ReportTable rows={reportListState} loadData={loadData} />}
             </div>
         </div>

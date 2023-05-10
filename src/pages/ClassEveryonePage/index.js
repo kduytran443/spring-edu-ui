@@ -70,8 +70,6 @@ function ClassEveryonePage() {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
             if (isValidRole(data.classRole)) {
                 setUserRole(data.classRole);
-            } else {
-                navigate('/not-found-page');
             }
         });
     };
@@ -109,9 +107,9 @@ function ClassEveryonePage() {
 
     useEffect(() => {
         classService.getClassIntroById(classId).then((data) => {
-            if (data.status === 0) {
-                navigate('/page-not-found');
-            } else setClassDataState(data);
+            if (data.id) {
+                setClassDataState(data);
+            }
         });
     }, [classId]);
 

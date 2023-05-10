@@ -43,6 +43,9 @@ function ClassPage() {
             status: 'Đã bắt đầu',
         };
     });
+
+    console.log('???????????????????????????? nè');
+
     const location = useLocation();
     const { classId } = useParams();
     const [topicListState, setTopicListState] = useState([]);
@@ -69,12 +72,8 @@ function ClassPage() {
         fetch(`${API_BASE_URL}/public/api/class-intro/${classId}`, config)
             .then((res) => res.json())
             .then((data) => {
-                if (data.userRoleCode) {
-                    setClassDataState(data);
-                    setLoadingState(false);
-                } else {
-                    navigate('/page-not-found');
-                }
+                setClassDataState(data);
+                setLoadingState(false);
             });
     }, []);
 

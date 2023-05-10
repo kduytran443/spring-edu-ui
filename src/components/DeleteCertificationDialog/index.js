@@ -209,7 +209,7 @@ export default function DeleteCertificationDialog({
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title">Cấp chứng nhận</DialogTitle>
+                <DialogTitle id="alert-dialog-title">Thu hồi chứng nhận</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                         <AlertSuccessDialog open={alert} />

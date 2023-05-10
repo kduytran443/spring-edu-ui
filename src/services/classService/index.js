@@ -36,6 +36,11 @@ export const classService = {
         const response = await fetch(queryString, config);
         return response.json();
     },
+    async getClassChart() {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/chart`, config);
+        return response.json();
+    },
     async getClasses() {
         const config = getConfig();
         const response = await fetch(`${API_BASE_URL}/public/api/class-intro`, config);

@@ -103,7 +103,7 @@ function ClassLayout({ children }) {
         classMemberService.getClassMemberByUserAndClassId(classId).then((data) => {
             if (isValidRole(data.classRole) && data.memberAccepted === 1 && data.classAccepted === 1) {
                 setUserRole(data.classRole);
-            } else {
+            } else if (userState.role !== 'ADMIN') {
                 navigate('/class/' + classId + '/intro');
             }
         });
@@ -117,8 +117,10 @@ function ClassLayout({ children }) {
     };
 
     useEffect(() => {
-        loadUserData();
-    }, [location]);
+        if (userState.role) {
+            loadUserData();
+        }
+    }, [location, userState]);
 
     return (
         <FullLayout>

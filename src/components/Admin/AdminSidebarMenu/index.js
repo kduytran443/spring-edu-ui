@@ -45,22 +45,6 @@ function AdminSidebarMenu({ preAction = () => {} }) {
                 <span className="text-xs font-bold">Dashboard</span>
             </li>
 
-            {userState.username && (
-                <>
-                    <li
-                        className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
-                            selected && ' bg-gray-200 border-[1px] shadow'
-                        }`}
-                        onClick={(e) => {
-                            doNavigate(QUESTION_BANK_URL);
-                        }}
-                    >
-                        <BallotIcon style={{ padding: '4px', margin: '0' }} fontSize="large" />
-                        <span className="text-xs font-bold text-center">Question Bank</span>
-                    </li>
-                </>
-            )}
-
             <li
                 className={`select-none cursor-pointer w-[72px] h-[72px] border-gray-200 py-2 rounded-2xl my-2 flex flex-col items-center w-full hover:bg-gray-100 hover:shadow-sm ${
                     selected && ' bg-gray-200 border-[1px] shadow'

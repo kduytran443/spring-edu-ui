@@ -56,14 +56,25 @@ function Header() {
                 {userState.username ? (
                     <div className="flex flex-row justify-center items-center">
                         <div className="mr-2">
-                            <Button
-                                onClick={(e) => {
-                                    navigate('/create-class');
-                                }}
-                                startIcon={<FontAwesomeIcon icon={faPlus} />}
-                            >
-                                Tạo lớp
-                            </Button>
+                            {userState.role === 'ADMIN' ? (
+                                <Button
+                                    onClick={(e) => {
+                                        navigate('/admin');
+                                    }}
+                                    startIcon={<FontAwesomeIcon icon={faUser} />}
+                                >
+                                    Admin
+                                </Button>
+                            ) : (
+                                <Button
+                                    onClick={(e) => {
+                                        navigate('/create-class');
+                                    }}
+                                    startIcon={<FontAwesomeIcon icon={faPlus} />}
+                                >
+                                    Tạo lớp
+                                </Button>
+                            )}
                         </div>
                         <div className="p-[10px] mr-4">
                             <HeaderNotifier />

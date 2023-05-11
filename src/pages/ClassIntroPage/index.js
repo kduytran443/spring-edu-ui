@@ -43,6 +43,8 @@ import { notificationService } from '~/services/notificationService';
 import PaypalCheckout from '~/components/PaypalCheckout';
 import CheckoutDialog from '~/components/CheckoutDialog';
 import { transactionService } from '~/services/transactionService';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { classService } from '~/services/classService';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -391,6 +393,33 @@ function ClassIntroPage() {
             }
         });
     };
+    const acceptJoinClassAsASupporter = () => {
+        const classMember = {
+            classId: classId,
+            classRole: 'supporter',
+            memberAccepted: 1,
+            classAccepted: 1,
+            fee: 0,
+        };
+        //classDataState.userId
+        classMemberService.putClassMember(classMember).then((data) => {
+            if (data) {
+                setAlertSuccess(1);
+                setTimeout(() => {
+                    const obj = {
+                        content: userState.username + ' đã tham gia: ' + classDataState.name,
+                        redirectUrl: `/class/${classId}/everyone`,
+                        receiverIds: [classDataState.userId],
+                    };
+
+                    notificationService.post(obj).then((data) => {
+                        sendContext([classDataState.userId]);
+                        navigate('/class/' + classId);
+                    });
+                }, 2000);
+            }
+        });
+    };
 
     useEffect(() => {
         discountService.getAllByClassId(classId).then((data) => {
@@ -422,6 +451,24 @@ function ClassIntroPage() {
 
     const checkoutRef = useRef();
 
+    const [likedState, setLikedState] = useState(false);
+    const checkFavoritedProduct = () => {
+        if (classId) {
+            classService.checkLiked(classId).then((data) => {
+                setLikedState(data);
+            });
+        }
+    };
+    useEffect(() => {
+        checkFavoritedProduct();
+    }, [location]);
+
+    const favorite = () => {
+        classService.like(classId).then((data) => {
+            checkFavoritedProduct();
+        });
+    };
+
     return (
         <div className="w-full p-4 md:p-6 flex-1 flex lg:flex-row flex-col-reverse relative top-0">
             <div className="flex-1">
@@ -442,7 +489,15 @@ function ClassIntroPage() {
                 )}
                 <div className="w-full flex flex-row items-center">
                     <h1 className="text-4xl font-black mb-4">{classDataState.name}</h1>
-                    <ReportClassDialog classId={classId} />
+                    <div className="ml-2">
+                        <IconButton
+                            onClick={favorite}
+                            aria-label="add to favorites"
+                            color={likedState ? 'error' : 'default'}
+                        >
+                            <FavoriteIcon />
+                        </IconButton>
+                    </div>
                 </div>
                 <div className="flex flex-row items-center">
                     <b>
@@ -461,21 +516,13 @@ function ClassIntroPage() {
                     />
                 </div>
                 <div className="my-4">
-                    {reviewListState && (
+                    {classDataState && classDataState.stars >= 0 && (
                         <div>
                             <Rating
                                 readOnly={true}
-                                defaultValue={
-                                    reviewListState.reduce((pre, cur) => {
-                                        return pre + cur.stars;
-                                    }, 0) / reviewListState.length
-                                }
-                                value={
-                                    reviewListState.reduce((pre, cur) => {
-                                        return pre + cur.stars;
-                                    }, 0) / reviewListState.length
-                                }
-                                precision={1}
+                                defaultValue={classDataState.stars}
+                                value={classDataState.stars}
+                                precision={0.5}
                             />
                         </div>
                     )}
@@ -587,6 +634,9 @@ function ClassIntroPage() {
                                 </>
                             )}
                         </ul>
+                    </div>
+                    <div className="mt-6">
+                        <ReportClassDialog classId={classId} />
                     </div>
                 </div>
             </div>
@@ -711,8 +761,8 @@ function ClassIntroPage() {
                                                         : 'Chấp nhận tham gia miễn phí'}
                                                 </Button>
                                             ) : (
-                                                <Button onClick={acceptJoinClass} variant="contained">
-                                                    Chấp nhận
+                                                <Button onClick={acceptJoinClassAsASupporter} variant="contained">
+                                                    Chấp nhận làm trợ giảng
                                                 </Button>
                                             )}
                                         </div>

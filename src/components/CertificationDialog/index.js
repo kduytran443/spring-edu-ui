@@ -140,7 +140,7 @@ export default function CertificationDialog({
 
     const handleAgree = () => {
         const obj = {
-            avg: avargeEffectiveMark,
+            avg: (avargeEffectiveMark / avargeEffectiveExerciseMark) * 100,
             comment: teacherComment,
             classDTO: {
                 id: classId,

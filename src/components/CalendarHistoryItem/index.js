@@ -218,6 +218,10 @@ export default function CalendarHistoryItem({
                                 return <></>;
                             }
 
+                            if (object.classRole !== 'student') {
+                                return <></>;
+                            }
+
                             return (
                                 <li
                                     className="w-full my-6 flex flex-col rounded-lg bg-slate-50 shadow border border-slate-200 p-4"

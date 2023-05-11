@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import images from '~/assets/images';
 import { renderToDate } from '~/utils';
 
 function Certificate({ certificate = {} }) {
     const [certificateState, setCertificateState] = useState(certificate);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (certificate) {
@@ -38,7 +40,12 @@ function Certificate({ certificate = {} }) {
                     {certificateState.fullname} - {certificateState.username}
                 </div>
                 <div className="my-4">Đã tham gia và hoàn thành lớp học</div>
-                <div className="text-2xl uppercase font-bold mb-4 border-b-2 border-slate-400">
+                <div
+                    onClick={(e) => {
+                        navigate('/class/' + certificateState?.classDTO.id + '/intro');
+                    }}
+                    className="text-2xl uppercase font-bold hover:text-blue-600 cursor-pointer mb-4 border-b-2 border-slate-400"
+                >
                     {certificateState.classDTO && certificateState?.classDTO.name}
                 </div>
                 <div className="mb-4">

@@ -23,7 +23,6 @@ function JoinedClassPage() {
     useEffect(() => {
         classService.getClassReviewCardByUserId().then((data) => {
             if (data.length >= 0) {
-                console.log('datadatadata', data);
                 setClassListState(data);
             }
         });

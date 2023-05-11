@@ -95,12 +95,6 @@ function SidebarMenu({ preAction = () => {} }) {
                     </li>
                 </>
             )}
-
-            <li>
-                <IconButton aria-label="other" size="large" style={{ width: '64px', height: '64px' }}>
-                    <FontAwesomeIcon icon={faEllipsis} />
-                </IconButton>
-            </li>
         </ul>
     );
 }

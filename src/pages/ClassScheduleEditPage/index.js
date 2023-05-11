@@ -147,7 +147,7 @@ function ClassScheduleEditPage() {
                             label="Phút bắt đầu"
                         />
                     </div>
-                    <div className="w-full flex flex-row items-center">
+                    <div className="w-full flex flex-row mt:6 md:mt-0 items-center">
                         <TextField
                             value={classScheduleState.endHours}
                             onInput={(e) => {

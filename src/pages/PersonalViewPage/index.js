@@ -1,0 +1,99 @@
+import { faCalendar, faCamera, faEdit, faReply } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Avatar, Button, IconButton } from '@mui/material';
+import { useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import images from '~/assets/images';
+import { PERSONAL_PAGE_URL } from '~/constants';
+import { certificationService } from '~/services/certificationService';
+import { userDataService } from '~/services/userDataService';
+import { openInNewTab, renderToDate } from '~/utils';
+
+function PersonalViewPage() {
+    const { username } = useParams();
+    const location = useLocation();
+    const [userState, setUserState] = useState({});
+    const navigate = useNavigate();
+    const loadData = () => {
+        userDataService.getUserByUsername(username).then((data) => {
+            if (data.id) {
+                setUserState(data);
+            }
+        });
+    };
+
+    const [certificationList, setCertificationList] = useState([]);
+    const loadCertification = () => {
+        certificationService.getByUsername(username).then((data) => {
+            if (data.length > 0) {
+                setCertificationList(data);
+            }
+        });
+    };
+    useEffect(() => {
+        loadData();
+        loadCertification();
+    }, [location]);
+
+    return (
+        <div>
+            <h1 className="font-black text-4xl ml-4 my-4 mb-8">Trang cá nhân</h1>
+            <div className="flex flex-col items-center md:flex-row justify-center md:items-start">
+                <div className="group bg-slate-800 rounded-full cursor-pointer relative duration-200 hover:shadow-md">
+                    <div>
+                        <Avatar
+                            className="group-hover:opacity-80 duration-200"
+                            src={userState.avatar}
+                            sx={{ width: '240px', height: '240px' }}
+                        />
+                    </div>
+                </div>
+                <div className="flex-1 pl-2 md:px-8 flex flex-col mt-4 justify-between">
+                    <span className="mb-4 font-black text-2xl">{userState.fullname}</span>
+                    <span className="mb-4 text-2xl text-gray-500">username: {userState.username}</span>
+                    <span className="mb-4 text-2xl">Năm sinh: {userState.birthYear}</span>
+                    <span className="mb-4 text-2xl">Giới tính: {userState.gender}</span>
+                    <span className="mb-4 text-2xl">Email: {userState.email}</span>
+                    <span className="mb-4 text-2xl">Số điện thoại: +{userState.phoneNumber}</span>
+                    <span className="mb-4 text-2xl">
+                        Vai trò: {userState.role === 'ADMIN' ? 'Quản trị viên' : 'Người dùng'}
+                    </span>
+                </div>
+            </div>
+            <div className="flex flex-col mt-12 mb-6">
+                <h2 className="font-black pl-4 text-4xl mb-4">Chứng nhận ({certificationList.length})</h2>
+                <ul className="flex flex-col">
+                    {certificationList.map((certification) => {
+                        return (
+                            <li
+                                key={certification.id}
+                                onClick={(e) => {
+                                    openInNewTab('/certificate/' + certification.id);
+                                }}
+                                className="group flex flex-row hover:text-white items-center text-gray-600 cursor-pointer duration-100 hover:bg-blue-500 hover:shadow hover:shadow-blue-300 rounded-lg"
+                            >
+                                <div className="p-4 ">
+                                    <img
+                                        alt=""
+                                        src={images.certification}
+                                        className="w-[100px] md:w-[160px] rounded-full"
+                                    />
+                                </div>
+                                <div className="flex-1 pl-2 md:pl-4">
+                                    <div className="font-bold mb-2 text-lg">{certification.classDTO.name}</div>
+                                    <div>
+                                        <FontAwesomeIcon icon={faCalendar} className="mr-2" />
+                                        Ngày cấp: {renderToDate(certification.date)}
+                                    </div>
+                                </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
+        </div>
+    );
+}
+
+export default PersonalViewPage;

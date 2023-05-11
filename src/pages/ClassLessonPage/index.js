@@ -133,7 +133,7 @@ function ClassLessonPage() {
 
     const loadComment = () => {
         commentService.getByLessonId(lessonId).then((data) => {
-            if (data.length > 0) {
+            if (data.length >= 0) {
                 setCommentListState(data);
             }
         });

@@ -24,6 +24,8 @@ function SubmittedExerciseFileReview({
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.videoIcon} />;
     } else if (type.includes('audio/')) {
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.audioIcon} />;
+    } else if (type.includes('octet-stream')) {
+        fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.winrarIcon} />;
     } else if (type.includes('compressed')) {
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.zip} />;
     } else {

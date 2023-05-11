@@ -220,20 +220,23 @@ function ClassSettingPage() {
         }
     };
 
-    const [classVisibleState, setClassVisibleState] = useState(0);
+    const [classVisibleState, setClassVisibleState] = useState();
     useEffect(() => {
         if (classDataState) {
-            setClassVisibleState(classDataState.visible);
+            setClassVisibleState(classDataState.visiable);
         }
     }, [classDataState]);
 
     const changeVisible = (state) => {
+        console.log('classVisibleState', classVisibleState);
         if (classVisibleState === 1) {
-            setClassVisibleState(0);
-            classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
+            classService.changeClassVisible({ id: classId, visiable: classVisibleState ? 0 : 1 }).then((data) => {
+                setClassVisibleState(data.visiable);
+            });
         } else if (classVisibleState === 0) {
-            setClassVisibleState(1);
-            classService.changeClassVisible({ id: classId, visible: classVisibleState }).then((data) => {});
+            classService.changeClassVisible({ id: classId, visiable: classVisibleState ? 0 : 1 }).then((data) => {
+                setClassVisibleState(data.visiable);
+            });
         }
     };
 
@@ -323,21 +326,24 @@ function ClassSettingPage() {
         <div className="p-2 md:p-0">
             <h1 className="font-bold text-xl my-2">Cài đặt</h1>
             <AlertSuccessDialog open={alertSuccess} />
-            <FormGroup>
-                <FormControlLabel
-                    control={
-                        <Switch
-                            onChange={(e) => {
-                                changeVisible(e.target.value);
-                            }}
-                            defaultChecked={classVisibleState === 0}
-                        />
-                    }
-                    label="Ẩn lớp học khỏi trang chính"
-                />
-            </FormGroup>
+            {classVisibleState >= 0 && (
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                onChange={(e) => {
+                                    changeVisible(e.target.value);
+                                }}
+                                value={classVisibleState === 0}
+                                defaultChecked={classVisibleState === 0}
+                            />
+                        }
+                        label="Ẩn lớp học khỏi trang chính"
+                    />
+                </FormGroup>
+            )}
             <div className="mt-8 mb-16 w-full">
-                <div>Tỉ lệ hoàn thành tối thiểu cấp chứng nhận</div>
+                <div>Tỉ lệ điểm cần đạt để được cấp chứng nhận</div>
                 <TextField
                     className="w-full"
                     type="number"
@@ -394,12 +400,12 @@ function ClassSettingPage() {
             </div>
             <div className="my-12 p-4 bg-slate-100 rounded">
                 <h2 className="text-xl font-bold mb-2">Thời gian mở lớp</h2>
-                <div className="flex lg:flex-row items-center flex-col">
+                <div className="flex lg:flex-row flex-wrap w-full items-center flex-col">
                     {startTimeState && (
-                        <div className="z-[40] w-full md:w-auto md:ml-4">
+                        <div className="z-[40] w-full md:w-[50%]">
                             <div className="font-bold">Bắt đầu:</div>
                             <DateTimePicker
-                                className="h-[40px] w-full md:w-auto"
+                                className="h-[40px] min-w-full w-full md:w-auto"
                                 onChange={(e) => {
                                     setStartTimeState(new Date(e.getTime()));
                                     setChangeDateState(true);
@@ -409,10 +415,10 @@ function ClassSettingPage() {
                         </div>
                     )}
                     {endTimeState && (
-                        <div className="z-[41] w-full md:w-auto md:ml-4">
+                        <div className="z-[41] w-full md:w-[50%] md:pl-4">
                             <div className="font-bold">Kết thúc:</div>
                             <DateTimePicker
-                                className="h-[40px] w-full md:w-auto"
+                                className="h-[40px] min-w-full w-full md:w-auto"
                                 onChange={(e) => {
                                     setEndTimeState(new Date(e.getTime()));
                                     setChangeDateState(true);
@@ -421,7 +427,13 @@ function ClassSettingPage() {
                             />
                         </div>
                     )}
-                    {changeDateState && <Button onClick={submitChangeTimeOfClass}>Thay đổi ngày</Button>}
+                    {changeDateState && (
+                        <div className="mt-4">
+                            <Button variant="contained" onClick={submitChangeTimeOfClass}>
+                                Thay đổi ngày
+                            </Button>
+                        </div>
+                    )}
                 </div>
                 {dateError && <div className="text-red-500">*Ngày nhập không hợp lệ</div>}
             </div>

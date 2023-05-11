@@ -57,6 +57,7 @@ function WorkPage() {
     };
     const loadSubmittedExerciseOfTeacher = () => {
         submittedExerciseService.getSubmittedExercisesForTeacher().then((data) => {
+            console.log('OK OK ', data);
             if (data.length >= 0) {
                 const arr = data.map((item) => {
                     const obj = {
@@ -183,11 +184,12 @@ function WorkPage() {
                                 colorAvatar.bgcolor = orange[500];
                             }
                             let number = 0;
-                            if (classExercise.role === 'teacher') {
+                            if (classExercise.role === 'teacher' || classExercise.role === 'supporter') {
                                 number = checkNumber(classExercise.id);
                             }
 
-                            return classExercise.role === 'teacher' && number > 0 ? (
+                            return (classExercise.role === 'teacher' || classExercise.role === 'supporter') &&
+                                number > 0 ? (
                                 <ListItem
                                     className={`cursor-pointer ${
                                         isAvailable ? 'hover:bg-blue-100' : 'hover:bg-gray-100'

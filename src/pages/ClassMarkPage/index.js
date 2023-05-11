@@ -278,7 +278,7 @@ function ClassMarkPage() {
             {loadingState && <LoadingPageProcess />}
             {classDataState && (
                 <div className="text-lg text-blue-500 my-4">
-                    <FontAwesomeIcon icon={faCertificate} className="mr-2" /> Tỉ lệ tối thiểu đạt chứng nhận:{' '}
+                    <FontAwesomeIcon icon={faCertificate} className="mr-2" /> Tỉ lệ điểm cần đạt để được cấp chứng nhận:{' '}
                     <b>{classDataState.minimumCompletionRate}%</b>
                 </div>
             )}

@@ -3,6 +3,7 @@ const LOGIN_PAGE_URL = '/login';
 const SIGNUP_PAGE_URL = '/sign-up';
 const INTRO_PAGE_URL = '/intro';
 const PERSONAL_PAGE_URL = '/personal';
+const PERSONAL_DETAILS_PAGE_URL = '/personal/:username/view';
 const PERSONAL_EDIT_PAGE_URL = '/personal/edit';
 const CATEGORY_PAGE_URL = '/category/:categoryCode';
 const CALENDAR_PAGE_URL = '/calendar';
@@ -101,4 +102,5 @@ export {
     WORK_PAGE_URL,
     CLASS_HISTORY_PAGE_URL,
     FILE_PAGE_URL,
+    PERSONAL_DETAILS_PAGE_URL,
 };

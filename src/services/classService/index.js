@@ -56,10 +56,20 @@ export const classService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}-review`, config);
         return response.json();
     },
-
     async postClass(classData) {
         const config = postConfig(classData);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);
+        return response.json();
+    },
+
+    async like(classId) {
+        const config = postConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/favorite/${classId}`, config);
+        return response.json();
+    },
+    async checkLiked(classId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/favorite/${classId}`, config);
         return response.json();
     },
 

@@ -14,6 +14,8 @@ const images = {
     imageIcon: require('./image-icon.png'),
     videoIcon: require('./video-icon.png'),
     audioIcon: require('./audio-file.jpg'),
+    certification: require('./certification.png'),
+    winrarIcon: require('./winrar-icon.jpg'),
 };
 
 export default images;

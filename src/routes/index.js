@@ -40,6 +40,7 @@ import {
     WORK_PAGE_URL,
     CLASS_HISTORY_PAGE_URL,
     FILE_PAGE_URL,
+    PERSONAL_DETAILS_PAGE_URL,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -81,6 +82,7 @@ import LoginPage from '~/pages/LoginPage';
 import NotePage from '~/pages/NotePage';
 import PersonalPage from '~/pages/PersonalPage';
 import PersonalEditPage from '~/pages/PersonalPage/PersonalEditPage';
+import PersonalViewPage from '~/pages/PersonalViewPage';
 import QuestionBankDetailsPage from '~/pages/QuestionBankDetailsPage';
 import QuestionBankPage from '~/pages/QuestionBankPage';
 import SearchPage from '~/pages/SearchPage';
@@ -274,6 +276,11 @@ const privateRoutes = [
     {
         path: `${FILE_PAGE_URL}`,
         component: FilePage,
+        layout: FullLayout,
+    },
+    {
+        path: `${PERSONAL_DETAILS_PAGE_URL}`,
+        component: PersonalViewPage,
         layout: FullLayout,
     },
 ];

@@ -15,7 +15,7 @@ function ClassReviewCard({
     description,
     img = 'https://assets.thehansindia.com/h-upload/2021/02/15/1031432-edd.webp',
     people = 0,
-    review = 4,
+    review,
     reviewPeople = 0,
     navigateTo,
     userFullname,
@@ -56,7 +56,11 @@ function ClassReviewCard({
                             {people}
                         </div>
                         <div className="flex flex-row items-center">
-                            <Rating name="half-rating" readOnly defaultValue={review} precision={0.5} />
+                            {review >= 0 && (
+                                <div>
+                                    <Rating readOnly={true} defaultValue={review} value={review} precision={0.5} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -105,22 +105,24 @@ function ClassLessonUpdatePage() {
             };
 
             classLessonService.putClassLesson(obj).then((data) => {
-                if (data.status !== 500) {
+                if (data.id) {
+                    /*
                     if (fileListState.length > 0) {
                         fileListState.forEach((file) => {
                             uploadFiles(data.id, file);
                         });
                     }
-
-                    navigate('/class/' + classId);
+*/
+                    navigate('/class/' + classId + '/lesson/' + data.id);
                 }
             });
-
+            /*
             if (fileListState.length > 0) {
                 fileListState.forEach((file) => {
                     console.log('file', file);
                 });
             }
+            */
         }
     };
 

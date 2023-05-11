@@ -4,7 +4,11 @@ import MessageContent from './MessageContent';
 
 function ChatMessage({ message = {}, owner = false }) {
     return (
-        <div className={`flex flex-col md:flex-row items-start my-2 w-full ${owner ? 'justify-end' : 'justify-start'}`}>
+        <div
+            className={`flex flex-col md:flex-row ${owner ? 'items-end' : 'items-start'} md:items-start my-2 w-full ${
+                owner ? 'justify-end' : 'justify-start'
+            }`}
+        >
             {!owner && (
                 <div className="flex flex-row items-center justify-start mb-2 md:mb-0 md:mr-2">
                     <Avatar src={message?.user.avatar} />

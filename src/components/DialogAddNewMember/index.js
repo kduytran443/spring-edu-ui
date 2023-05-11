@@ -27,6 +27,7 @@ function DialogAddNewMember({ role, reload = () => {}, classId, currentList = []
         setSearchValue('');
         setSearchUserState({});
         setOpen(true);
+        setAlertState();
     };
 
     const handleClose = () => {
@@ -144,7 +145,7 @@ function DialogAddNewMember({ role, reload = () => {}, classId, currentList = []
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <div className="w-[330px] md:w-[400px]">
+                        <div className="md:w-[400px]">
                             {!alertState ? (
                                 <>
                                     <div className="w-full flex flex-row items-center">

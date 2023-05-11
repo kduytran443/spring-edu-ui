@@ -1,6 +1,6 @@
 import { faPlus, faReply, faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Alert, Button, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,8 @@ function PersonalEditPage() {
 
     const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState('');
+
+    const [errorState, setErrorState] = useState('');
 
     const onInputNumber = (e, callback, maxLength = 16) => {
         if (e.target.value.length < maxLength && !isNaN(e.target.value) && !e.target.value.includes(' ')) {
@@ -89,14 +91,17 @@ function PersonalEditPage() {
             };
             userDataService.putUser(obj).then((data) => {
                 if (data.id) {
+                    setErrorState('');
                     navigate('/personal');
+                } else {
+                    setErrorState(data.message);
                 }
             });
         }
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full p-4 md:p-0">
             <div className="mb-[6px]">
                 <Button
                     onClick={(e) => {
@@ -166,9 +171,14 @@ function PersonalEditPage() {
                         </FormControl>
                     </div>
                 )}
+                {errorState && (
+                    <div className="mt-6">
+                        <Alert severity="error">{errorState}</Alert>
+                    </div>
+                )}
                 <div
                     onClick={submit}
-                    className="w-full mt-10 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
+                    className="w-full mt-6 p-4 rounded-lg hover:bg-blue-600 active:bg-blue-700 text-center bg-blue-500 shadow-blue-300 shadow-lg cursor-pointer select-none text-white font-bold text-xl"
                 >
                     <FontAwesomeIcon icon={faSave} className="mr-2" /> Cập nhật
                 </div>

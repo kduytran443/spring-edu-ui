@@ -14,11 +14,13 @@ import { renderToTime } from '~/utils';
 function HeaderNotifierBox({ dataList = [] }) {
     const navigate = useNavigate();
 
+    const [page, setPage] = useState(1);
+
     return (
         <div className="bg-white p-2 w-[300px] lg:w-[420px] border-[1px] border-slate-300 min-h-[100px] shadow-lg rounded-lg flex flex-col">
             <ul>
                 {dataList.map((notify, index) => {
-                    return index < 5 ? (
+                    return index < page * 5 ? (
                         <li
                             onClick={(e) => {
                                 navigate(notify.redirectUrl);
@@ -39,7 +41,15 @@ function HeaderNotifierBox({ dataList = [] }) {
                 })}
                 {dataList.length === 0 && <div className="w-full p-6 text-center">Không có thông báo nào</div>}
             </ul>
-            <Button>Xem tất cả</Button>
+            {page * 5 < dataList.length && (
+                <Button
+                    onClick={(e) => {
+                        setPage((pre) => pre + 1);
+                    }}
+                >
+                    Xem thêm
+                </Button>
+            )}
         </div>
     );
 }

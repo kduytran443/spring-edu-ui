@@ -29,6 +29,8 @@ function FilePage() {
             fileContent = (
                 <audio className="w-full" style={{ width: '100%', height: '48px' }} controls src={fileState.data} />
             );
+        } else if (fileState.type.includes('octet-stream')) {
+            fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.winrarIcon} />;
         } else if (fileState.type.includes('compressed')) {
             fileContent = <img className="w-full max-h-[220px] max-w-[140px]" alt="file" src={images.zip} />;
         } else {

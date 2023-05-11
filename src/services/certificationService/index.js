@@ -8,7 +8,11 @@ export const certificationService = {
         const response = await fetch(`${API_BASE_URL}/public/${this.api}/${id}`, config);
         return response.json();
     },
-
+    async getByUsername(username) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/public/${this.api}/user/${username}`, config);
+        return response.json();
+    },
     async post(certificate) {
         const config = postConfig(certificate);
         const response = await fetch(`${API_BASE_URL}/${this.api}`, config);

@@ -18,9 +18,12 @@ function FileReview({ name = 'Tên', size = 1, type = '', data = '', index, noDe
         );
     } else if (type.includes('compressed')) {
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.zip} />;
+    } else if (type.includes('octet-stream')) {
+        fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.winrarIcon} />;
     } else {
         fileContent = <img className="w-full max-w-[140px]" alt="file" src={images.file} />;
     }
+
     const fileSize = size / 1024;
     const downloadRef = useRef();
 

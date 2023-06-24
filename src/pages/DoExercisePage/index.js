@@ -207,7 +207,7 @@ function DoExercisePage() {
     }, [drawQuizzes]);
 
     const endTime = () => {
-        //submit();
+        submit();
     };
 
     return (

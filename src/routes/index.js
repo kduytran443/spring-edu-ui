@@ -41,6 +41,7 @@ import {
     CLASS_HISTORY_PAGE_URL,
     FILE_PAGE_URL,
     PERSONAL_DETAILS_PAGE_URL,
+    FORBIDDEN_PAGE,
 } from '~/constants';
 import AdminLayout from '~/layouts/AdminLayout';
 import ClassLayout from '~/layouts/ClassLayout';
@@ -75,6 +76,7 @@ import ClassSpecificExercisePage from '~/pages/ClassSpecificExercisePage';
 import DoExercisePage from '~/pages/DoExercisePage';
 import ExerciseResultPage from '~/pages/ExerciseResultPage';
 import FilePage from '~/pages/FilePage';
+import ForbiddenPage from '~/pages/ForbiddenPage';
 import HomePage from '~/pages/HomePage';
 import IntroPage from '~/pages/IntroPage';
 import JoinedClassPage from '~/pages/JoinedClassPage';
@@ -128,6 +130,11 @@ const publicRoutes = [
     {
         path: `${SEARCH_PAGE_URL}`,
         component: SearchPage,
+        layout: FullLayout,
+    },
+    {
+        path: `${FORBIDDEN_PAGE}`,
+        component: ForbiddenPage,
         layout: FullLayout,
     },
 ];

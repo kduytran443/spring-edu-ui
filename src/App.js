@@ -1,5 +1,13 @@
 import './App.css';
-import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import {
+    BrowserRouter as Router,
+    Navigate,
+    Route,
+    Routes,
+    useLocation,
+    unstable_HistoryRouter as HistoryRouter,
+} from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import { publicRoutes, privateRoutes, adminRoutes } from './routes';
 import FullLayout from './layouts/FullLayout';
 import { Fragment, useEffect, useState } from 'react';
@@ -33,6 +41,7 @@ const theme = createTheme({
         },
     },
 });
+export const history = createBrowserHistory();
 
 function App() {
     const [isAuthenticatedState, setIsAuthenticatedState] = useState(null);
@@ -52,7 +61,7 @@ function App() {
 
     return (
         <ThemeProvider theme={theme}>
-            <Router>
+            <HistoryRouter history={history}>
                 <div className="pd-0 ">
                     <ScrollToTop>
                         <Routes>
@@ -131,7 +140,7 @@ function App() {
                         </Routes>
                     </ScrollToTop>
                 </div>
-            </Router>
+            </HistoryRouter>
         </ThemeProvider>
     );
 }

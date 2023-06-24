@@ -57,11 +57,7 @@ function QuestionBankDetailsPage() {
 
     const loadData = () => {
         questionBankService.getQuestionBankById(questionBankId).then((data) => {
-            if (data.id && data.username === userState.username) {
-                setQuestionBankState(data);
-            } else {
-                navigate('/question-bank');
-            }
+            setQuestionBankState(data);
         });
     };
 

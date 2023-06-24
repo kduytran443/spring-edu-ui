@@ -15,6 +15,11 @@ export const classScheduleService = {
         const response = await fetch(`${API_BASE_URL}/${this.api}/user`, config);
         return response.json();
     },
+    async checkExisted(classId) {
+        const config = getConfig();
+        const response = await fetch(`${API_BASE_URL}/${this.api}/existed/${classId}`, config);
+        return response.json();
+    },
 
     async getClassScheduleByClassScheduleId(id) {
         //classLessonId

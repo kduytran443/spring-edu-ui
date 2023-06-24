@@ -22,6 +22,8 @@ function QuestionBankPage() {
         });
     };
 
+    console.log(process.env.REACT_APP_API_BASE_URL);
+
     useEffect(() => {
         loadData();
     }, [location]);

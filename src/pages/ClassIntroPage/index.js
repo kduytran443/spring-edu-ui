@@ -45,6 +45,7 @@ import CheckoutDialog from '~/components/CheckoutDialog';
 import { transactionService } from '~/services/transactionService';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { classService } from '~/services/classService';
+import { classScheduleService } from '~/services/classScheduleService';
 
 const VND = new Intl.NumberFormat('vi-VN', {
     style: 'currency',
@@ -60,6 +61,8 @@ const columns = [
 function ClassIntroPage() {
     const [classDataState, setClassDataState] = useState({});
     const navigate = useNavigate();
+
+    const [userDataState, dispatchUserDataState] = useUser();
 
     const [editorValueState, setEditorValueState] = useState('');
     const [visibleEdittingState, setVisibleEdittingState] = useState(false);
@@ -461,11 +464,22 @@ function ClassIntroPage() {
     };
     useEffect(() => {
         checkFavoritedProduct();
+        loadExistedTime();
     }, [location]);
 
     const favorite = () => {
         classService.like(classId).then((data) => {
             checkFavoritedProduct();
+        });
+    };
+
+    const [existedTime, setExistedTime] = useState();
+
+    const loadExistedTime = () => {
+        classScheduleService.checkExisted(classId).then((data) => {
+            if (data >= 0) {
+                setExistedTime(data);
+            }
         });
     };
 
@@ -670,6 +684,7 @@ function ClassIntroPage() {
                         )}
                     </div>
                     <div className="flex flex-col items-center mt-4 sm:mt-0">
+                        {existedTime == 1 && <div className="my-2 text-red-500 font-bold">*Đụng độ lịch</div>}
                         {classDataState && !classDataState.userRoleCode && totalFee >= 0 && (
                             <div>
                                 <span className={'text-3xl font-bold text-orange-400 text-center'}>
@@ -792,6 +807,18 @@ function ClassIntroPage() {
                                     </span>
                                 </li>
                             </ul>
+                        )}
+                        {userDataState && userDataState.role === 'ADMIN' && (
+                            <div className="mt-4">
+                                <Button
+                                    onClick={(e) => {
+                                        navigate('/class/' + classId);
+                                    }}
+                                    variant="contained"
+                                >
+                                    ADMIN xem lớp
+                                </Button>
+                            </div>
                         )}
                     </div>
                 </div>
